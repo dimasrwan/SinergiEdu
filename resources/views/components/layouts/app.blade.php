@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $title ?? 'Dashboard' }} - SinergiEdu</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.svg?v=2') }}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="h-full font-sans text-slate-800 antialiased tracking-tight" x-data="{ sidebarOpen: false }">
+    <div>
+        <!-- Off-canvas menu untuk mobile -->
+        <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-show="sidebarOpen" x-description="Off-canvas menu overlay" style="display: none;">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-slate-900/80 transition-opacity duration-300 ease-linear-out" 
+                 x-show="sidebarOpen"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="sidebarOpen = false"></div>
+
+            <div class="fixed inset-0 flex">
+                <!-- Sidebar panel -->
+                <div class="relative flex w-full max-w-xs flex-1 flex-col bg-white border-r border-slate-200 pt-5 pb-4 transition-transform duration-300 ease-in-out"
+                     x-show="sidebarOpen"
+                     x-transition:enter="transition ease-in-out duration-300 transform"
+                     x-transition:enter-start="-translate-x-full"
+                     x-transition:enter-end="translate-x-0"
+                     x-transition:leave="transition ease-in-out duration-300 transform"
+                     x-transition:leave-start="translate-x-0"
+                     x-transition:leave-end="-translate-x-full">
+                    
+                    <div class="absolute top-0 right-0 -mr-12 pt-2">
+                        <button type="button" class="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" @click="sidebarOpen = false">
+                            <span class="sr-only">Tutup sidebar</span>
+                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" x-description="Heroicon name: outline/x-mark" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-shrink-0 items-center gap-3 px-6">
+                        <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-9 w-auto">
+                        <span class="text-2xl font-bold text-slate-900 tracking-tight">SinergiEdu</span>
+                    </div>
+                    
+                    <div class="mt-8 h-0 flex-1 overflow-y-auto px-4">
+                        <nav class="space-y-1">
+                            {{ $sidebar ?? '' }}
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Static sidebar untuk desktop -->
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
+            <div class="flex flex-grow flex-col overflow-y-auto border-r border-slate-200 bg-white px-6 pb-4">
+                <div class="flex h-16 flex-shrink-0 items-center gap-3">
+                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-9 w-auto">
+                    <span class="text-2xl font-bold text-slate-900 tracking-tight">SinergiEdu</span>
+                </div>
+                <nav class="mt-6 flex flex-1 flex-col">
+                    <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                        <li>
+                            <ul role="list" class="-mx-2 space-y-1">
+                                @php
+                                    $role = strtolower(Auth::user()->role->name ?? '');
+                                @endphp
+                                @if($role === 'admin')
+                                    <x-sidebars.admin />
+                                @elseif($role === 'guru')
+                                    <x-sidebars.guru />
+                                @elseif($role === 'siswa')
+                                    <x-sidebars.siswa />
+                                @elseif($role === 'orang tua')
+                                    <x-sidebars.orangtua />
+                                @elseif($role === 'waka kurikulum')
+                                    <x-sidebars.waka />
+                                @elseif($role === 'pengawas')
+                                    <x-sidebars.pengawas />
+                                @else
+                                    {{ $sidebar ?? '' }}
+                                @endif
+                            </ul>
+                        </li>
+                        <li class="mt-auto px-4 pb-4">
+                            <!-- Profil & Logout -->
+                            <div class="bg-[#123B82] rounded-2xl p-4 flex items-center gap-x-4 shadow-lg shadow-[#123B82]/20">
+                                <div class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30 text-white font-bold shrink-0">
+                                    {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
+                                    <p class="text-[10px] text-blue-200 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
+                                </div>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-xl transition duration-150">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main column -->
+        <div class="lg:pl-64 flex flex-col min-h-screen">
+            <!-- Navbar -->
+            <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
+                <button type="button" class="-m-2.5 p-2.5 text-slate-700 lg:hidden" @click="sidebarOpen = true">
+                    <span class="sr-only">Buka sidebar</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+
+                <div class="h-6 w-px bg-slate-200 lg:hidden" aria-hidden="true"></div>
+
+                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6">{{ $title ?? 'Dashboard' }}</h2>
+                    </div>
+                    <div class="flex items-center gap-x-4 lg:gap-x-6">
+                        <!-- Search (Hidden on small screens) -->
+                        <div class="hidden md:block relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                </svg>
+                            </div>
+                            <input type="text" class="block w-64 rounded-full border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                        </div>
+                        
+                        <!-- Notifications -->
+                        <button type="button" class="-m-2.5 p-2.5 text-slate-400 hover:text-slate-500 relative transition">
+                            <span class="sr-only">Lihat notifikasi</span>
+                            <span class="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                        </button>
+
+                        <!-- Divider -->
+                        <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200" aria-hidden="true"></div>
+
+                        <!-- Dropdown Menu / Profile -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3" @click="open = !open">
+                                <span class="sr-only">Buka menu user</span>
+                                <div class="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-sm font-bold text-primary border border-blue-100">
+                                    {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                                </div>
+                                <div class="hidden lg:flex lg:items-center">
+                                    <span class="text-sm font-semibold leading-6 text-slate-900" aria-hidden="true">{{ Auth::user()->name ?? 'Guest' }}</span>
+                                    <svg class="ml-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <!-- Dropdown panel -->
+                            <div class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-xl bg-white py-2 shadow-lg ring-1 ring-slate-900/5 focus:outline-none"
+                                 x-show="open"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 @click.away="open = false"
+                                 style="display: none;">
+                                <a href="{{ route('profile.edit') }}" class="block px-3 py-1.5 text-sm leading-6 text-slate-900 hover:bg-slate-50">Profil Saya</a>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left block px-3 py-1.5 text-sm leading-6 text-red-600 hover:bg-red-50">Keluar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <main class="py-10 flex-1">
+                <div class="px-4 sm:px-6 lg:px-8">
+                    {{ $slot }}
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-slate-200/50 py-6 mt-auto">
+                <div class="px-4 sm:px-6 lg:px-8 flex items-center justify-between text-sm text-slate-500">
+                    <p>&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</p>
+                    <div class="flex gap-4">
+                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold">{{ Auth::user()->role->name ?? 'guest' }} Mode</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    @stack('scripts')
+</body>
+</html>
