@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\SemesterController;
 use App\Http\Controllers\Admin\TeacherAssignmentController;
 use App\Http\Controllers\Admin\StudentPlacementController;
+use App\Http\Controllers\Admin\WakaController;
+use App\Http\Controllers\Admin\PengawasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -25,3 +27,7 @@ Route::resource('/academic-years', AcademicYearController::class);
 Route::resource('/semesters', SemesterController::class);
 Route::resource('/teacher-assignments', TeacherAssignmentController::class)->except(['show']);
 Route::resource('/student-placements', StudentPlacementController::class)->except(['show']);
+Route::resource('/wakas', WakaController::class);
+Route::resource('/pengawas', PengawasController::class)->parameters([
+    'pengawas' => 'pengawas'
+]);
