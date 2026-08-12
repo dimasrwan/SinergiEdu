@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\StudentPlacementController;
 use App\Http\Controllers\Admin\WakaController;
 use App\Http\Controllers\Admin\PengawasController;
 use App\Http\Controllers\Admin\KepalaSekolahController;
+use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -35,3 +36,6 @@ Route::resource('/pengawas', PengawasController::class)->parameters([
 Route::resource('/kepala-sekolah', KepalaSekolahController::class)->parameters([
     'kepala-sekolah' => 'kepala_sekolah'
 ]);
+
+Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
