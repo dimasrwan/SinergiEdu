@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\TeacherAssignmentController;
 use App\Http\Controllers\Admin\StudentPlacementController;
 use App\Http\Controllers\Admin\WakaController;
 use App\Http\Controllers\Admin\PengawasController;
+use App\Http\Controllers\Admin\KepalaSekolahController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -30,4 +31,7 @@ Route::resource('/student-placements', StudentPlacementController::class)->excep
 Route::resource('/wakas', WakaController::class);
 Route::resource('/pengawas', PengawasController::class)->parameters([
     'pengawas' => 'pengawas'
+]);
+Route::resource('/kepala-sekolah', KepalaSekolahController::class)->parameters([
+    'kepala-sekolah' => 'kepala_sekolah'
 ]);

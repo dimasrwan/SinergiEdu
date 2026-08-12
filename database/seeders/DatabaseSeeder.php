@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $roleSiswa = Role::create(['name' => 'siswa', 'display_name' => 'Siswa']);
         $roleOrangTua = Role::create(['name' => 'orangtua', 'display_name' => 'Orang Tua']);
         $rolePengawas = Role::create(['name' => 'pengawas', 'display_name' => 'Pengawas']);
+        $roleKepalaSekolah = Role::create(['name' => 'kepala_sekolah', 'display_name' => 'Kepala Sekolah/Madrasah']);
 
         // 2. Buat Akun Admin
         User::create([
@@ -51,6 +52,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'pengawas@sinergiedu.test',
             'password' => $password,
             'role_id' => $rolePengawas->id,
+        ]);
+
+        // 5. Buat Akun Kepala Sekolah
+        User::create([
+            'name' => 'Demo Kepala Sekolah',
+            'email' => 'kepala@sinergiedu.test',
+            'password' => $password,
+            'role_id' => $roleKepalaSekolah->id,
         ]);
 
         // 5. Buat Akun Guru & Profil Teacher
