@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Tambah Tahun Ajaran</x-slot:title>
 
-    <div class="w-full max-w-2xl">
+    <div class="w-full">
         <!-- Header -->
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.academic-years.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
@@ -51,8 +51,8 @@
                                     <input id="is_active" name="is_active" type="checkbox" value="1" class="w-4 h-4 text-primary bg-white border-slate-300 rounded focus:ring-accent focus:ring-2" {{ old('is_active') ? 'checked' : '' }}>
                                 </div>
                                 <div class="flex-1">
-                                    <span class="block text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">Aktifkan Tahun Ajaran Ini</span>
-                                    <span class="block text-xs text-slate-500 mt-0.5">Jika dicentang, sistem akan menggunakan periode ini sebagai konteks akademik utama dan secara otomatis menonaktifkan tahun ajaran aktif sebelumnya.</span>
+                                    <span class="block text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">Jadikan Tahun Ajaran Aktif</span>
+                                    <span class="block text-xs text-slate-500 mt-0.5">Periode ini akan menjadi konteks akademik utama sistem.</span>
                                 </div>
                             </label>
                         </div>

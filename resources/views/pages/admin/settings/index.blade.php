@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Pengaturan Sistem</x-slot:title>
 
-    <div class="w-full max-w-4xl mx-auto">
+    <div class="w-full">
         <!-- Page Header -->
         <div class="mb-6">
             <h1 class="text-2xl font-bold tracking-tight text-slate-900">Pengaturan Sistem</h1>
@@ -28,7 +28,7 @@
                     <div class="space-y-6">
                         <div class="border-b border-slate-100 pb-3">
                             <h2 class="text-lg font-bold text-slate-900">Profil Sekolah / Madrasah</h2>
-                            <p class="text-sm text-slate-500 mt-0.5">Informasi ini akan digunakan sebagai identitas pada berbagai laporan dan antarmuka sistem.</p>
+                            <p class="text-sm text-slate-500 mt-0.5">Informasi ini digunakan sebagai identitas sekolah/madrasah pada laporan dan antarmuka sistem.</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -55,7 +55,7 @@
                                 <div class="flex-1 space-y-3 w-full">
                                     <div>
                                         <label class="block text-sm font-bold text-slate-900">Logo Sekolah/Madrasah</label>
-                                        <p class="text-xs text-slate-500 mt-1">Format: JPG, JPEG, PNG, WEBP. Maksimal 2MB. Resolusi disarankan 512x512px.</p>
+                                        <p class="text-xs text-slate-500 mt-1">JPG, PNG, atau SVG • Maks. 2 MB</p>
                                     </div>
                                     <div class="relative">
                                         <input type="file" id="school_logo" name="school_logo" accept="image/jpeg,image/png,image/jpg,image/webp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" @change="fileChosen" />
@@ -104,7 +104,7 @@
                                 <x-input-error :messages="$errors->get('school_phone')" class="mt-2 text-xs" />
                             </div>
 
-                            <div>
+                            <div class="md:col-span-2">
                                 <label for="school_email" class="block text-sm font-semibold text-slate-700 mb-1.5">Email Sekolah</label>
                                 <x-text-input id="school_email" name="school_email" type="email" :value="old('school_email', $setting->school_email)" placeholder="Misal: info@sekolah.sch.id" class="w-full" />
                                 <x-input-error :messages="$errors->get('school_email')" class="mt-2 text-xs" />
@@ -145,8 +145,9 @@
                 </div>
 
                 <!-- Footer / Actions -->
-                <div class="bg-slate-50 px-6 py-4 md:px-8 flex items-center justify-end gap-3 border-t border-slate-100">
-                    <x-button variant="primary" type="submit" x-bind:disabled="isSubmitting" x-bind:class="{ 'opacity-70 cursor-not-allowed': isSubmitting }">
+                <div class="bg-slate-50 px-6 py-5 md:px-8 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 border-t border-slate-100">
+                    <x-button variant="secondary" href="{{ route('admin.dashboard') }}" class="w-full sm:w-auto">Batal</x-button>
+                    <x-button variant="primary" type="submit" class="w-full sm:w-auto justify-center" x-bind:disabled="isSubmitting" x-bind:class="{ 'opacity-70 cursor-not-allowed': isSubmitting }">
                         <span x-show="!isSubmitting">Simpan Perubahan</span>
                         <span x-show="isSubmitting" class="flex items-center gap-2">
                             <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>

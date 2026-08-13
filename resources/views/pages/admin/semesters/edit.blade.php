@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Edit Semester - {{ $semester->name }}</x-slot:title>
 
-    <div class="w-full max-w-2xl">
+    <div class="w-full">
         <!-- Header -->
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.semesters.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
@@ -46,7 +46,7 @@
                                 <option value="" disabled>Pilih tahun ajaran...</option>
                                 @foreach($academicYears as $year)
                                     <option value="{{ $year->id }}" {{ old('academic_year_id', $semester->academic_year_id) == $year->id ? 'selected' : '' }}>
-                                        Tahun Ajaran {{ $year->year }} {{ $year->is_active ? '(Saat ini Aktif)' : '' }}
+                                        {{ $year->year }} {{ $year->is_active ? '• Aktif' : '' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -68,9 +68,11 @@
                                 </div>
                                 <div class="flex-1">
                                     <span class="block text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">
-                                        {{ $semester->is_active ? 'Semester Ini Sedang Aktif' : 'Aktifkan Semester Ini' }}
+                                        {{ $semester->is_active ? 'Semester Ini Aktif' : 'Jadikan Semester Aktif' }}
                                     </span>
-                                    <span class="block text-xs text-slate-500 mt-0.5">Jika dicentang, sistem hanya akan mengizinkan satu semester ini menjadi aktif dalam rentang tahun ajaran tersebut.</span>
+                                    <span class="block text-xs text-slate-500 mt-0.5">
+                                        {{ $semester->is_active ? 'Semester ini sedang digunakan sebagai periode akademik aktif.' : 'Semester ini menjadi periode akademik aktif untuk tahun ajaran yang dipilih.' }}
+                                    </span>
                                 </div>
                             </label>
                         </div>

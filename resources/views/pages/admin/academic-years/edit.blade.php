@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Edit Tahun Ajaran - {{ $academicYear->year }}</x-slot:title>
 
-    <div class="w-full max-w-2xl">
+    <div class="w-full">
         <!-- Header -->
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.academic-years.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
@@ -52,9 +52,9 @@
                                 </div>
                                 <div class="flex-1">
                                     <span class="block text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">
-                                        {{ $academicYear->is_active ? 'Tahun Ajaran Sedang Aktif' : 'Aktifkan Tahun Ajaran Ini' }}
+                                        {{ $academicYear->is_active ? 'Tahun Ajaran Aktif' : 'Jadikan Tahun Ajaran Aktif' }}
                                     </span>
-                                    <span class="block text-xs text-slate-500 mt-0.5">Jika dicentang, sistem akan menggunakan periode ini sebagai konteks utama dan secara otomatis menonaktifkan tahun ajaran lain.</span>
+                                    <span class="block text-xs text-slate-500 mt-0.5">Periode ini akan menjadi konteks akademik utama sistem.</span>
                                 </div>
                             </label>
                         </div>
