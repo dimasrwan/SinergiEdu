@@ -15,14 +15,16 @@ class SemesterController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Semester::with('academicYear');
+        $query = Semester::with('academicYear')
+            ->select('semesters.*')
+            ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id');
 
         if ($request->filled('academic_year_id')) {
-            $query->where('academic_year_id', $request->academic_year_id);
+            $query->where('semesters.academic_year_id', $request->academic_year_id);
         }
 
-        $semesters = $query->orderByDesc('academic_year_id')
-                           ->orderBy('name')
+        $semesters = $query->orderByDesc('academic_years.year')
+                           ->orderByRaw("CASE WHEN semesters.name = 'Genap' THEN 1 WHEN semesters.name = 'Ganjil' THEN 2 ELSE 3 END")
                            ->paginate(10)
                            ->withQueryString();
 

@@ -17,6 +17,7 @@ class Classroom extends Model
     protected $table = 'classes';
 
     protected $fillable = [
+        'education_level',
         'name',
         'grade_level',
         'academic_year_id',
@@ -47,5 +48,13 @@ class Classroom extends Model
         return $this->belongsToMany(Student::class, 'student_classes', 'class_id', 'student_id')
                     ->withPivot('academic_year_id')
                     ->withTimestamps();
+    }
+
+    /**
+     * Dapatkan format tampilan tingkat kelas.
+     */
+    public function getFormattedGradeLevelAttribute()
+    {
+        return $this->grade_level;
     }
 }

@@ -45,7 +45,19 @@
 
         <x-card padding="none" class="overflow-hidden">
             <!-- Filter Bar -->
-            <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50/50">
+            <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50/50" x-data="{
+                jenjang: '{{ request('education_level') }}',
+                tingkat: '{{ request('grade_level') }}',
+                getTingkatOptions() {
+                    if (this.jenjang === 'SD') return [1,2,3,4,5,6];
+                    if (this.jenjang === 'SMP') return [7,8,9];
+                    if (this.jenjang === 'SMA') return [10,11,12];
+                    return [];
+                },
+                onJenjangChange() {
+                    this.tingkat = '';
+                }
+            }">
                 <form action="{{ route('admin.classes.index') }}" method="GET" class="flex flex-col md:flex-row gap-3">
                     <div class="flex-1">
                         <div class="relative w-full">
@@ -58,11 +70,18 @@
                     </div>
                     
                     <div class="flex flex-col sm:flex-row gap-3 md:w-auto w-full shrink-0">
-                        <select name="grade_level" class="block w-full sm:w-40 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
+                        <select name="education_level" x-model="jenjang" @change="onJenjangChange" class="block w-full sm:w-40 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
+                            <option value="">Semua Jenjang</option>
+                            <option value="SD">SD / MI</option>
+                            <option value="SMP">SMP / MTs</option>
+                            <option value="SMA">SMA / MA / SMK</option>
+                        </select>
+
+                        <select name="grade_level" x-model="tingkat" :disabled="!jenjang" class="block w-full sm:w-40 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm disabled:opacity-50 disabled:bg-slate-50">
                             <option value="">Semua Tingkat</option>
-                            <option value="10" {{ request('grade_level') == '10' ? 'selected' : '' }}>X</option>
-                            <option value="11" {{ request('grade_level') == '11' ? 'selected' : '' }}>XI</option>
-                            <option value="12" {{ request('grade_level') == '12' ? 'selected' : '' }}>XII</option>
+                            <template x-for="val in getTingkatOptions()" :key="val">
+                                <option :value="val" x-text="val" :selected="val == tingkat"></option>
+                            </template>
                         </select>
                         
                         <select name="academic_year_id" class="block w-full sm:w-48 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
@@ -77,7 +96,7 @@
                         <button type="submit" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 transition-colors">
                             Filter
                         </button>
-                        @if(request('search') || request('grade_level') || request('academic_year_id'))
+                        @if(request('search') || request('grade_level') || request('academic_year_id') || request('education_level'))
                             <a href="{{ route('admin.classes.index') }}" class="px-4 py-2 bg-white hover:bg-red-50 text-slate-500 hover:text-danger text-sm font-semibold rounded-xl border border-slate-200 transition-colors text-center">
                                 Reset
                             </a>
@@ -92,7 +111,8 @@
                     <thead>
                         <tr class="bg-white border-b border-slate-100">
                             <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider w-10">NO</th>
-                            <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">KELAS</th>
+                            <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">KELAS / ROMBEL</th>
+                            <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">JENJANG</th>
                             <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">TINGKAT</th>
                             <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">WALI KELAS</th>
                             <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider hidden lg:table-cell">TAHUN AJARAN</th>
@@ -110,14 +130,20 @@
                                     <p class="text-sm font-bold text-primary">{{ $class->name }}</p>
                                     <!-- Mobile Info Fallback -->
                                     <div class="lg:hidden mt-1 space-y-0.5">
-                                        <p class="text-[11px] text-slate-500 sm:hidden">Tingkat: {{ $class->grade_level == '10' ? 'X' : ($class->grade_level == '11' ? 'XI' : ($class->grade_level == '12' ? 'XII' : $class->grade_level)) }}</p>
+                                        <p class="text-[11px] text-slate-500 sm:hidden">Jenjang: {{ $class->education_level }}</p>
+                                        <p class="text-[11px] text-slate-500 sm:hidden">Tingkat: {{ $class->grade_level }}</p>
                                         <p class="text-[11px] text-slate-500 md:hidden">Wali: {{ $class->homeroomTeacher->user->name ?? 'Belum ditentukan' }}</p>
                                         <p class="text-[11px] text-slate-500 lg:hidden">Tahun: {{ $class->academicYear->year ?? 'Belum ditentukan' }}</p>
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 hidden sm:table-cell">
+                                    <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+                                        {{ $class->education_level }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 hidden sm:table-cell">
                                     <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-primary font-bold text-xs shadow-sm">
-                                        {{ $class->grade_level == '10' ? 'X' : ($class->grade_level == '11' ? 'XI' : ($class->grade_level == '12' ? 'XII' : $class->grade_level)) }}
+                                        {{ $class->grade_level }}
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 hidden md:table-cell text-sm text-slate-700 font-medium">
@@ -161,13 +187,13 @@
                                         @endif
                                     </h3>
                                     <p class="text-sm text-slate-500 mt-1 mb-4">
-                                        @if(request('search') || request('grade_level') || request('academic_year_id'))
+                                        @if(request('search') || request('grade_level') || request('academic_year_id') || request('education_level'))
                                             Coba ubah kata kunci pencarian atau filter Anda.
                                         @else
                                             Belum ada data kelas yang didaftarkan dalam sistem.
                                         @endif
                                     </p>
-                                    @if(!(request('search') || request('grade_level') || request('academic_year_id')))
+                                    @if(!(request('search') || request('grade_level') || request('academic_year_id') || request('education_level')))
                                         <x-button variant="primary" href="{{ route('admin.classes.create') }}" class="!py-2 !text-xs">
                                             Tambah Kelas
                                         </x-button>

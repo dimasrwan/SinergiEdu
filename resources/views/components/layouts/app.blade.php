@@ -149,23 +149,37 @@
                     </div>
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
                         <!-- Search (Hidden on small screens) -->
-                        <div class="hidden md:block relative">
+                        <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
                             </div>
-                            <input type="text" class="block w-64 rounded-full border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                            <input type="text" x-model="query" @input.debounce.500ms="fetchResults" @keydown.escape="close()" class="block w-64 rounded-full border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                            
+                            <!-- Dropdown Results -->
+                            <div x-show="open" x-transition.opacity class="absolute top-full mt-2 w-[400px] bg-white rounded-xl shadow-lg ring-1 ring-slate-900/5 py-2 z-50 lg:right-auto right-0 max-h-96 overflow-y-auto" style="display: none;">
+                                <template x-if="loading">
+                                    <div class="px-4 py-3 text-sm text-slate-500 text-center">Mencari...</div>
+                                </template>
+                                <template x-if="!loading && results.length === 0 && query.length >= 2">
+                                    <div class="px-4 py-3 text-sm text-slate-500 text-center">Tidak ada hasil ditemukan.</div>
+                                </template>
+                                <template x-if="!loading && results.length > 0">
+                                    <ul class="divide-y divide-slate-100">
+                                        <template x-for="(result, index) in results" :key="index">
+                                            <li>
+                                                <a :href="result.url" class="block px-4 py-2.5 hover:bg-slate-50 transition-colors group">
+                                                    <p class="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5" x-text="result.category"></p>
+                                                    <p class="text-sm font-semibold text-slate-900 group-hover:text-primary transition-colors" x-text="result.title"></p>
+                                                    <p class="text-xs text-slate-500 mt-0.5" x-text="result.subtitle"></p>
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </template>
+                            </div>
                         </div>
-                        
-                        <!-- Notifications -->
-                        <button type="button" class="-m-2.5 p-2.5 text-slate-400 hover:text-slate-500 relative transition">
-                            <span class="sr-only">Lihat notifikasi</span>
-                            <span class="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                            </svg>
-                        </button>
 
                         <!-- Divider -->
                         <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200" aria-hidden="true"></div>
@@ -223,14 +237,47 @@
             <footer class="bg-white border-t border-slate-200/50 py-6 mt-auto">
                 <div class="px-4 sm:px-6 lg:px-8 flex items-center justify-between text-sm text-slate-500">
                     <p>&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</p>
-                    <div class="flex gap-4">
-                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold">{{ Auth::user()->role->name ?? 'guest' }} Mode</span>
-                    </div>
                 </div>
             </footer>
         </div>
     </div>
     
     @stack('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('globalSearch', () => ({
+                query: '',
+                results: [],
+                loading: false,
+                open: false,
+                
+                async fetchResults() {
+                    if (this.query.length < 2) {
+                        this.results = [];
+                        this.open = false;
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.open = true;
+                    
+                    try {
+                        const response = await fetch('/admin/search?q=' + encodeURIComponent(this.query));
+                        if (response.ok) {
+                            this.results = await response.json();
+                        }
+                    } catch (e) {
+                        console.error('Search error', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                close() {
+                    this.open = false;
+                }
+            }))
+        });
+    </script>
 </body>
 </html>

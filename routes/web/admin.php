@@ -16,9 +16,11 @@ use App\Http\Controllers\Admin\WakaController;
 use App\Http\Controllers\Admin\PengawasController;
 use App\Http\Controllers\Admin\KepalaSekolahController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::resource('/teachers', TeacherController::class);
 Route::resource('/students', StudentController::class);

@@ -28,6 +28,10 @@ class ClassroomController extends Controller
             $query->where('grade_level', $request->grade_level);
         }
 
+        if ($request->filled('education_level')) {
+            $query->where('education_level', $request->education_level);
+        }
+
         if ($request->filled('academic_year_id')) {
             $query->where('academic_year_id', $request->academic_year_id);
         }
@@ -56,6 +60,7 @@ class ClassroomController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'education_level' => 'required|in:SD,SMP,SMA',
             'name' => [
                 'required',
                 'string',
@@ -68,11 +73,6 @@ class ClassroomController extends Controller
                 'required',
                 'string',
                 'max:50',
-                function ($attribute, $value, $fail) use ($request) {
-                    if (!str_starts_with(strtoupper($request->name), strtoupper($value))) {
-                        $fail('Tingkat kelas (' . $value . ') tidak sesuai dengan awalan nama kelas (' . $request->name . ').');
-                    }
-                }
             ],
             'academic_year_id' => 'required|exists:academic_years,id',
             'homeroom_teacher_id' => [
@@ -131,6 +131,7 @@ class ClassroomController extends Controller
     public function update(Request $request, Classroom $class)
     {
         $validated = $request->validate([
+            'education_level' => 'required|in:SD,SMP,SMA',
             'name' => [
                 'required',
                 'string',
@@ -143,11 +144,6 @@ class ClassroomController extends Controller
                 'required',
                 'string',
                 'max:50',
-                function ($attribute, $value, $fail) use ($request) {
-                    if (!str_starts_with(strtoupper($request->name), strtoupper($value))) {
-                        $fail('Tingkat kelas (' . $value . ') tidak sesuai dengan awalan nama kelas (' . $request->name . ').');
-                    }
-                }
             ],
             'academic_year_id' => 'required|exists:academic_years,id',
             'homeroom_teacher_id' => [

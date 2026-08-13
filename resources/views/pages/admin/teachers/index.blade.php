@@ -1,17 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Manajemen Guru</x-slot:title>
 
-    @php
-        function formatClassName($name) {
-            if (str_starts_with($name, '10 ')) return 'X ' . substr($name, 3);
-            if (str_starts_with($name, '11 ')) return 'XI ' . substr($name, 3);
-            if (str_starts_with($name, '12 ')) return 'XII ' . substr($name, 3);
-            if ($name == '10') return 'X';
-            if ($name == '11') return 'XI';
-            if ($name == '12') return 'XII';
-            return $name;
-        }
-    @endphp
+
 
     <div class="space-y-6" x-data="{}">
         <!-- Page Header -->
@@ -199,7 +189,7 @@
                                                             <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
                                                                 <option value="" disabled selected>-- Pilih Kelas --</option>
                                                                 @foreach($classrooms as $cls)
-                                                                    <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ formatClassName($cls->name) }}</option>
+                                                                    <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ $cls->name }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>

@@ -1,17 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Detail Guru</x-slot:title>
 
-    @php
-        function formatClassName($name) {
-            if (str_starts_with($name, '10 ')) return 'X ' . substr($name, 3);
-            if (str_starts_with($name, '11 ')) return 'XI ' . substr($name, 3);
-            if (str_starts_with($name, '12 ')) return 'XII ' . substr($name, 3);
-            if ($name == '10') return 'X';
-            if ($name == '11') return 'XI';
-            if ($name == '12') return 'XII';
-            return $name;
-        }
-    @endphp
+
 
     <div class="max-w-4xl space-y-6 mx-auto" x-data="{}">
         <div class="mb-4">
@@ -121,7 +111,7 @@
                                         </td>
                                         <td class="py-3 px-4">
                                             <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                                                {{ formatClassName($assignment->classroom->name) }}
+                                                {{ $assignment->classroom->name }}
                                             </span>
                                         </td>
                                         <td class="py-3 px-4">
@@ -172,7 +162,7 @@
                                                                     <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
                                                                         <option value="" disabled>-- Pilih Kelas --</option>
                                                                         @foreach($classrooms as $cls)
-                                                                            <option value="{{ $cls->id }}" @selected($assignment->class_id == $cls->id)>{{ formatClassName($cls->name) }}</option>
+                                                                            <option value="{{ $cls->id }}" @selected($assignment->class_id == $cls->id)>{{ $cls->name }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -212,7 +202,7 @@
                                                     
                                                     <div class="mb-4 space-y-1">
                                                         <p class="font-bold">{{ $assignment->subject->name }}</p>
-                                                        <p class="text-sm">{{ formatClassName($assignment->classroom->name) }}</p>
+                                                        <p class="text-sm">{{ $assignment->classroom->name }}</p>
                                                         <p class="text-sm">{{ $assignment->academicYear?->year ?? '-' }} • {{ $assignment->semester?->name ?? '-' }}</p>
                                                     </div>
                                                     
@@ -279,7 +269,7 @@
                             <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
                                 <option value="" disabled selected>-- Pilih Kelas --</option>
                                 @foreach($classrooms as $cls)
-                                    <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ formatClassName($cls->name) }}</option>
+                                    <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ $cls->name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -17,7 +17,25 @@
         </div>
 
         <x-card padding="none" class="overflow-hidden">
-            <form action="{{ route('admin.classes.update', $class) }}" method="POST">
+            <form action="{{ route('admin.classes.update', $class) }}" method="POST" x-data="{
+                jenjang: '{{ old('education_level', $class->education_level) }}',
+                tingkat: '{{ old('grade_level', $class->grade_level) }}',
+                getTingkatOptions() {
+                    if (this.jenjang === 'SD') return [1,2,3,4,5,6];
+                    if (this.jenjang === 'SMP') return [7,8,9];
+                    if (this.jenjang === 'SMA') return [10,11,12];
+                    return [];
+                },
+                onJenjangChange() {
+                    this.tingkat = '';
+                },
+                getPlaceholder() {
+                    if (this.jenjang === 'SD') return 'Misal: 5A';
+                    if (this.jenjang === 'SMP') return 'Misal: VIII A';
+                    if (this.jenjang === 'SMA') return 'Misal: X IPA 1';
+                    return 'Pilih jenjang terlebih dahulu...';
+                }
+            }">
                 @csrf
                 @method('PUT')
 
@@ -47,17 +65,32 @@
                             </div>
 
                             <div>
-                                <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kelas <span class="text-danger">*</span></label>
-                                <x-text-input id="name" name="name" type="text" :value="old('name', $class->name)" required class="w-full" />
+                                <label for="education_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Jenjang Pendidikan <span class="text-danger">*</span></label>
+                                <select id="education_level" name="education_level" x-model="jenjang" @change="onJenjangChange" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
+                                    <option value="" disabled>Pilih jenjang...</option>
+                                    <option value="SD">SD / MI</option>
+                                    <option value="SMP">SMP / MTs</option>
+                                    <option value="SMA">SMA / MA / SMK</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('education_level')" class="mt-2" />
                             </div>
 
                             <div>
                                 <label for="grade_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Tingkat Kelas <span class="text-danger">*</span></label>
-                                <select id="grade_level" name="grade_level" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
-                                    <option value="10" {{ old('grade_level', $class->grade_level) == '10' ? 'selected' : '' }}>X</option>
-                                    <option value="11" {{ old('grade_level', $class->grade_level) == '11' ? 'selected' : '' }}>XI</option>
-                                    <option value="12" {{ old('grade_level', $class->grade_level) == '12' ? 'selected' : '' }}>XII</option>
+                                <select id="grade_level" name="grade_level" x-model="tingkat" :disabled="!jenjang" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700 disabled:opacity-50 disabled:bg-slate-50">
+                                    <option value="" disabled>Pilih tingkat...</option>
+                                    <template x-for="val in getTingkatOptions()" :key="val">
+                                        <option :value="val" x-text="val" :selected="val == tingkat"></option>
+                                    </template>
                                 </select>
+                                <x-input-error :messages="$errors->get('grade_level')" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Kelas / Rombel <span class="text-danger">*</span></label>
+                                <input id="name" name="name" type="text" value="{{ old('name', $class->name) }}" x-bind:placeholder="getPlaceholder()" required class="block w-full py-2.5 px-3 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-900" />
+                                <p class="text-[11px] text-slate-500 mt-1.5">Gunakan format penamaan rombel yang berlaku di sekolah.</p>
+                                <x-input-error :messages="$errors->get('name')" class="mt-2" />
                             </div>
                         </div>
 
