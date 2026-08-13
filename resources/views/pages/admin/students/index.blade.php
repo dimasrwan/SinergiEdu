@@ -1,7 +1,19 @@
 <x-layouts.app>
     <x-slot:title>Manajemen Siswa</x-slot:title>
 
-    <div class="space-y-6">
+    @php
+        function formatClassName($name) {
+            if (str_starts_with($name, '10 ')) return 'X ' . substr($name, 3);
+            if (str_starts_with($name, '11 ')) return 'XI ' . substr($name, 3);
+            if (str_starts_with($name, '12 ')) return 'XII ' . substr($name, 3);
+            if ($name == '10') return 'X';
+            if ($name == '11') return 'XI';
+            if ($name == '12') return 'XII';
+            return $name;
+        }
+    @endphp
+
+    <div class="space-y-6" x-data="{}">
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-5 gap-4">
             <div>
@@ -34,6 +46,22 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-800 flex flex-col gap-1">
+                <div class="flex items-center gap-2 font-bold">
+                    <svg class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Gagal Menyimpan Data</span>
+                </div>
+                <ul class="list-disc pl-9 mt-1">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Toolbar (Search & Filter) -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-between gap-4">
             <form action="{{ route('admin.students.index') }}" method="GET" class="w-full flex flex-col sm:flex-row gap-4">
@@ -53,7 +81,7 @@
                     <select name="class_id" onchange="this.form.submit()" class="block w-full pl-3 pr-10 py-2.5 text-sm border border-slate-300 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent appearance-none cursor-pointer">
                         <option value="">Semua Kelas</option>
                         @forelse($classes as $class)
-                            <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
+                            <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ formatClassName($class->name) }}</option>
                         @empty
                             <option value="" disabled>Belum ada kelas tersedia.</option>
                         @endforelse
@@ -94,7 +122,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($activeClass)
-                                        <span class="text-sm font-semibold text-slate-700">{{ $activeClass->name }}</span>
+                                        <span class="text-sm font-semibold text-slate-700">{{ formatClassName($activeClass->name) }}</span>
                                     @else
                                         <span class="text-sm text-slate-400 italic">Belum ditempatkan</span>
                                     @endif
@@ -115,20 +143,19 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div x-data="{ menuOpen: false }" class="relative inline-block text-left">
-                                        <button @click="menuOpen = !menuOpen" @click.away="menuOpen = false" type="button" class="p-2 text-slate-400 hover:text-primary hover:bg-slate-50 rounded-lg transition-colors">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                                            </svg>
+                                    <div class="flex flex-wrap items-center justify-end gap-1.5 ">
+                                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-placement-{{ $student->id }}')" class="px-2.5 py-1 text-xs font-bold text-white bg-accent hover:bg-blue-600 rounded-lg transition-colors shrink-0">
+                                            + Penempatan
                                         </button>
-                                        <div x-show="menuOpen" x-transition class="absolute right-0 z-10 mt-1 w-48 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-slate-900/5 focus:outline-none py-1" style="display: none;">
-                                            <a href="{{ route('admin.students.show', $student) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">Lihat Detail</a>
-                                            <a href="{{ route('admin.students.edit', $student) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-accent transition-colors">Edit Data</a>
-                                            <div class="my-1 border-t border-slate-100"></div>
-                                            <button type="button" x-on:click="$dispatch('open-modal', 'delete-student-{{ $student->id }}'); menuOpen = false" class="block w-full text-left px-4 py-2 text-sm text-danger hover:bg-red-50 transition-colors">
-                                                Hapus
-                                            </button>
-                                        </div>
+                                        <a href="{{ route('admin.students.show', $student) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat Detail" aria-label="Lihat detail siswa">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        </a>
+                                        <a href="{{ route('admin.students.edit', $student) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit" aria-label="Edit siswa">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                        </a>
+                                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-student-{{ $student->id }}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus" aria-label="Hapus siswa">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                        </button>
                                     </div>
                                     
                                     <!-- Delete Modal -->
@@ -148,6 +175,54 @@
                                                 </form>
                                             </div>
                                         </div>
+                                    </x-modal>
+
+                                    <!-- Add Placement Modal -->
+                                    <x-modal name="add-placement-{{ $student->id }}" maxWidth="xl">
+                                        <form action="{{ route('admin.student-placements.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="redirect_to" value="students_index">
+                                            <input type="hidden" name="student_id" value="{{ $student->id }}">
+                                            
+                                            <div class="p-6 text-left whitespace-normal">
+                                                <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Tambah Penempatan Siswa</h2>
+                                                
+                                                <div class="space-y-5">
+                                                    <!-- Readonly Siswa Info -->
+                                                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col gap-1">
+                                                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Siswa</span>
+                                                        <div class="font-bold text-slate-900">{{ $student->user->name ?? '-' }}</div>
+                                                        <div class="text-xs text-slate-500 font-mono">NIS: {{ $student->nis ?? '-' }}</div>
+                                                    </div>
+                                                    
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                        <div>
+                                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
+                                                            <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                                <option value="" disabled selected>-- Pilih Kelas --</option>
+                                                                @foreach($classes as $cls)
+                                                                    <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ formatClassName($cls->name) }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
+                                                            <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                                <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
+                                                                @foreach($academicYears as $ay)
+                                                                    <option value="{{ $ay->id }}" @selected(old('academic_year_id', $academicYears->first()->id ?? null) == $ay->id)>{{ $ay->year }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
+                                                    <button type="button" x-on:click.prevent="$dispatch('close-modal', 'add-placement-{{ $student->id }}')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
+                                                    <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </x-modal>
                                 </td>
                             </tr>

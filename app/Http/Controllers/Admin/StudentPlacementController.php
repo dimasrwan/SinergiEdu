@@ -93,6 +93,11 @@ class StudentPlacementController extends Controller
                 ->with('success', 'Penempatan siswa berhasil ditambahkan.');
         }
 
+        if ($request->input('redirect_to') === 'students_index') {
+            return redirect()->route('admin.students.index')
+                ->with('success', 'Penempatan siswa berhasil ditambahkan.');
+        }
+
         return redirect()->route('admin.student-placements.index')
             ->with('success', 'Penempatan siswa berhasil ditambahkan.');
     }

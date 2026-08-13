@@ -41,8 +41,9 @@ class StudentController extends Controller
         $students = $query->latest()->paginate(10)->withQueryString();
         $totalStudents = Student::count();
         $classes = Classroom::all();
+        $academicYears = AcademicYear::orderByDesc('year')->get();
 
-        return view('pages.admin.students.index', compact('students', 'totalStudents', 'classes'));
+        return view('pages.admin.students.index', compact('students', 'totalStudents', 'classes', 'academicYears'));
     }
 
     public function create(): View
@@ -73,18 +74,6 @@ class StudentController extends Controller
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
             ]);
-
-            // 3. Tambahkan ke Kelas Aktif (Tahun Ajaran aktif)
-            $activeYear = AcademicYear::where('is_active', true)->first();
-            if ($activeYear) {
-                DB::table('student_classes')->insert([
-                    'student_id' => $student->id,
-                    'class_id' => (int) $request->class_id,
-                    'academic_year_id' => $activeYear->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
         });
 
         return redirect()->route('admin.students.index')->with('success', 'Data Siswa berhasil ditambahkan.');
@@ -98,8 +87,11 @@ class StudentController extends Controller
             ->where('student_id', $student->id)
             ->orderByDesc('academic_year_id')
             ->get();
+            
+        $classes = Classroom::all();
+        $academicYears = AcademicYear::orderByDesc('year')->get();
         
-        return view('pages.admin.students.show', compact('student', 'activeClass', 'placements'));
+        return view('pages.admin.students.show', compact('student', 'activeClass', 'placements', 'classes', 'academicYears'));
     }
 
     public function edit(Student $student): View
@@ -136,16 +128,6 @@ class StudentController extends Controller
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
             ]);
-
-            // 3. Update/Sinkron Kelas Aktif (Tahun Ajaran aktif)
-            $activeYear = AcademicYear::where('is_active', true)->first();
-            if ($activeYear) {
-                DB::table('student_classes')
-                    ->updateOrInsert(
-                        ['student_id' => $student->id, 'academic_year_id' => $activeYear->id],
-                        ['class_id' => (int) $request->class_id, 'updated_at' => now()]
-                    );
-            }
         });
 
         return redirect()->route('admin.students.index')->with('success', 'Data Siswa berhasil diperbarui.');

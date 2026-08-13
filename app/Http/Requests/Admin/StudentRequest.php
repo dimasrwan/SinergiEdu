@@ -25,7 +25,6 @@ class StudentRequest extends FormRequest
             'nis' => 'required|string|max:50|unique:students,nis,' . $studentId,
             'gender' => 'required|in:L,P',
             'date_of_birth' => 'required|date',
-            'class_id' => 'required|exists:classes,id',
             'parent_id' => 'nullable|exists:parents,id',
             'password' => $student ? 'nullable|string|min:8' : 'required|string|min:8',
         ];

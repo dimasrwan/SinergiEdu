@@ -32,7 +32,14 @@ class TeacherController extends Controller
             ->paginate(10)
             ->withQueryString();
             
-        return view('pages.admin.teachers.index', compact('teachers'));
+        $subjects = \App\Models\Subject::orderBy('name')->get();
+        $classrooms = \App\Models\Classroom::orderBy('name')->get();
+        $academicYears = \App\Models\AcademicYear::orderByDesc('year')->get();
+        $semesters = \App\Models\Semester::with('academicYear')
+            ->get()
+            ->sortByDesc(fn($s) => $s->academicYear->year . ' ' . $s->name);
+            
+        return view('pages.admin.teachers.index', compact('teachers', 'subjects', 'classrooms', 'academicYears', 'semesters'));
     }
 
     public function create(): View
@@ -64,18 +71,6 @@ class TeacherController extends Controller
                 'address' => $request->address,
             ]);
 
-            // 3. Simpan Relasi Kelas dan Mapel ke tabel pivot (assignments array)
-            if ($request->filled('assignments')) {
-                foreach ($request->assignments as $assignment) {
-                    DB::table('teacher_subjects')->insert([
-                        'teacher_id' => $teacher->id,
-                        'class_id' => (int) $assignment['class_id'],
-                        'subject_id' => (int) $assignment['subject_id'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
         });
 
         return redirect()->route('admin.teachers.index')->with('success', 'Data Guru berhasil ditambahkan.');
@@ -90,24 +85,20 @@ class TeacherController extends Controller
             ->orderBy('semester_id')
             ->get();
             
-        return view('pages.admin.teachers.show', compact('teacher', 'assignments'));
+        $subjects = \App\Models\Subject::orderBy('name')->get();
+        $classrooms = \App\Models\Classroom::orderBy('name')->get();
+        $academicYears = \App\Models\AcademicYear::orderByDesc('year')->get();
+        $semesters = \App\Models\Semester::with('academicYear')
+            ->get()
+            ->sortByDesc(fn($s) => $s->academicYear->year . ' ' . $s->name);
+            
+        return view('pages.admin.teachers.show', compact('teacher', 'assignments', 'subjects', 'classrooms', 'academicYears', 'semesters'));
     }
 
     public function edit(Teacher $teacher): View
     {
         $teacher->load(['user', 'classes', 'subjects']);
-        $classes = Classroom::all();
-        $subjects = Subject::all();
-
-        // Ambil assignments saat ini
-        $existingAssignments = \Illuminate\Support\Facades\DB::table('teacher_subjects')
-            ->where('teacher_id', $teacher->id)
-            ->select('class_id', 'subject_id')
-            ->get()
-            ->map(fn($item) => ['class_id' => $item->class_id, 'subject_id' => $item->subject_id])
-            ->toArray();
-
-        return view('pages.admin.teachers.edit', compact('teacher', 'classes', 'subjects', 'existingAssignments'));
+        return view('pages.admin.teachers.edit', compact('teacher'));
     }
 
     public function update(TeacherRequest $request, Teacher $teacher): RedirectResponse
@@ -131,20 +122,6 @@ class TeacherController extends Controller
                 'address' => $request->address,
             ]);
 
-            // 3. Sync tabel pivot teacher_subjects
-            DB::table('teacher_subjects')->where('teacher_id', $teacher->id)->delete();
-
-            if ($request->filled('assignments')) {
-                foreach ($request->assignments as $assignment) {
-                    DB::table('teacher_subjects')->insert([
-                        'teacher_id' => $teacher->id,
-                        'class_id' => (int) $assignment['class_id'],
-                        'subject_id' => (int) $assignment['subject_id'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            }
         });
 
         return redirect()->route('admin.teachers.index')->with('success', 'Data Guru berhasil diperbarui.');

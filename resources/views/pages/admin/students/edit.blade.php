@@ -4,12 +4,12 @@
     <div class="w-full">
         <div class="mb-6">
             <a href="{{ route('admin.students.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition mb-4">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Kembali ke Daftar
             </a>
-            <x-page-header title="Edit Data Siswa" description="Perbarui profil siswa, biodata dasar, penempatan kelas, serta orang tua/wali siswa." />
+            <x-page-header title="Edit Data Siswa" description="Perbarui profil siswa, biodata dasar, serta orang tua/wali siswa." />
         </div>
 
         <x-card padding="lg">
@@ -69,16 +69,6 @@
                             </div>
                         </div>
 
-                        <div>
-                            <x-input-label for="class_id" :value="__('Kelas Aktif')" />
-                            <x-select id="class_id" name="class_id" required>
-                                <option value="">-- Pilih Kelas --</option>
-                                @foreach($classes as $classItem)
-                                    <option value="{{ $classItem->id }}" {{ old('class_id', $activeClassId) == $classItem->id ? 'selected' : '' }}>{{ $classItem->name }} (Grade {{ $classItem->grade_level }})</option>
-                                @endforeach
-                            </x-select>
-                            <x-input-error :messages="$errors->get('class_id')" class="mt-2" />
-                        </div>
 
                         <div>
                             <x-input-label for="parent_id" :value="__('Orang Tua / Wali')" />

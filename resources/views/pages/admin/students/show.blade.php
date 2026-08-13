@@ -1,11 +1,23 @@
 <x-layouts.app>
     <x-slot:title>Detail Siswa - {{ $student->user->name }}</x-slot:title>
 
-    <div class="w-full">
+    @php
+        function formatClassName($name) {
+            if (str_starts_with($name, '10 ')) return 'X ' . substr($name, 3);
+            if (str_starts_with($name, '11 ')) return 'XI ' . substr($name, 3);
+            if (str_starts_with($name, '12 ')) return 'XII ' . substr($name, 3);
+            if ($name == '10') return 'X';
+            if ($name == '11') return 'XI';
+            if ($name == '12') return 'XII';
+            return $name;
+        }
+    @endphp
+
+    <div class="w-full" x-data="{}">
         <!-- Header & Breadcrumb -->
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.students.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Kembali ke Daftar
@@ -77,10 +89,10 @@
                             <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" /></svg>
                             Penempatan & Riwayat Kelas
                         </h3>
-                        <a href="{{ route('admin.student-placements.create', ['student_id' => $student->id, 'redirect_to' => 'student']) }}" class="px-4 py-2 text-xs font-semibold text-white bg-accent hover:bg-blue-600 rounded-lg transition duration-150 inline-flex items-center gap-1.5">
+                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-placement')" class="px-4 py-2 text-xs font-semibold text-white bg-accent hover:bg-blue-600 rounded-lg transition duration-150 inline-flex items-center gap-1.5">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                             Tambah Penempatan
-                        </a>
+                        </button>
                     </div>
                     
                     <div class="p-6 md:p-8 space-y-6">
@@ -94,17 +106,31 @@
                             </div>
                         @endif
 
+                        @if($errors->any())
+                            <div class="p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 shadow-sm mb-4">
+                                <svg class="h-5 w-5 text-red-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                <div>
+                                    <h3 class="text-sm font-bold text-red-800">Gagal Menyimpan Data</h3>
+                                    <ul class="list-disc pl-5 mt-1 text-sm text-red-700">
+                                        @foreach($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="space-y-3">
                             <h4 class="text-sm font-bold text-slate-800">Kelas Aktif Saat Ini</h4>
                             @if($activeClass)
                                 <div class="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-white p-5 rounded-2xl border border-blue-100 shadow-sm">
                                     <div class="w-14 h-14 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center text-primary shrink-0">
-                                        <span class="text-lg font-bold">X</span>
+                                        <span class="text-lg font-bold">{{ substr(formatClassName($activeClass->name), 0, strpos(formatClassName($activeClass->name), ' ') ?: strlen(formatClassName($activeClass->name))) }}</span>
                                     </div>
                                     <div class="flex-1">
                                         <p class="text-sm font-semibold text-primary/80 uppercase tracking-wide">Tahun Ajaran Aktif</p>
-                                        <p class="text-2xl font-bold text-slate-900 mt-0.5">{{ $activeClass->name }}</p>
-                                        <p class="text-sm text-slate-500 mt-1">Siswa ini terdaftar di Tingkat {{ $activeClass->grade_level }}.</p>
+                                        <p class="text-2xl font-bold text-slate-900 mt-0.5">{{ formatClassName($activeClass->name) }}</p>
+                                        <p class="text-sm text-slate-500 mt-1">Siswa ini terdaftar di kelas ini.</p>
                                     </div>
                                 </div>
                             @else
@@ -134,22 +160,90 @@
                                                 </td>
                                                 <td class="py-3 px-4">
                                                     <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                                                        {{ $placement->classroom->name }} (Tingkat {{ $placement->classroom->level }})
+                                                        {{ formatClassName($placement->classroom->name) }}
                                                     </span>
                                                 </td>
                                                 <td class="py-3 px-4 text-right">
-                                                    <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                                        <a href="{{ route('admin.student-placements.edit', ['student_placement' => $placement->id, 'redirect_to' => 'student']) }}" class="p-1.5 text-slate-400 hover:text-accent hover:bg-blue-50 rounded-lg transition-colors" title="Ubah Kelas">
+                                                    <div class="flex items-center justify-end gap-2 ">
+                                                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'edit-placement-{{ $placement->id }}')" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit Penempatan">
                                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
-                                                        </a>
-                                                        <form action="{{ route('admin.student-placements.destroy', $placement) }}" method="POST" class="inline" onsubmit="return confirm('Hapus penempatan ini?');">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <input type="hidden" name="redirect_to" value="student">
-                                                            <button type="submit" class="p-1.5 text-slate-400 hover:text-danger hover:bg-red-50 rounded-lg transition-colors" title="Hapus Penempatan">
-                                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                                            </button>
-                                                        </form>
+                                                        </button>
+                                                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-placement-{{ $placement->id }}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus Penempatan">
+                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                                        </button>
+
+                                                        <!-- Edit Placement Modal -->
+                                                        <x-modal name="edit-placement-{{ $placement->id }}" maxWidth="xl">
+                                                            <form action="{{ route('admin.student-placements.update', $placement) }}" method="POST">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <input type="hidden" name="redirect_to" value="student">
+                                                                <input type="hidden" name="student_id" value="{{ $student->id }}">
+                                                                
+                                                                <div class="p-6 text-left whitespace-normal">
+                                                                    <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Edit Penempatan Siswa</h2>
+                                                                    
+                                                                    <div class="space-y-5">
+                                                                        <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col gap-1">
+                                                                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Siswa</span>
+                                                                            <div class="font-bold text-slate-900">{{ $student->user->name ?? '-' }}</div>
+                                                                            <div class="text-xs text-slate-500 font-mono">NIS: {{ $student->nis ?? '-' }}</div>
+                                                                        </div>
+                                                                        
+                                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                                            <div>
+                                                                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
+                                                                                <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                                                    <option value="" disabled>-- Pilih Kelas --</option>
+                                                                                    @foreach($classes as $cls)
+                                                                                        <option value="{{ $cls->id }}" @selected(old('class_id', $placement->class_id) == $cls->id)>{{ formatClassName($cls->name) }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                            <div>
+                                                                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
+                                                                                <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                                                    <option value="" disabled>-- Pilih Tahun Ajaran --</option>
+                                                                                    @foreach($academicYears as $ay)
+                                                                                        <option value="{{ $ay->id }}" @selected(old('academic_year_id', $placement->academic_year_id) == $ay->id)>{{ $ay->year }}</option>
+                                                                                    @endforeach
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
+                                                                        <button type="button" x-on:click.prevent="$dispatch('close-modal', 'edit-placement-{{ $placement->id }}')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
+                                                                        <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </x-modal>
+
+                                                        <!-- Delete Placement Modal -->
+                                                        <x-modal name="delete-placement-{{ $placement->id }}" maxWidth="sm">
+                                                            <div class="p-6 text-left whitespace-normal text-slate-700">
+                                                                <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4">Hapus Penempatan?</h2>
+                                                                
+                                                                <div class="mb-4 space-y-1">
+                                                                    <p class="font-bold">{{ $student->user->name ?? '-' }}</p>
+                                                                    <p class="text-sm">{{ formatClassName($placement->classroom->name) }}</p>
+                                                                    <p class="text-sm">{{ $placement->academicYear?->year ?? '-' }}</p>
+                                                                </div>
+                                                                
+                                                                <p class="text-sm mt-4 text-danger font-medium bg-red-50 p-3 rounded-lg border border-red-100">Menghapus penempatan ini tidak akan menghapus data akademik yang terlanjur terkait jika ada.</p>
+                                                                
+                                                                <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-slate-100">
+                                                                    <x-button variant="secondary" x-on:click.prevent="$dispatch('close-modal', 'delete-placement-{{ $placement->id }}')">Batal</x-button>
+                                                                    <form action="{{ route('admin.student-placements.destroy', $placement) }}" method="POST" class="inline">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <input type="hidden" name="redirect_to" value="student">
+                                                                        <x-button variant="danger" type="submit">Hapus</x-button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </x-modal>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -166,6 +260,54 @@
                         </div>
                     </div>
                 </x-card>
+
+                <!-- Add Placement Modal -->
+                <x-modal name="add-placement" maxWidth="xl">
+                    <form action="{{ route('admin.student-placements.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="student">
+                        <input type="hidden" name="student_id" value="{{ $student->id }}">
+                        
+                        <div class="p-6 text-left whitespace-normal">
+                            <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Tambah Penempatan Siswa</h2>
+                            
+                            <div class="space-y-5">
+                                <!-- Readonly Siswa Info -->
+                                <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col gap-1">
+                                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Siswa</span>
+                                    <div class="font-bold text-slate-900">{{ $student->user->name ?? '-' }}</div>
+                                    <div class="text-xs text-slate-500 font-mono">NIS: {{ $student->nis ?? '-' }}</div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
+                                        <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                            <option value="" disabled selected>-- Pilih Kelas --</option>
+                                            @foreach($classes as $cls)
+                                                <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ formatClassName($cls->name) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
+                                        <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                            <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
+                                            @foreach($academicYears as $ay)
+                                                <option value="{{ $ay->id }}" @selected(old('academic_year_id', $academicYears->first()->id ?? null) == $ay->id)>{{ $ay->year }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
+                                <button type="button" x-on:click.prevent="$dispatch('close-modal', 'add-placement')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
+                                <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
+                            </div>
+                        </div>
+                    </form>
+                </x-modal>
 
                 <!-- Orang Tua / Wali -->
                 <x-card padding="lg">

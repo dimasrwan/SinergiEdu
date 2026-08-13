@@ -4,7 +4,7 @@
     <div class="w-full">
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.parents.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Kembali ke Daftar
@@ -140,7 +140,7 @@
                                                 <p class="text-xs text-slate-500 font-mono mt-0.5 mb-1" x-text="`NIS: ${student.nis}`"></p>
                                                 <span class="inline-flex text-[10px] font-bold uppercase tracking-wider text-primary bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100" x-text="student.active_class ?? 'Belum ada kelas'"></span>
                                             </div>
-                                            <button type="button" @click="removeStudent(student.id)" class="p-1.5 text-slate-400 hover:text-danger hover:bg-red-50 rounded-lg transition-colors" title="Hapus Kaitan">
+                                            <button type="button" @click="removeStudent(student.id)" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus Kaitan">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                             </button>
                                             

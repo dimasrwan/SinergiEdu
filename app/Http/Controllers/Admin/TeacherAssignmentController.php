@@ -130,6 +130,11 @@ class TeacherAssignmentController extends Controller
                 ->with('success', 'Penugasan guru berhasil ditambahkan.');
         }
 
+        if ($request->input('redirect_to') === 'teachers_index') {
+            return redirect()->route('admin.teachers.index')
+                ->with('success', 'Penugasan guru berhasil ditambahkan.');
+        }
+
         return redirect()->route('admin.teacher-assignments.index')
             ->with('success', 'Penugasan guru berhasil ditambahkan.');
     }
