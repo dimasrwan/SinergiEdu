@@ -65,16 +65,16 @@
         </div>
 
         <!-- Static sidebar untuk desktop -->
-        <div class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-64 lg:flex-col">
-            <div class="flex flex-grow flex-col overflow-y-auto border-r border-slate-200 bg-white px-6 pb-4">
-                <div class="flex h-16 flex-shrink-0 items-center gap-3">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-9 w-auto">
-                    <span class="text-2xl font-bold text-slate-900 tracking-tight">SinergiEdu</span>
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[230px] lg:flex-col">
+            <div class="flex flex-grow flex-col overflow-y-auto border-r border-slate-200 bg-white px-4 pb-1">
+                <div class="flex h-[60px] flex-shrink-0 items-center gap-3">
+                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto">
+                    <span class="text-xl font-bold text-slate-900 tracking-tight">SinergiEdu</span>
                 </div>
-                <nav class="mt-6 flex flex-1 flex-col">
-                    <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                <nav class="mt-4 flex flex-1 flex-col">
+                    <ul role="list" class="flex flex-1 flex-col gap-y-2">
                         <li>
-                            <ul role="list" class="-mx-2 space-y-1">
+                            <ul role="list" class="space-y-1">
                                 @php
                                     $role = strtolower(Auth::user()->role->name ?? '');
                                 @endphp
@@ -95,33 +95,43 @@
                                 @endif
                             </ul>
                         </li>
-                        <li class="mt-auto px-4 pb-4">
+                        @if(strtolower(Auth::user()->role->name ?? '') !== 'admin')
+                        <li class="mt-auto px-2 pb-4">
                             <!-- Profil & Logout -->
-                            <div class="bg-[#123B82] rounded-2xl p-4 flex items-center gap-x-4 shadow-lg shadow-[#123B82]/20">
-                                <div class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center border border-white/30 text-white font-bold shrink-0">
+                            <div class="bg-[#123B82] rounded-xl p-3 flex items-center gap-x-3 shadow-md shadow-[#123B82]/10 h-[60px]">
+                                <div class="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center border border-white/30 text-white font-bold shrink-0 text-xs">
                                     {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
-                                    <p class="text-[10px] text-blue-200 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
+                                    <p class="text-[13px] font-semibold text-white truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
+                                    <p class="text-[9px] text-blue-200 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
                                 </div>
-                                <form action="{{ route('logout') }}" method="POST">
+                                <form action="{{ route('logout') }}" method="POST" class="shrink-0">
                                     @csrf
-                                    <button type="submit" class="p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-xl transition duration-150">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <button type="submit" class="p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition duration-150">
+                                        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                                         </svg>
                                     </button>
                                 </form>
                             </div>
                         </li>
+                        @else
+                        <li class="mt-auto pt-4 pb-0">
+                            <!-- Admin Subtle Footer -->
+                            <div class="border-t border-slate-200/60 pt-3">
+                                <p class="text-xs font-bold text-slate-700">SinergiEdu</p>
+                                <p class="text-[11px] font-medium text-slate-400 mt-0.5">Admin Workspace</p>
+                            </div>
+                        </li>
+                        @endif
                     </ul>
                 </nav>
             </div>
         </div>
 
         <!-- Main column -->
-        <div class="lg:pl-64 flex flex-col min-h-screen">
+        <div class="lg:pl-[230px] flex flex-col min-h-screen">
             <!-- Navbar -->
             <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
                 <button type="button" class="-m-2.5 p-2.5 text-slate-700 lg:hidden" @click="sidebarOpen = true">
@@ -175,7 +185,7 @@
                                 </div>
                             </button>
                             <!-- Dropdown panel -->
-                            <div class="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-xl bg-white py-2 shadow-lg ring-1 ring-slate-900/5 focus:outline-none"
+                            <div class="absolute right-0 z-10 mt-2.5 w-56 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-slate-900/5 focus:outline-none"
                                  x-show="open"
                                  x-transition:enter="transition ease-out duration-100"
                                  x-transition:enter-start="transform opacity-0 scale-95"
@@ -185,10 +195,16 @@
                                  x-transition:leave-end="transform opacity-0 scale-95"
                                  @click.away="open = false"
                                  style="display: none;">
-                                <a href="{{ route('profile.edit') }}" class="block px-3 py-1.5 text-sm leading-6 text-slate-900 hover:bg-slate-50">Profil Saya</a>
+                                @if(strtolower(Auth::user()->role->name ?? '') === 'admin')
+                                <div class="px-4 py-3 border-b border-slate-100 mb-1">
+                                    <p class="text-sm font-semibold text-slate-900 truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
+                                    <p class="text-xs text-slate-500 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->display_name ?? Auth::user()->role->name ?? 'Admin' }}</p>
+                                </div>
+                                @endif
+                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">Profil</a>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="w-full text-left block px-3 py-1.5 text-sm leading-6 text-red-600 hover:bg-red-50">Keluar</button>
+                                    <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Keluar</button>
                                 </form>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Edit Mata Pelajaran - {{ $subject->name }}</x-slot:title>
 
-    <div class="w-full max-w-2xl">
+    <div class="w-full">
         <!-- Header -->
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.subjects.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">

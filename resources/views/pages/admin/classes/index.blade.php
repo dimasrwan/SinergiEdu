@@ -52,7 +52,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                             </div>
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="🔍 Cari nama kelas..." 
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama kelas..." 
                                 class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
                         </div>
                     </div>
@@ -60,9 +60,9 @@
                     <div class="flex flex-col sm:flex-row gap-3 md:w-auto w-full shrink-0">
                         <select name="grade_level" class="block w-full sm:w-40 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
                             <option value="">Semua Tingkat</option>
-                            <option value="10" {{ request('grade_level') == '10' ? 'selected' : '' }}>Tingkat 10</option>
-                            <option value="11" {{ request('grade_level') == '11' ? 'selected' : '' }}>Tingkat 11</option>
-                            <option value="12" {{ request('grade_level') == '12' ? 'selected' : '' }}>Tingkat 12</option>
+                            <option value="10" {{ request('grade_level') == '10' ? 'selected' : '' }}>X</option>
+                            <option value="11" {{ request('grade_level') == '11' ? 'selected' : '' }}>XI</option>
+                            <option value="12" {{ request('grade_level') == '12' ? 'selected' : '' }}>XII</option>
                         </select>
                         
                         <select name="academic_year_id" class="block w-full sm:w-48 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
@@ -110,14 +110,14 @@
                                     <p class="text-sm font-bold text-primary">{{ $class->name }}</p>
                                     <!-- Mobile Info Fallback -->
                                     <div class="lg:hidden mt-1 space-y-0.5">
-                                        <p class="text-[11px] text-slate-500 sm:hidden">Tingkat: {{ $class->grade_level }}</p>
+                                        <p class="text-[11px] text-slate-500 sm:hidden">Tingkat: {{ $class->grade_level == '10' ? 'X' : ($class->grade_level == '11' ? 'XI' : ($class->grade_level == '12' ? 'XII' : $class->grade_level)) }}</p>
                                         <p class="text-[11px] text-slate-500 md:hidden">Wali: {{ $class->homeroomTeacher->user->name ?? 'Belum ditentukan' }}</p>
                                         <p class="text-[11px] text-slate-500 lg:hidden">Tahun: {{ $class->academicYear->year ?? 'Belum ditentukan' }}</p>
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 hidden sm:table-cell">
                                     <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-primary font-bold text-xs shadow-sm">
-                                        {{ $class->grade_level }}
+                                        {{ $class->grade_level == '10' ? 'X' : ($class->grade_level == '11' ? 'XI' : ($class->grade_level == '12' ? 'XII' : $class->grade_level)) }}
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 hidden md:table-cell text-sm text-slate-700 font-medium">

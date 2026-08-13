@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Tambah Kelas</x-slot:title>
 
-    <div class="w-full max-w-4xl">
+    <div class="w-full">
         <!-- Header -->
         <div class="mb-6 flex flex-col items-start gap-4">
             <a href="{{ route('admin.classes.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
@@ -55,9 +55,9 @@
                                 <label for="grade_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Tingkat Kelas <span class="text-danger">*</span></label>
                                 <select id="grade_level" name="grade_level" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
                                     <option value="" disabled {{ old('grade_level') ? '' : 'selected' }}>Pilih tingkat kelas...</option>
-                                    <option value="10" {{ old('grade_level') == '10' ? 'selected' : '' }}>Tingkat 10</option>
-                                    <option value="11" {{ old('grade_level') == '11' ? 'selected' : '' }}>Tingkat 11</option>
-                                    <option value="12" {{ old('grade_level') == '12' ? 'selected' : '' }}>Tingkat 12</option>
+                                    <option value="10" {{ old('grade_level') == '10' ? 'selected' : '' }}>X</option>
+                                    <option value="11" {{ old('grade_level') == '11' ? 'selected' : '' }}>XI</option>
+                                    <option value="12" {{ old('grade_level') == '12' ? 'selected' : '' }}>XII</option>
                                 </select>
                             </div>
                         </div>
