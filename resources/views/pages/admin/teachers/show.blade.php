@@ -89,7 +89,7 @@
                                             </span>
                                         </td>
                                         <td class="py-3 px-4">
-                                            <p class="text-sm text-slate-600">{{ $assignment->academicYear->year }} - {{ $assignment->semester->name }}</p>
+                                            <p class="text-sm text-slate-600">{{ $assignment->academicYear?->year ?? '-' }} - {{ $assignment->semester?->name ?? '-' }}</p>
                                         </td>
                                         <td class="py-3 px-4 text-right">
                                             <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

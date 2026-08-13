@@ -160,7 +160,7 @@
                     @else
                         <x-button variant="secondary" href="{{ route('admin.teacher-assignments.index') }}" class="w-full sm:w-auto">Batal</x-button>
                     @endif
-                    <x-button variant="primary" type="submit" class="w-full sm:w-auto justify-center" {{ $teachers->isEmpty() || $subjects->isEmpty() || $classrooms->isEmpty() || $academicYears->isEmpty() || $semesters->isEmpty() ? 'disabled' : '' }}>
+                    <x-button variant="primary" type="submit" class="w-full sm:w-auto justify-center" :disabled="$teachers->isEmpty() || $subjects->isEmpty() || $classrooms->isEmpty() || $academicYears->isEmpty() || $semesters->isEmpty()">
                         Simpan Penugasan
                     </x-button>
                 </div>
