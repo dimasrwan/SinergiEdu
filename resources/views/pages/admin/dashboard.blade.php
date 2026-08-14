@@ -158,7 +158,6 @@
                             <h3 class="text-base font-bold text-slate-900">Pengguna Terdaftar Terbaru</h3>
                             <p class="text-xs text-slate-500 mt-1">Daftar pengguna yang baru saja dibuat atau bergabung ke sistem.</p>
                         </div>
-                        <a href="#" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 transition border border-slate-200">Lihat Semua Data</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
@@ -178,8 +177,16 @@
                                         $initials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $user->name), 0, 2));
                                         $bgColors = ['bg-indigo-50 text-indigo-600', 'bg-blue-50 text-blue-600', 'bg-emerald-50 text-emerald-600', 'bg-amber-50 text-amber-600'];
                                         $colorClass = $bgColors[$user->id % count($bgColors)];
-                                        
-                                        $primaryRole = $user->role?->name ?? 'Pengguna';
+                                        $r_name = strtolower($user->role?->name ?? '');
+                                        $primaryRole = 'Pengguna';
+                                        if ($r_name === 'guru') $primaryRole = 'Guru';
+                                        elseif ($r_name === 'siswa') $primaryRole = 'Siswa';
+                                        elseif ($r_name === 'orang_tua' || $r_name === 'orang tua') $primaryRole = 'Orang Tua';
+                                        elseif ($r_name === 'waka' || $r_name === 'waka_kurikulum' || $r_name === 'waka kurikulum') $primaryRole = 'Waka Kurikulum';
+                                        elseif ($r_name === 'pengawas') $primaryRole = 'Pengawas';
+                                        elseif ($r_name === 'kepala_sekolah' || $r_name === 'kepala sekolah') $primaryRole = 'Kepala Sekolah/Madrasah';
+                                        elseif ($r_name === 'admin') $primaryRole = 'Admin';
+                                        else $primaryRole = \Illuminate\Support\Str::title(str_replace('_', ' ', $r_name));
                                     @endphp
                                     <tr class="hover:bg-slate-50/80 transition-colors group">
                                         <td class="px-6 py-4 font-semibold text-slate-900 text-sm flex items-center gap-3">
@@ -190,20 +197,33 @@
                                         <td class="px-6 py-4"><span class="px-2 py-1 rounded bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider border border-slate-200">{{ $primaryRole }}</span></td>
                                         <td class="px-6 py-4 text-sm text-slate-500">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d M Y') }}</td>
                                         <td class="px-6 py-4">
-                                            @if($user->is_active ?? true)
+                                            @if($user->is_active)
                                                 <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Inactive
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                                 </span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-right">
-                                            <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button class="p-1.5 text-slate-400 hover:text-primary transition" title="Lihat"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></button>
-                                                <button class="p-1.5 text-slate-400 hover:text-accent transition" title="Edit" aria-label="Edit"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></button>
+                                            <div class="flex items-center justify-end gap-2">
+                                                @php
+                                                    $r = strtolower($user->role?->name ?? '');
+                                                    $showUrl = '#';
+                                                    $editUrl = '#';
+                                                    if ($user->role_model_id) {
+                                                        if ($r === 'guru') { $showUrl = route('admin.teachers.show', $user->role_model_id); $editUrl = route('admin.teachers.edit', $user->role_model_id); }
+                                                        elseif ($r === 'siswa') { $showUrl = route('admin.students.show', $user->role_model_id); $editUrl = route('admin.students.edit', $user->role_model_id); }
+                                                        elseif ($r === 'orang tua') { $showUrl = route('admin.parents.show', $user->role_model_id); $editUrl = route('admin.parents.edit', $user->role_model_id); }
+                                                        elseif ($r === 'waka kurikulum' || $r === 'waka') { $showUrl = route('admin.wakas.show', $user->role_model_id); $editUrl = route('admin.wakas.edit', $user->role_model_id); }
+                                                        elseif ($r === 'pengawas') { $showUrl = route('admin.pengawas.show', $user->role_model_id); $editUrl = route('admin.pengawas.edit', $user->role_model_id); }
+                                                        elseif ($r === 'kepala sekolah') { $showUrl = route('admin.kepala-sekolah.show', $user->role_model_id); $editUrl = route('admin.kepala-sekolah.edit', $user->role_model_id); }
+                                                    }
+                                                @endphp
+                                                <a href="{{ $showUrl }}" class="p-1.5 text-slate-400 hover:text-primary transition" title="Lihat"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></a>
+                                                <a href="{{ $editUrl }}" class="p-1.5 text-slate-400 hover:text-accent transition" title="Edit" aria-label="Edit"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg></a>
                                             </div>
                                         </td>
                                     </tr>

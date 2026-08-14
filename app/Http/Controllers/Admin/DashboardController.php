@@ -89,11 +89,28 @@ class DashboardController extends Controller
             ->groupBy('roles.id', 'roles.name')
             ->get();
 
-        // 5. Recent Users
         $recentUsers = User::with('role')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
+
+        foreach($recentUsers as $user) {
+            $user->role_model_id = null;
+            $r = strtolower($user->role?->name ?? '');
+            if ($r === 'guru') {
+                $user->role_model_id = \App\Models\Teacher::where('user_id', $user->id)->value('id');
+            } elseif ($r === 'siswa') {
+                $user->role_model_id = \App\Models\Student::where('user_id', $user->id)->value('id');
+            } elseif ($r === 'orang tua') {
+                $user->role_model_id = \App\Models\StudentParent::where('user_id', $user->id)->value('id');
+            } elseif ($r === 'waka kurikulum' || $r === 'waka') {
+                $user->role_model_id = \App\Models\Waka::where('user_id', $user->id)->value('id');
+            } elseif ($r === 'pengawas') {
+                $user->role_model_id = \App\Models\Pengawas::where('user_id', $user->id)->value('id');
+            } elseif ($r === 'kepala sekolah') {
+                $user->role_model_id = \App\Models\KepalaSekolah::where('user_id', $user->id)->value('id');
+            }
+        }
 
         return view('pages.admin.dashboard', compact(
             'activeAcademicYear',
