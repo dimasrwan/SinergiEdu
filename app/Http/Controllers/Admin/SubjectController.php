@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -13,12 +14,15 @@ class SubjectController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', \App\Models\Subject::class);
         $query = Subject::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%");
+            $query->where(function($q) use ($search) {
+                  $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%");
+              });
         }
 
         $subjects = $query->orderBy('name')->paginate(10)->withQueryString();
@@ -31,6 +35,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', \App\Models\Subject::class);
         return view('pages.admin.subjects.create');
     }
 
@@ -39,6 +44,7 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', \App\Models\Subject::class);
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:subjects,name',
             'code' => 'required|string|max:50|unique:subjects,code',
@@ -57,6 +63,7 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
+        Gate::authorize('view', $subject);
         // Memuat pivot guru dan kelas
         $teacherSubjects = \DB::table('teacher_subjects')
             ->join('teachers', 'teacher_subjects.teacher_id', '=', 'teachers.id')
@@ -80,6 +87,7 @@ class SubjectController extends Controller
      */
     public function edit(Subject $subject)
     {
+        Gate::authorize('update', $subject);
         return view('pages.admin.subjects.edit', compact('subject'));
     }
 
@@ -88,6 +96,7 @@ class SubjectController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
+        Gate::authorize('update', $subject);
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:subjects,name,' . $subject->id,
             'code' => 'required|string|max:50|unique:subjects,code,' . $subject->id,
@@ -106,6 +115,7 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
+        Gate::authorize('delete', $subject);
         // Proteksi Hapus: Cek dependensi
         $dependenciesCount = 0;
         $dependenciesCount += \DB::table('teacher_subjects')->where('subject_id', $subject->id)->count();

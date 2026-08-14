@@ -11,9 +11,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Student extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     protected $fillable = [
+        'school_id',
         'user_id',
         'parent_id',
         'nisn',
@@ -71,5 +74,11 @@ class Student extends Model
         }
 
         return $this->classes()->wherePivot('academic_year_id', $activeYear->id)->first();
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
     }
 }

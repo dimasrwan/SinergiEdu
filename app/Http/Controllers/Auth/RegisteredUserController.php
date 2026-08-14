@@ -38,7 +38,13 @@ class RegisteredUserController extends Controller
 
         $defaultRole = \App\Models\Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
 
+        $school = \App\Models\School::firstOrCreate(
+            ['npsn' => 'TEST'],
+            ['name' => 'Test School', 'email' => 'test@school.com', 'is_active' => true]
+        );
+
         $user = User::create([
+            'school_id' => $school->id,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),

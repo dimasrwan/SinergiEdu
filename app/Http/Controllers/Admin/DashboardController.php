@@ -84,6 +84,7 @@ class DashboardController extends Controller
 
         // 4. User Distribution
         $distributionData = DB::table('users')
+            ->where('users.school_id', app(\App\Services\TenantService::class)->getSchoolId())
             ->join('roles', 'users.role_id', '=', 'roles.id')
             ->select('roles.name', DB::raw('COUNT(users.id) as total'))
             ->groupBy('roles.id', 'roles.name')

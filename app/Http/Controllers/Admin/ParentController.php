@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ParentRequest;
 use App\Models\Role;
@@ -20,6 +21,7 @@ class ParentController extends Controller
 {
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', \App\Models\StudentParent::class);
         $query = StudentParent::with(['user', 'students.user']);
 
         if ($search = $request->input('search')) {
@@ -39,12 +41,14 @@ class ParentController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('create', \App\Models\StudentParent::class);
         $students = Student::with('user')->whereNull('parent_id')->get();
         return view('pages.admin.parents.create', compact('students'));
     }
 
     public function store(ParentRequest $request): RedirectResponse
     {
+        Gate::authorize('create', \App\Models\StudentParent::class);
         DB::transaction(function () use ($request) {
             $roleOrangTua = Role::where('name', 'orangtua')->firstOrFail();
 
@@ -74,12 +78,14 @@ class ParentController extends Controller
 
     public function show(StudentParent $parent): View
     {
+        Gate::authorize('view', $parent);
         $parent->load(['user', 'students.user', 'students.classes']);
         return view('pages.admin.parents.show', compact('parent'));
     }
 
     public function edit(StudentParent $parent): View
     {
+        Gate::authorize('update', $parent);
         $parent->load(['user', 'students']);
         // Tampilkan semua siswa yang tidak memiliki orang tua, PLUS anak-anak orang tua ini sendiri
         $students = Student::with('user')
@@ -95,6 +101,7 @@ class ParentController extends Controller
 
     public function update(ParentRequest $request, StudentParent $parent): RedirectResponse
     {
+        Gate::authorize('update', $parent);
         DB::transaction(function () use ($request, $parent) {
             // 1. Update User
             $user = $parent->user;
@@ -127,6 +134,7 @@ class ParentController extends Controller
 
     public function destroy(StudentParent $parent): RedirectResponse
     {
+        Gate::authorize('delete', $parent);
         DB::transaction(function () use ($parent) {
             $user = $parent->user;
             // Putuskan relasi anak

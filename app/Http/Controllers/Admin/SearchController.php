@@ -26,8 +26,10 @@ class SearchController extends Controller
 
         // 1. Search Users (Guru, Siswa, Orang Tua, etc)
         $users = User::with('role')
-            ->where('name', 'LIKE', "%{$query}%")
-            ->orWhere('email', 'LIKE', "%{$query}%")
+            ->where(function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('email', 'LIKE', "%{$query}%");
+            })
             ->limit(5)
             ->get();
             
@@ -71,8 +73,10 @@ class SearchController extends Controller
         }
 
         // 3. Search Subjects
-        $subjects = Subject::where('name', 'LIKE', "%{$query}%")
-            ->orWhere('code', 'LIKE', "%{$query}%")
+        $subjects = Subject::where(function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('code', 'LIKE', "%{$query}%");
+            })
             ->limit(3)
             ->get();
             

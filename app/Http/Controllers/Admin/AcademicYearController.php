@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ class AcademicYearController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', \App\Models\AcademicYear::class);
         $query = AcademicYear::query()->withCount('classes');
 
         if ($request->filled('status')) {
@@ -30,6 +32,7 @@ class AcademicYearController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', \App\Models\AcademicYear::class);
         return view('pages.admin.academic-years.create');
     }
 
@@ -38,6 +41,7 @@ class AcademicYearController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', \App\Models\AcademicYear::class);
         $validated = $request->validate([
             'year' => 'required|string|max:20|unique:academic_years,year',
             'is_active' => 'nullable|boolean',
@@ -66,6 +70,7 @@ class AcademicYearController extends Controller
      */
     public function show(AcademicYear $academicYear)
     {
+        Gate::authorize('view', $academicYear);
         $academicYear->load(['classes.homeroomTeacher.user']);
         
         return view('pages.admin.academic-years.show', compact('academicYear'));
@@ -76,6 +81,7 @@ class AcademicYearController extends Controller
      */
     public function edit(AcademicYear $academicYear)
     {
+        Gate::authorize('update', $academicYear);
         return view('pages.admin.academic-years.edit', compact('academicYear'));
     }
 
@@ -84,6 +90,7 @@ class AcademicYearController extends Controller
      */
     public function update(Request $request, AcademicYear $academicYear)
     {
+        Gate::authorize('update', $academicYear);
         $validated = $request->validate([
             'year' => 'required|string|max:20|unique:academic_years,year,' . $academicYear->id,
             'is_active' => 'nullable|boolean',
@@ -114,6 +121,7 @@ class AcademicYearController extends Controller
      */
     public function destroy(AcademicYear $academicYear)
     {
+        Gate::authorize('delete', $academicYear);
         // Cek dependensi pada tabel yang menggunakan academic_year_id
         $dependenciesCount = 0;
         

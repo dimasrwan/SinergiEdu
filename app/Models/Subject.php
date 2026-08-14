@@ -11,9 +11,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Subject extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     protected $fillable = [
+        'school_id',
         'name',
         'code',
     ];
@@ -49,5 +52,11 @@ class Subject extends Model
     public function classes(): BelongsToMany
     {
         return $this->belongsToMany(Classroom::class, 'teacher_subjects', 'subject_id', 'class_id')->distinct();
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
     }
 }

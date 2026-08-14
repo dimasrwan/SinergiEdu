@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Classroom extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     /**
@@ -17,6 +19,7 @@ class Classroom extends Model
     protected $table = 'classes';
 
     protected $fillable = [
+        'school_id',
         'education_level',
         'name',
         'grade_level',
@@ -56,5 +59,11 @@ class Classroom extends Model
     public function getFormattedGradeLevelAttribute()
     {
         return $this->grade_level;
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
     }
 }

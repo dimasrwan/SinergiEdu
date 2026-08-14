@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StudentRequest;
 use App\Models\AcademicYear;
@@ -22,6 +23,7 @@ class StudentController extends Controller
 {
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', \App\Models\Student::class);
         $query = Student::with(['user', 'parent.user', 'classes']);
 
         if ($search = $request->input('search')) {
@@ -48,6 +50,7 @@ class StudentController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('create', \App\Models\Student::class);
         $classes = Classroom::all();
         $parents = StudentParent::with('user')->get();
         return view('pages.admin.students.create', compact('classes', 'parents'));
@@ -55,6 +58,7 @@ class StudentController extends Controller
 
     public function store(StudentRequest $request): RedirectResponse
     {
+        Gate::authorize('create', \App\Models\Student::class);
         DB::transaction(function () use ($request) {
             $roleSiswa = Role::where('name', 'siswa')->firstOrFail();
 
@@ -81,6 +85,7 @@ class StudentController extends Controller
 
     public function show(Student $student): View
     {
+        Gate::authorize('view', $student);
         $student->load(['user', 'parent.user', 'classes.academicYear']);
         $activeClass = $student->activeClassroom();
         $placements = \App\Models\StudentClass::with(['classroom', 'academicYear'])
@@ -96,6 +101,7 @@ class StudentController extends Controller
 
     public function edit(Student $student): View
     {
+        Gate::authorize('update', $student);
         $student->load(['user', 'classes']);
         $classes = Classroom::all();
         $parents = StudentParent::with('user')->get();
@@ -109,6 +115,7 @@ class StudentController extends Controller
 
     public function update(StudentRequest $request, Student $student): RedirectResponse
     {
+        Gate::authorize('update', $student);
         DB::transaction(function () use ($request, $student) {
             // 1. Update User
             $user = $student->user;
@@ -135,6 +142,7 @@ class StudentController extends Controller
 
     public function destroy(Student $student): RedirectResponse
     {
+        Gate::authorize('delete', $student);
         DB::transaction(function () use ($student) {
             $user = $student->user;
             $student->delete();
