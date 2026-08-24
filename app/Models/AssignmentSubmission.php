@@ -18,6 +18,7 @@ class AssignmentSubmission extends Model
         'file_path',
         'notes',
         'score',
+        'feedback',
     ];
 
     /**

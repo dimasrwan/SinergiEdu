@@ -120,15 +120,77 @@ class AssignmentController extends Controller
         return redirect()->route('guru.assignments.index')->with('success', 'Tugas baru berhasil dibuat.');
     }
 
-    public function show(Assignment $assignment): View
+    public function show(Request $request, Assignment $assignment): View
     {
         $teacher = $this->getTeacherProfile();
         abort_if($assignment->teacher_id !== $teacher->id, 403, 'Akses ditolak.');
 
         $assignment->load(['classroom', 'subject']);
-        $assignment->loadCount('submissions');
+        
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        
+        $baseQuery = \App\Models\Student::whereHas('classes', function($q) use ($assignment, $activeAcademicYear) {
+            $q->where('student_classes.class_id', $assignment->class_id);
+            if ($activeAcademicYear) {
+                $q->where('student_classes.academic_year_id', $activeAcademicYear->id);
+            }
+        });
+        
+        $totalClassStudents = (clone $baseQuery)->count();
+        $submittedCount = (clone $baseQuery)->whereHas('submissions', function($q) use ($assignment) {
+            $q->where('assignment_id', $assignment->id);
+        })->count();
 
-        return view('pages.guru.assignments.show', compact('assignment'));
+        $gradedCount = (clone $baseQuery)->whereHas('submissions', function($q) use ($assignment) {
+            $q->where('assignment_id', $assignment->id)
+              ->whereNotNull('score');
+        })->count();
+
+        $studentsQuery = (clone $baseQuery)->with(['user', 'submissions' => function($q) use ($assignment) {
+            $q->where('assignment_id', $assignment->id);
+        }]);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $studentsQuery->where(function($q) use ($search) {
+                $q->whereHas('user', function($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if ($status === 'submitted') {
+                $studentsQuery->whereHas('submissions', function($q) use ($assignment) {
+                    $q->where('assignment_id', $assignment->id);
+                });
+            } elseif ($status === 'not_submitted') {
+                $studentsQuery->whereDoesntHave('submissions', function($q) use ($assignment) {
+                    $q->where('assignment_id', $assignment->id);
+                });
+            } elseif ($status === 'late') {
+                $studentsQuery->whereHas('submissions', function($q) use ($assignment) {
+                    $q->where('assignment_id', $assignment->id)
+                      ->where('created_at', '>', $assignment->deadline);
+                });
+            } elseif ($status === 'graded') {
+                $studentsQuery->whereHas('submissions', function($q) use ($assignment) {
+                    $q->where('assignment_id', $assignment->id)
+                      ->whereNotNull('score');
+                });
+            } elseif ($status === 'not_graded') {
+                $studentsQuery->whereHas('submissions', function($q) use ($assignment) {
+                    $q->where('assignment_id', $assignment->id)
+                      ->whereNull('score');
+                });
+            }
+        }
+
+        $students = $studentsQuery->paginate(25)->withQueryString();
+
+        return view('pages.guru.assignments.show', compact('assignment', 'students', 'totalClassStudents', 'submittedCount', 'gradedCount'));
     }
 
     public function edit(Assignment $assignment): View
@@ -232,5 +294,116 @@ class AssignmentController extends Controller
         }
         
         return Storage::disk('local')->download($path);
+    }
+
+    public function downloadSubmission(Assignment $assignment, \App\Models\AssignmentSubmission $submission)
+    {
+        $teacher = $this->getTeacherProfile();
+        
+        abort_if($assignment->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        abort_if($submission->assignment_id !== $assignment->id, 403, 'Submission tidak sesuai dengan tugas ini.');
+        
+        // Verifikasi student dalam kelas
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        $studentInClass = \App\Models\StudentClass::where('student_id', $submission->student_id)
+            ->where('class_id', $assignment->class_id)
+            ->when($activeAcademicYear, function($q) use ($activeAcademicYear) {
+                $q->where('academic_year_id', $activeAcademicYear->id);
+            })
+            ->exists();
+            
+        abort_if(!$studentInClass, 403, 'Siswa pengumpul bukan anggota kelas ini.');
+        
+        $path = $submission->file_path;
+        
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban tidak ditemukan.');
+        }
+        
+        return Storage::disk('local')->download($path);
+    }
+
+    public function grade(Request $request, Assignment $assignment, \App\Models\AssignmentSubmission $submission): RedirectResponse
+    {
+        $teacher = $this->getTeacherProfile();
+        
+        abort_if($assignment->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        abort_if($submission->assignment_id !== $assignment->id, 403, 'Submission tidak sesuai dengan tugas ini.');
+        
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        $studentInClass = \App\Models\StudentClass::where('student_id', $submission->student_id)
+            ->where('class_id', $assignment->class_id)
+            ->when($activeAcademicYear, function($q) use ($activeAcademicYear) {
+                $q->where('academic_year_id', $activeAcademicYear->id);
+            })
+            ->exists();
+            
+        abort_if(!$studentInClass, 403, 'Siswa pengumpul bukan anggota kelas ini.');
+        
+        $request->validate([
+            'score' => 'required|integer|min:0|max:100',
+        ]);
+        
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $assignment, $submission, $teacher, $activeAcademicYear) {
+            $submission->update([
+                'score' => $request->input('score'),
+            ]);
+            
+            $activeSemester = Semester::where('is_active', true)->first();
+            
+            if ($activeAcademicYear && $activeSemester) {
+                // Calculate average assignment score
+                $averageScore = \App\Models\AssignmentSubmission::where('student_id', $submission->student_id)
+                    ->whereNotNull('score')
+                    ->whereHas('assignment', function($q) use ($assignment) {
+                        $q->where('subject_id', $assignment->subject_id);
+                    })
+                    ->avg('score');
+                    
+                \App\Models\StudentGrade::updateOrCreate(
+                    [
+                        'student_id' => $submission->student_id,
+                        'subject_id' => $assignment->subject_id,
+                        'academic_year_id' => $activeAcademicYear->id,
+                        'semester_id' => $activeSemester->id,
+                    ],
+                    [
+                        'teacher_id' => $teacher->id,
+                        'class_id' => $assignment->class_id,
+                        'assignment_score' => $averageScore ? round($averageScore) : null,
+                    ]
+                );
+            }
+        });
+
+        return back()->with('success', 'Nilai berhasil disimpan.');
+    }
+
+    public function feedback(Request $request, Assignment $assignment, \App\Models\AssignmentSubmission $submission): RedirectResponse
+    {
+        $teacher = $this->getTeacherProfile();
+        
+        abort_if($assignment->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        abort_if($submission->assignment_id !== $assignment->id, 403, 'Submission tidak sesuai dengan tugas ini.');
+        
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        $studentInClass = \App\Models\StudentClass::where('student_id', $submission->student_id)
+            ->where('class_id', $assignment->class_id)
+            ->when($activeAcademicYear, function($q) use ($activeAcademicYear) {
+                $q->where('academic_year_id', $activeAcademicYear->id);
+            })
+            ->exists();
+            
+        abort_if(!$studentInClass, 403, 'Siswa pengumpul bukan anggota kelas ini.');
+        
+        $request->validate([
+            'feedback' => 'nullable|string|max:1000',
+        ]);
+        
+        $submission->update([
+            'feedback' => $request->input('feedback'),
+        ]);
+
+        return back()->with('success', 'Feedback berhasil disimpan.');
     }
 }

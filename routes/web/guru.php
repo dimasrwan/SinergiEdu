@@ -19,6 +19,11 @@ Route::get('/classes/{class}', [ClassroomController::class, 'show'])->name('clas
 Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
 Route::resource('/materials', MaterialController::class);
 Route::get('/assignments/{assignment}/download', [AssignmentController::class, 'download'])->name('assignments.download');
+Route::get('/assignments/{assignment}/submissions/{submission}/download', [AssignmentController::class, 'downloadSubmission'])->name('assignments.submissions.download');
+    Route::post('/assignments/{assignment}/submissions/{submission}/grade', [AssignmentController::class, 'grade'])
+        ->name('assignments.submissions.grade');
+    Route::post('/assignments/{assignment}/submissions/{submission}/feedback', [AssignmentController::class, 'feedback'])
+        ->name('assignments.submissions.feedback');
 Route::resource('/assignments', AssignmentController::class);
 Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
 Route::post('/grades', [GradeController::class, 'store'])->name('grades.store');

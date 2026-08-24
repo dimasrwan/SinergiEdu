@@ -81,4 +81,9 @@ class Student extends Model
     {
         return $this->belongsTo(\App\Models\School::class);
     }
+    
+    public function submissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\AssignmentSubmission::class);
+    }
 }
