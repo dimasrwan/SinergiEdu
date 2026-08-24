@@ -80,7 +80,7 @@
                                         <p class="text-xs text-slate-500 mt-0.5">Unduh untuk membaca rincian soal selengkapnya.</p>
                                     </div>
                                 </div>
-                                <x-button variant="primary" href="{{ asset('storage/' . $assignment->attachment_path) }}" target="_blank" download class="w-full sm:w-auto shadow-sm">
+                                <x-button variant="primary" href="{{ route('siswa.assignments.download', $assignment) }}" target="_blank" class="w-full sm:w-auto shadow-sm">
                                     Unduh File
                                 </x-button>
                             </div>
@@ -109,7 +109,7 @@
                         <div class="space-y-4">
                             <div>
                                 <span class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">File Jawaban Anda:</span>
-                                <a href="{{ asset('storage/' . $submission->file_path) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 hover:text-blue-600">
+                                <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 hover:text-blue-600">
                                     <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-blue-500">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
@@ -127,6 +127,43 @@
                                     </div>
                                 </div>
                             @endif
+
+                            <div class="mt-6 pt-5 border-t border-slate-100">
+                                <h4 class="text-sm font-bold text-slate-900 mb-4">Penilaian Guru</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="p-4 rounded-xl border border-slate-100 bg-slate-50 flex flex-col justify-center">
+                                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nilai</span>
+                                        @if($submission->score !== null)
+                                            <span class="text-2xl font-bold text-slate-900">{{ $submission->score }}<span class="text-base font-medium text-slate-400">/100</span></span>
+                                        @else
+                                            <span class="text-sm font-medium text-slate-500 italic">Belum dinilai</span>
+                                        @endif
+                                    </div>
+                                    <div class="p-4 rounded-xl border border-slate-100 bg-slate-50 flex flex-col justify-center">
+                                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Status Penilaian</span>
+                                        <div class="flex items-center gap-1.5 mt-1">
+                                            @if($submission->score !== null)
+                                                <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
+                                                <span class="text-sm font-medium text-emerald-700">Selesai Dinilai</span>
+                                            @else
+                                                <div class="h-2 w-2 rounded-full bg-amber-500"></div>
+                                                <span class="text-sm font-medium text-amber-700">Menunggu Penilaian</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <span class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Umpan Balik (Feedback):</span>
+                                <div class="p-4 rounded-xl border border-slate-100 bg-white">
+                                    @if($submission->feedback)
+                                        <p class="text-sm text-slate-700">{{ $submission->feedback }}</p>
+                                    @else
+                                        <p class="text-sm text-slate-400 italic">Belum ada feedback.</p>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     @else
                         <!-- Jika Belum Kumpul -->

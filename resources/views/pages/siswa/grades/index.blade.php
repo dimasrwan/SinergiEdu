@@ -44,19 +44,7 @@
                 <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Guru belum mengunggah rekapitulasi nilai untuk Anda di periode yang dipilih.</p>
             </x-card>
         @else
-        <x-table>
-            <x-slot:head>
-                <tr>
-                    <th class="px-6 py-4 text-left">Mata Pelajaran</th>
-                    <th class="px-4 py-4 w-24 text-center">Tes Awal</th>
-                    <th class="px-4 py-4 w-24 text-center">Tugas</th>
-                    <th class="px-4 py-4 w-24 text-center">Tes Akhir</th>
-                    <th class="px-4 py-4 w-24 text-center">Karakter</th>
-                    <th class="px-4 py-4 w-24 text-center">Hafalan</th>
-                    <th class="px-6 py-4 w-32 text-center">Rata-Rata</th>
-                </tr>
-            </x-slot:head>
-            <x-slot:body>
+        <x-table :headers="['Mata Pelajaran', 'Tes Awal', 'Tugas', 'Tes Akhir', 'Karakter', 'Hafalan', 'Rata-Rata', 'Aksi']">
                 @foreach($grades as $grade)
                     <tr class="hover:bg-slate-50/50 transition-colors text-center group">
                         <td class="px-6 py-4 text-left">
@@ -78,9 +66,13 @@
                                 </span>
                             </div>
                         </td>
+                        <td class="px-6 py-4">
+                            <a href="{{ route('siswa.grades.show', $grade) }}" class="inline-flex items-center justify-center rounded-xl bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-600 px-3 py-2 text-xs font-semibold border border-slate-200 hover:border-blue-200 transition-colors">
+                                Lihat Detail
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
-            </x-slot:body>
         </x-table>
         @endif
     </div>
