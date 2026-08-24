@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role_id', 'school_id'])]
+#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -44,5 +44,25 @@ class User extends Authenticatable
     public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\App\Models\School::class);
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($user) {
+            // Load role if not loaded to check name safely
+            if ($user->role_id && !$user->relationLoaded('role')) {
+                $user->load('role');
+            }
+
+            if ($user->role && $user->role->name === 'super_admin') {
+                if ($user->school_id !== null) {
+                    throw new \Exception('Super Admin must have school_id = NULL');
+                }
+            } else {
+                if ($user->school_id === null) {
+                    throw new \Exception('Normal user must have a valid school_id');
+                }
+            }
+        });
     }
 }

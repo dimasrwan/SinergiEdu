@@ -78,7 +78,9 @@
                                 @php
                                     $role = strtolower(Auth::user()->role->name ?? '');
                                 @endphp
-                                @if($role === 'admin')
+                                @if($role === 'super_admin')
+                                    <x-sidebars.super-admin />
+                                @elseif($role === 'admin')
                                     <x-sidebars.admin />
                                 @elseif($role === 'guru')
                                     <x-sidebars.guru />
@@ -149,6 +151,7 @@
                     </div>
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
                         <!-- Search (Hidden on small screens) -->
+                        @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin')
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -180,6 +183,7 @@
                                 </template>
                             </div>
                         </div>
+                        @endif
 
                         <!-- Divider -->
                         <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200" aria-hidden="true"></div>

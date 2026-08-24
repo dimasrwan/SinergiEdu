@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
         return match ($user->role->name ?? null) {
+            'super_admin' => redirect()->route('super_admin.dashboard'),
             'admin' => redirect()->route('admin.dashboard'),
             'waka' => redirect()->route('waka.dashboard'),
             'guru' => redirect()->route('guru.dashboard'),
@@ -34,6 +35,9 @@ Route::middleware(['auth'])->group(function () {
             default => redirect('/'),
         };
     })->name('dashboard');
+
+    // Super Admin
+    Route::prefix('super-admin')->name('super_admin.')->middleware('role:super_admin')->group(base_path('routes/web/super_admin.php'));
 
     // Admin
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(base_path('routes/web/admin.php'));

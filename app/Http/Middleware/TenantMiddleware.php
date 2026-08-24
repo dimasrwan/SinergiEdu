@@ -20,24 +20,34 @@ class TenantMiddleware
         // Pastikan user sudah login
         if (Auth::check()) {
             $user = Auth::user();
-            
-            // Pastikan user memiliki school_id
-            if (!$user->school_id) {
-                abort(403, 'Forbidden: You do not have an associated school.');
+
+            // Load role untuk mengecek super admin
+            if (!$user->relationLoaded('role')) {
+                $user->load('role');
             }
 
-            // Pastikan school valid
-            $school = $user->school;
-            if (!$school) {
-                abort(403, 'Forbidden: Associated school does not exist.');
-            }
+            if ($user->role && $user->role->name === 'super_admin') {
+                // Platform context untuk Super Admin
+                app(TenantService::class)->setPlatformContext();
+            } else {
+                // Pastikan user memiliki school_id
+                if (!$user->school_id) {
+                    abort(403, 'Forbidden: You do not have an associated school.');
+                }
 
-            if (!$school->is_active) {
-                abort(403, 'Forbidden: Your school is inactive.');
-            }
+                // Pastikan school valid
+                $school = $user->school;
+                if (!$school) {
+                    abort(403, 'Forbidden: Associated school does not exist.');
+                }
 
-            // Set current tenant context
-            app(TenantService::class)->setSchool($school);
+                if (!$school->is_active) {
+                    abort(403, 'Forbidden: Your school is inactive.');
+                }
+
+                // Set current tenant context
+                app(TenantService::class)->setSchool($school);
+            }
         }
 
         return $next($request);

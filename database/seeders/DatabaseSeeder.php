@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $password = Hash::make('password');
 
         // 1. Seed Roles (roles are global)
+        $roleSuperAdmin = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
         $roleAdmin = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin']);
         $roleWaka = Role::firstOrCreate(['name' => 'waka'], ['display_name' => 'Waka Kurikulum']);
         $roleGuru = Role::firstOrCreate(['name' => 'guru'], ['display_name' => 'Guru']);
@@ -31,6 +32,19 @@ class DatabaseSeeder extends Seeder
         $roleOrangTua = Role::firstOrCreate(['name' => 'orangtua'], ['display_name' => 'Orang Tua']);
         $rolePengawas = Role::firstOrCreate(['name' => 'pengawas'], ['display_name' => 'Pengawas']);
         $roleKepalaSekolah = Role::firstOrCreate(['name' => 'kepala_sekolah'], ['display_name' => 'Kepala Sekolah/Madrasah']);
+
+        // Seed Super Admin
+        app(TenantService::class)->setPlatformContext();
+        User::firstOrCreate(
+            ['email' => 'superadmin@example.com'],
+            [
+                'name' => 'Demo Super Admin',
+                'password' => $password,
+                'role_id' => $roleSuperAdmin->id,
+                'school_id' => null,
+            ]
+        );
+        app(TenantService::class)->clear();
 
         $schoolsData = [
             [
@@ -116,8 +130,8 @@ class DatabaseSeeder extends Seeder
                 'school_id' => $school->id,
                 'user_id' => $userSiswa->id,
                 'parent_id' => null,
-                'nisn' => '006789123' . rand(1,9),
-                'nis' => '22231010' . rand(1,9),
+                'nisn' => '006789123' . $school->id . rand(1,9),
+                'nis' => '22231010' . $school->id . rand(1,9),
                 'gender' => 'L',
             ]);
 

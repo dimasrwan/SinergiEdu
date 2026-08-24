@@ -10,6 +10,8 @@ class TenantService
     protected ?School $school = null;
     protected bool $tenantContext = false;
 
+    protected bool $platformContext = false;
+
     /**
      * Initialize the tenant context for the current request.
      */
@@ -18,6 +20,18 @@ class TenantService
         $this->schoolId = $school->id;
         $this->school = $school;
         $this->tenantContext = true;
+        $this->platformContext = false;
+    }
+
+    /**
+     * Set the platform context (for Super Admin).
+     */
+    public function setPlatformContext(): void
+    {
+        $this->schoolId = null;
+        $this->school = null;
+        $this->tenantContext = false;
+        $this->platformContext = true;
     }
 
     /**
@@ -45,6 +59,14 @@ class TenantService
     }
 
     /**
+     * Check if the application is running in a platform context.
+     */
+    public function isPlatformContext(): bool
+    {
+        return $this->platformContext;
+    }
+
+    /**
      * Clear the tenant context (useful for testing or switching).
      */
     public function clear(): void
@@ -52,5 +74,6 @@ class TenantService
         $this->schoolId = null;
         $this->school = null;
         $this->tenantContext = false;
+        $this->platformContext = false;
     }
 }
