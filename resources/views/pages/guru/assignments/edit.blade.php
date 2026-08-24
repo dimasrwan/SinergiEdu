@@ -74,7 +74,7 @@
                                     </div>
                                     <div>
                                         <p class="font-semibold text-slate-800">Lampiran Saat Ini</p>
-                                        <a href="{{ asset('storage/' . $assignment->attachment_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline">Lihat Berkas</a>
+                                        <a href="{{ route('guru.assignments.download', $assignment) }}" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline">Lihat Berkas</a>
                                     </div>
                                 </div>
                             </div>

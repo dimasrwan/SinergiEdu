@@ -18,6 +18,7 @@ Route::get('/classes/{class}', [ClassroomController::class, 'show'])->name('clas
 
 Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
 Route::resource('/materials', MaterialController::class);
+Route::get('/assignments/{assignment}/download', [AssignmentController::class, 'download'])->name('assignments.download');
 Route::resource('/assignments', AssignmentController::class);
 Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
 Route::post('/grades', [GradeController::class, 'store'])->name('grades.store');
