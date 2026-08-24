@@ -9,11 +9,12 @@ use App\Http\Controllers\Guru\GradeController;
 use App\Http\Controllers\Guru\MaterialController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Guru\ClassroomController;
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/classes', function () {
-    return view('pages.placeholder');
-})->name('classes.index');
+Route::get('/classes', [ClassroomController::class, 'index'])->name('classes.index');
+Route::get('/classes/{class}', [ClassroomController::class, 'show'])->name('classes.show');
 
 Route::resource('/materials', MaterialController::class);
 Route::resource('/assignments', AssignmentController::class);
