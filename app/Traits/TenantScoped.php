@@ -8,11 +8,11 @@ use App\Services\TenantService;
 trait TenantScoped
 {
     /**
-     * The "booted" method of the model.
+     * The "boot" method of the trait.
      *
      * @return void
      */
-    protected static function booted()
+    protected static function bootTenantScoped()
     {
         // Add Global Scope to filter queries
         static::addGlobalScope(new TenantScope);

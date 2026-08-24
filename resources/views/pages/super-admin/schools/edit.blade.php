@@ -1,103 +1,95 @@
-<x-layouts.app title="Edit Sekolah">
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Edit Sekolah</h1>
-            <p class="text-sm text-slate-500 mt-1">Ubah informasi sekolah {{ $school->name }}.</p>
-        </div>
-        <div>
-            <a href="{{ route('super_admin.schools.index') }}" class="text-sm font-semibold leading-6 text-slate-900 hover:text-slate-700">
-                &larr; Kembali
+<x-layouts.app>
+    <x-slot:title>Edit Profil Sekolah</x-slot:title>
+
+    <div class="w-full">
+        <div class="mb-6 flex flex-col items-start gap-4">
+            <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Kembali ke Detail Sekolah
             </a>
-        </div>
-    </div>
-
-    <form action="{{ route('super_admin.schools.update', $school) }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-sm ring-1 ring-slate-900/5 sm:rounded-xl md:col-span-2">
-        @csrf
-        @method('PUT')
-        <div class="px-4 py-6 sm:p-8">
-            <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <!-- Nama Sekolah -->
-                <div class="sm:col-span-4">
-                    <label for="name" class="block text-sm font-medium leading-6 text-slate-900">Nama Sekolah/Madrasah <span class="text-red-500">*</span></label>
-                    <div class="mt-2">
-                        <input type="text" name="name" id="name" required value="{{ old('name', $school->name) }}" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- NPSN -->
-                <div class="sm:col-span-2">
-                    <label for="npsn" class="block text-sm font-medium leading-6 text-slate-900">NPSN</label>
-                    <div class="mt-2">
-                        <input type="text" name="npsn" id="npsn" value="{{ old('npsn', $school->npsn) }}" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    @error('npsn') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Email -->
-                <div class="sm:col-span-3">
-                    <label for="email" class="block text-sm font-medium leading-6 text-slate-900">Email Utama</label>
-                    <div class="mt-2">
-                        <input type="email" name="email" id="email" value="{{ old('email', $school->email) }}" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Telepon -->
-                <div class="sm:col-span-3">
-                    <label for="phone" class="block text-sm font-medium leading-6 text-slate-900">Nomor Telepon</label>
-                    <div class="mt-2">
-                        <input type="text" name="phone" id="phone" value="{{ old('phone', $school->phone) }}" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    @error('phone') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Alamat -->
-                <div class="col-span-full">
-                    <label for="address" class="block text-sm font-medium leading-6 text-slate-900">Alamat Lengkap</label>
-                    <div class="mt-2">
-                        <textarea id="address" name="address" rows="3" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">{{ old('address', $school->address) }}</textarea>
-                    </div>
-                    @error('address') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Logo -->
-                <div class="col-span-full">
-                    <label for="logo" class="block text-sm font-medium leading-6 text-slate-900">Logo Sekolah</label>
-                    <div class="mt-2 flex items-center gap-x-3">
-                        @if($school->logo)
-                            <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="h-12 w-12 rounded-lg object-cover border border-slate-200 shrink-0">
-                        @else
-                            <div class="h-12 w-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
-                                <svg class="h-6 w-6 text-slate-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        @endif
-                        <input type="file" name="logo" id="logo" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100 transition-colors">
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Abaikan jika tidak ingin mengubah logo saat ini.</p>
-                    @error('logo') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Status -->
-                <div class="sm:col-span-3">
-                    <label for="is_active" class="block text-sm font-medium leading-6 text-slate-900">Status</label>
-                    <div class="mt-2">
-                        <select id="is_active" name="is_active" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                            <option value="1" {{ old('is_active', $school->is_active) == '1' ? 'selected' : '' }}>Aktif</option>
-                            <option value="0" {{ old('is_active', $school->is_active) == '0' ? 'selected' : '' }}>Nonaktif</option>
-                        </select>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Sekolah nonaktif akan memblokir login semua penggunanya.</p>
-                </div>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Edit Profil Sekolah</h1>
+                <p class="mt-1 text-sm text-slate-500">Perbarui informasi dan profil institusi SinergiEdu.</p>
             </div>
         </div>
-        <div class="flex items-center justify-end gap-x-4 border-t border-slate-900/10 px-4 py-4 sm:px-8 bg-slate-50 rounded-b-xl">
-            <a href="{{ route('super_admin.schools.index') }}" class="text-sm font-semibold leading-6 text-slate-900">Batal</a>
-            <button type="submit" class="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors">
-                Simpan Perubahan
-            </button>
-        </div>
-    </form>
+
+        <x-card padding="none" class="overflow-hidden">
+            <form action="{{ route('super_admin.schools.update', $school) }}" method="POST" enctype="multipart/form-data" x-data="{ isSubmitting: false }" @submit="isSubmitting = true">
+                @csrf
+                @method('PUT')
+
+                <div class="p-6 md:p-8 space-y-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <!-- Informasi Sekolah -->
+                        <div class="space-y-6">
+                            <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Informasi Sekolah</h2>
+                            
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Sekolah <span class="text-danger">*</span></label>
+                                <x-text-input id="name" name="name" type="text" :value="old('name', $school->name)" placeholder="Contoh: SMA Negeri 1 Jakarta" required class="w-full" />
+                                <x-input-error :messages="$errors->get('name')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label for="npsn" class="block text-sm font-semibold text-slate-700 mb-1.5">NPSN</label>
+                                <x-text-input id="npsn" name="npsn" type="text" :value="old('npsn', $school->npsn)" placeholder="Nomor Pokok Sekolah Nasional" class="w-full" />
+                                <x-input-error :messages="$errors->get('npsn')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Logo Sekolah</label>
+                                @if($school->logo)
+                                    <div class="mb-3">
+                                        <img src="{{ Storage::url($school->logo) }}" alt="Logo saat ini" class="h-16 w-16 object-cover rounded-xl border border-slate-200">
+                                    </div>
+                                @endif
+                                <input id="logo" name="logo" type="file" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors bg-slate-50 border border-slate-200 rounded-xl cursor-pointer" />
+                                <p class="mt-1.5 text-xs text-slate-500">Maks. 2MB. Format: JPG, PNG. Biarkan kosong jika tidak ingin mengubah.</p>
+                                <x-input-error :messages="$errors->get('logo')" class="mt-2 text-xs" />
+                            </div>
+                        </div>
+
+                        <!-- Kontak & Alamat -->
+                        <div class="space-y-6">
+                            <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Kontak & Alamat</h2>
+
+                            <div>
+                                <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">Email Resmi</label>
+                                <x-text-input id="email" name="email" type="email" :value="old('email', $school->email)" placeholder="info@sekolah.sch.id" class="w-full" />
+                                <x-input-error :messages="$errors->get('email')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label for="phone" class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Telepon</label>
+                                <x-text-input id="phone" name="phone" type="text" :value="old('phone', $school->phone)" placeholder="Contoh: (021) 1234567" class="w-full" />
+                                <x-input-error :messages="$errors->get('phone')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label for="address" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Lengkap</label>
+                                <x-textarea id="address" name="address" rows="3" placeholder="Masukkan alamat lengkap sekolah">{{ old('address', $school->address) }}</x-textarea>
+                                <x-input-error :messages="$errors->get('address')" class="mt-2 text-xs" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4">
+                    <x-button variant="secondary" href="{{ route('super_admin.schools.show', $school) }}" class="w-full sm:w-auto">Batal</x-button>
+                    
+                    <button type="submit" :disabled="isSubmitting" 
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-xl transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                        <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
+                    </button>
+                </div>
+            </form>
+        </x-card>
+    </div>
 </x-layouts.app>

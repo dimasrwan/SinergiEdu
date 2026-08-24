@@ -7,42 +7,42 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SettingRequest;
-use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller
 {
     public function index(): View
     {
         Gate::authorize('viewAny', \App\Models\Setting::class);
-        $setting = Setting::first() ?? new Setting();
-        return view('pages.admin.settings.index', compact('setting'));
+        $school = Auth::user()->school;
+        return view('pages.admin.settings.index', compact('school'));
     }
 
     public function update(SettingRequest $request): RedirectResponse
     {
-        $setting = Setting::first() ?? new Setting();
+        $school = Auth::user()->school;
         
-        $setting->school_name = $request->school_name;
-        $setting->school_npsn = $request->school_npsn;
-        $setting->school_address = $request->school_address;
-        $setting->school_phone = $request->school_phone;
-        $setting->school_email = $request->school_email;
+        $school->name = $request->school_name;
+        $school->npsn = $request->school_npsn;
+        $school->address = $request->school_address;
+        $school->phone = $request->school_phone;
+        $school->email = $request->school_email;
 
         if ($request->hasFile('school_logo')) {
             // Delete old logo if exists
-            if ($setting->school_logo && Storage::disk('public')->exists($setting->school_logo)) {
-                Storage::disk('public')->delete($setting->school_logo);
+            if ($school->logo && Storage::disk('public')->exists($school->logo)) {
+                Storage::disk('public')->delete($school->logo);
             }
             
             $path = $request->file('school_logo')->store('logos', 'public');
-            $setting->school_logo = $path;
+            $school->logo = $path;
         }
 
-        $setting->save();
+        $school->save();
 
-        return redirect()->route('admin.settings.index')->with('success', 'Pengaturan sistem berhasil diperbarui.');
+        return redirect()->route('admin.settings.index')->with('success', 'Profil Sekolah berhasil diperbarui.');
     }
 }

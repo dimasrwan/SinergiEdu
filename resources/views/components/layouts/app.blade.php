@@ -97,25 +97,42 @@
                                 @endif
                             </ul>
                         </li>
-                        @if(strtolower(Auth::user()->role->name ?? '') !== 'admin')
+                        @if(!in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
                         <li class="mt-auto px-2 pb-4">
-                            <!-- Profil & Logout -->
-                            <div class="bg-[#123B82] rounded-xl p-3 flex items-center gap-x-3 shadow-md shadow-[#123B82]/10 h-[60px]">
-                                <div class="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center border border-white/30 text-white font-bold shrink-0 text-xs">
-                                    {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                            <!-- Compact Profile Dropdown -->
+                            <div class="relative" x-data="{ open: false }">
+                                <button type="button" @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100 rounded-xl p-2.5 flex items-center justify-between gap-x-3 transition-colors border border-slate-200/60">
+                                    <div class="flex items-center gap-x-3 min-w-0">
+                                        <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0 text-xs">
+                                            {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0 text-left">
+                                            <p class="text-[13px] font-semibold text-slate-900 truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
+                                            <p class="text-[10px] text-slate-500 truncate mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
+                                        </div>
+                                    </div>
+                                    <svg class="h-4 w-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                    </svg>
+                                </button>
+                                
+                                <!-- Dropdown Menu -->
+                                <div x-show="open" 
+                                     @click.away="open = false"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute bottom-full left-0 mb-2 w-full rounded-xl bg-white shadow-lg ring-1 ring-slate-900/5 py-1 z-50"
+                                     style="display: none;">
+                                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">Profil</a>
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Logout</button>
+                                    </form>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[13px] font-semibold text-white truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
-                                    <p class="text-[9px] text-blue-200 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
-                                </div>
-                                <form action="{{ route('logout') }}" method="POST" class="shrink-0">
-                                    @csrf
-                                    <button type="submit" class="p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition duration-150">
-                                        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                                        </svg>
-                                    </button>
-                                </form>
                             </div>
                         </li>
                         @else
@@ -123,7 +140,9 @@
                             <!-- Admin Subtle Footer -->
                             <div class="border-t border-slate-200/60 pt-3">
                                 <p class="text-xs font-bold text-slate-700">SinergiEdu</p>
-                                <p class="text-[11px] font-medium text-slate-400 mt-0.5">Admin Workspace</p>
+                                <p class="text-[11px] font-medium text-slate-400 mt-0.5">
+                                    {{ strtolower(Auth::user()->role->name ?? '') === 'super_admin' ? 'Platform Console' : 'Admin Workspace' }}
+                                </p>
                             </div>
                         </li>
                         @endif
@@ -146,12 +165,15 @@
                 <div class="h-6 w-px bg-slate-200 lg:hidden" aria-hidden="true"></div>
 
                 <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between">
-                    <div>
+                    <div class="flex items-center gap-x-3">
+                        <!-- Desktop Logo/Brand -->
+                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center lg:hidden">
+                            <span class="text-white font-bold text-sm">S</span>
+                        </div>
                         <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6">{{ $title ?? 'Dashboard' }}</h2>
                     </div>
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
-                        <!-- Search (Hidden on small screens) -->
-                        @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin')
+                        @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -213,7 +235,7 @@
                                  x-transition:leave-end="transform opacity-0 scale-95"
                                  @click.away="open = false"
                                  style="display: none;">
-                                @if(strtolower(Auth::user()->role->name ?? '') === 'admin')
+                                @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
                                 <div class="px-4 py-3 border-b border-slate-100 mb-1">
                                     <p class="text-sm font-semibold text-slate-900 truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
                                     <p class="text-xs text-slate-500 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->display_name ?? Auth::user()->role->name ?? 'Admin' }}</p>
@@ -230,7 +252,6 @@
                 </div>
             </div>
 
-            <!-- Content Area -->
             <main class="py-10 flex-1">
                 <div class="px-4 sm:px-6 lg:px-8">
                     {{ $slot }}

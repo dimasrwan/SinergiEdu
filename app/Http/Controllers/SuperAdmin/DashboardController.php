@@ -16,8 +16,11 @@ class DashboardController extends Controller
     {
         $totalSchools = School::count();
         $activeSchools = School::where('is_active', true)->count();
-        $totalUsers = User::count(); // Super Admin can see all users, or rather sum of all schools' users. Since users with school_id=null are only super_admins, totalUsers is virtually all users.
+        $inactiveSchools = School::where('is_active', false)->count();
+        $totalUsers = User::count(); 
 
-        return view('pages.super-admin.dashboard', compact('totalSchools', 'activeSchools', 'totalUsers'));
+        $recentSchools = School::withCount('users')->latest()->take(5)->get();
+
+        return view('pages.super-admin.dashboard', compact('totalSchools', 'activeSchools', 'inactiveSchools', 'totalUsers', 'recentSchools'));
     }
 }

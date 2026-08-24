@@ -1,80 +1,105 @@
-<x-layouts.app title="Tambah Admin Sekolah">
-    <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Tambah Admin Sekolah</h1>
-            <p class="text-sm text-slate-500 mt-1">Daftarkan Admin untuk sekolah <span class="font-semibold text-slate-700">{{ $school->name }}</span>.</p>
-        </div>
-        <div>
-            <a href="{{ route('super_admin.schools.show', $school) }}" class="text-sm font-semibold leading-6 text-slate-900 hover:text-slate-700">
-                &larr; Kembali ke Detail Sekolah
+<x-layouts.app>
+    <x-slot:title>Tambah Admin Sekolah</x-slot:title>
+
+    <div class="w-full">
+        <div class="mb-6 flex flex-col items-start gap-4">
+            <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Kembali ke Detail Sekolah
             </a>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Tambah Admin Sekolah</h1>
+                <p class="mt-1 text-sm text-slate-500">Daftarkan Admin untuk mengelola data operasional <span class="font-semibold text-slate-700">{{ $school->name }}</span>.</p>
+            </div>
         </div>
+
+        <x-card padding="none" class="overflow-hidden">
+            <form action="{{ route('super_admin.schools.admins.store', $school) }}" method="POST" x-data="{ isSubmitting: false }" @submit="isSubmitting = true">
+                @csrf
+
+                <div class="p-6 md:p-8 space-y-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <!-- Informasi Akun -->
+                        <div class="space-y-6">
+                            <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Informasi Akun Admin</h2>
+                            
+                            <!-- Error Conflicts -->
+                            @if($errors->has('email'))
+                                <div class="p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 shadow-sm mb-4">
+                                    <svg class="h-5 w-5 text-red-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                    <div>
+                                        <h3 class="text-sm font-bold text-red-800">Pembuatan Admin Gagal</h3>
+                                        <p class="text-sm text-red-700 mt-0.5">{{ $errors->first('email') }}</p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap <span class="text-danger">*</span></label>
+                                <x-text-input id="name" name="name" type="text" :value="old('name')" placeholder="Masukkan nama lengkap admin" required class="w-full" />
+                                <x-input-error :messages="$errors->get('name')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">Email Akses <span class="text-danger">*</span></label>
+                                <x-text-input id="email" name="email" type="email" :value="old('email')" placeholder="admin@sekolah.sch.id" required class="w-full" />
+                                <p class="mt-1.5 text-xs text-slate-500">Email digunakan untuk login Admin Sekolah.</p>
+                                <x-input-error :messages="$errors->get('email')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password Sementara <span class="text-danger">*</span></label>
+                                <x-password-input id="password" name="password" required placeholder="Buat password minimal 8 karakter" />
+                                <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs" />
+                            </div>
+
+                            <div>
+                                <label for="password_confirmation" class="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Password <span class="text-danger">*</span></label>
+                                <x-password-input id="password_confirmation" name="password_confirmation" required placeholder="Masukkan kembali password" />
+                            </div>
+                        </div>
+
+                        <!-- Info Tambahan -->
+                        <div class="space-y-6">
+                            <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Informasi Target Tenant</h2>
+                            
+                            <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-4">
+                                <div>
+                                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Sekolah</span>
+                                    <span class="block font-semibold text-slate-900">{{ $school->name }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">NPSN</span>
+                                    <span class="block font-semibold text-slate-700">{{ $school->npsn ?? '-' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Hak Akses</span>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-100">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>
+                                        Admin Sekolah
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4">
+                    <x-button variant="secondary" href="{{ route('super_admin.schools.show', $school) }}" class="w-full sm:w-auto">Batal</x-button>
+                    
+                    <button type="submit" :disabled="isSubmitting" 
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-xl transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                        <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="isSubmitting ? 'Menyimpan...' : 'Tambah Admin'"></span>
+                    </button>
+                </div>
+            </form>
+        </x-card>
     </div>
-
-    <!-- Error Conflicts -->
-    @if($errors->has('email'))
-        <div class="rounded-xl bg-red-50 p-4 mb-6 shadow-sm ring-1 ring-inset ring-red-600/20">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">Pembuatan Admin Gagal</h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <p>{{ $errors->first('email') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    <form action="{{ route('super_admin.schools.admins.store', $school) }}" method="POST" class="bg-white shadow-sm ring-1 ring-slate-900/5 sm:rounded-xl md:col-span-2">
-        @csrf
-        <div class="px-4 py-6 sm:p-8">
-            <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <!-- Nama Lengkap -->
-                <div class="sm:col-span-6">
-                    <label for="name" class="block text-sm font-medium leading-6 text-slate-900">Nama Lengkap <span class="text-red-500">*</span></label>
-                    <div class="mt-2">
-                        <input type="text" name="name" id="name" required value="{{ old('name') }}" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    @error('name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Email Login -->
-                <div class="sm:col-span-6">
-                    <label for="email" class="block text-sm font-medium leading-6 text-slate-900">Email Login <span class="text-red-500">*</span></label>
-                    <div class="mt-2">
-                        <input type="email" name="email" id="email" required value="{{ old('email') }}" class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Email harus unik dan belum digunakan oleh entitas lain di platform.</p>
-                </div>
-
-                <!-- Password -->
-                <div class="sm:col-span-3">
-                    <label for="password" class="block text-sm font-medium leading-6 text-slate-900">Password <span class="text-red-500">*</span></label>
-                    <div class="mt-2">
-                        <input type="password" name="password" id="password" required class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                    @error('password') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <!-- Konfirmasi Password -->
-                <div class="sm:col-span-3">
-                    <label for="password_confirmation" class="block text-sm font-medium leading-6 text-slate-900">Konfirmasi Password <span class="text-red-500">*</span></label>
-                    <div class="mt-2">
-                        <input type="password" name="password_confirmation" id="password_confirmation" required class="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="flex items-center justify-end gap-x-4 border-t border-slate-900/10 px-4 py-4 sm:px-8 bg-slate-50 rounded-b-xl">
-            <a href="{{ route('super_admin.schools.show', $school) }}" class="text-sm font-semibold leading-6 text-slate-900">Batal</a>
-            <button type="submit" class="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-colors">
-                Tambah Admin
-            </button>
-        </div>
-    </form>
 </x-layouts.app>

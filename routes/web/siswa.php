@@ -26,6 +26,3 @@ Route::get('/grades/{grade}', [\App\Http\Controllers\Siswa\GradeController::clas
 Route::get('/feedbacks', [\App\Http\Controllers\Siswa\FeedbackController::class, 'index'])->name('feedbacks.index');
 Route::get('/feedbacks/{feedback}', [\App\Http\Controllers\Siswa\FeedbackController::class, 'show'])->name('feedbacks.show');
 
-Route::get('/reflections', function () {
-    return view('pages.placeholder');
-})->name('reflections.index');
