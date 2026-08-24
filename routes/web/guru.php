@@ -29,6 +29,7 @@ Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
 Route::post('/grades', [GradeController::class, 'store'])->name('grades.store');
 Route::resource('/feedbacks', FeedbackController::class);
 
-Route::get('/student-progress', function () {
-    return view('pages.placeholder');
-})->name('student-progress.index');
+use App\Http\Controllers\Guru\StudentProgressController;
+
+Route::get('/student-progress', [StudentProgressController::class, 'index'])->name('student-progress.index');
+Route::get('/student-progress/{student}', [StudentProgressController::class, 'show'])->name('student-progress.show');
