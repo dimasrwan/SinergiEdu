@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/learning', function () {
-    return view('pages.placeholder');
-})->name('learning.index');
+
 
 Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
 Route::get('/materials/{material}', [MaterialController::class, 'show'])->name('materials.show');
