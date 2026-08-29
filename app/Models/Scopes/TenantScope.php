@@ -18,7 +18,7 @@ class TenantScope implements Scope
         
         if ($tenantService->isTenantContext() && $tenantService->getSchoolId() !== null) {
             $builder->where($model->getTable() . '.school_id', $tenantService->getSchoolId());
-        } elseif (auth()->check() && auth()->user()->school_id) {
+        } elseif (auth()->hasUser() && auth()->user()->school_id) {
             // Fallback for situations where TenantMiddleware hasn't run yet (e.g. Route Model Binding)
             $builder->where($model->getTable() . '.school_id', auth()->user()->school_id);
         }
