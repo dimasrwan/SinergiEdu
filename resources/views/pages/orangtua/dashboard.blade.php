@@ -18,19 +18,13 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold tracking-tight mb-1">Budi Setiawan (Anak Anda)</h1>
-                        <p class="text-slate-300 text-sm mb-3">Kelas XI IPA 1 • NIS: 10293847</p>
+                        <p class="text-slate-300 text-sm mb-3">Kelas XI IPA 1 • NISN: 10293847</p>
                         <div class="flex items-center gap-2">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-200 border border-green-500/30">
                                 Kehadiran Sempurna (100%)
                             </span>
                         </div>
                     </div>
-                </div>
-                <div class="flex items-center gap-3 shrink-0">
-                    <!-- Dropdown for multiple children if applicable -->
-                    <x-button variant="secondary" class="!bg-white/10 !border-white/20 !text-white hover:!bg-white/20">
-                        Profil Siswa Lainnya <svg class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </x-button>
                 </div>
             </div>
         </div>
