@@ -69,7 +69,7 @@
                                 <td class="px-6 py-3 text-slate-600">
                                     @php
                                         $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-                                        $classroom = $feedback->studentClasses->where('academic_year_id', $activeYear?->id)->first()?->classroom;
+                                        $classroom = $feedback->classes()->wherePivot('academic_year_id', $activeYear?->id)->first();
                                     @endphp
                                     {{ $classroom?->name ?? '-' }}
                                 </td>

@@ -31,9 +31,9 @@ class StudentMonitoringController extends Controller
         // Dapatkan siswa dengan hasil belajar
         $students = Student::query()
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
-                return $query->whereHas('studentClasses', function ($q) use ($selectedClassId, $activeYear) {
+                return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classroom_id', $selectedClassId)
-                      ->where('academic_year_id', $activeYear?->id);
+                      ->wherePivot('academic_year_id', $activeYear?->id);
                 });
             })
             ->with(['user', 'parent.user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
@@ -61,10 +61,9 @@ class StudentMonitoringController extends Controller
         }
 
         // Dapatkan kelas aktif siswa
-        $activeClassroom = $student->studentClasses()
-            ->where('academic_year_id', $activeYear?->id)
-            ->first()
-            ?->classroom;
+        $activeClassroom = $student->classes()
+            ->wherePivot('academic_year_id', $activeYear?->id)
+            ->first();
 
         // Dapatkan hasil belajar
         $grades = StudentGrade::where('student_id', $student->id)
@@ -85,7 +84,7 @@ class StudentMonitoringController extends Controller
 
         // Dapatkan rata-rata kelas untuk perbandingan
         $classAverage = StudentGrade::whereHas('student', function ($q) use ($activeClassroom) {
-            $q->whereHas('studentClasses', function ($sq) use ($activeClassroom) {
+            $q->whereHas('classes', function ($sq) use ($activeClassroom) {
                 $sq->where('classroom_id', $activeClassroom?->id);
             });
         })
@@ -110,9 +109,9 @@ class StudentMonitoringController extends Controller
 
         $students = Student::query()
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
-                return $query->whereHas('studentClasses', function ($q) use ($selectedClassId, $activeYear) {
+                return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classroom_id', $selectedClassId)
-                      ->where('academic_year_id', $activeYear?->id);
+                      ->wherePivot('academic_year_id', $activeYear?->id);
                 });
             })
             ->with(['user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
