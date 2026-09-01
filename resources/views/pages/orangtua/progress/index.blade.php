@@ -36,9 +36,27 @@
                             $avgs = $classAverages[$grade->subject_id] ?? ['pre_test' => 0, 'assignment' => 0, 'post_test' => 0, 'character' => 0, 'memorization' => 0];
                         @endphp
                         <x-card padding="lg" class="border border-slate-200">
-                            <div class="border-b border-slate-100 pb-4 mb-6">
-                                <h3 class="text-base font-bold text-slate-900">{{ $grade->subject->name }}</h3>
-                                <p class="text-xs text-slate-500">Guru: {{ $grade->teacher->user->name ?? '-' }}</p>
+                            <div class="border-b border-slate-100 pb-4 mb-6 flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900">{{ $grade->subject->name }}</h3>
+                                    <p class="text-xs text-slate-500">Guru: {{ $grade->teacher->user->name ?? '-' }}</p>
+                                </div>
+                                <div class="md:text-right">
+                                    <div class="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wider">Progress Tugas</div>
+                                    @php
+                                        $progress = $assignmentProgress[$grade->subject_id] ?? ['total' => 0, 'submitted' => 0];
+                                    @endphp
+                                    @if($progress['total'] > 0)
+                                        <div class="flex items-center md:justify-end gap-3">
+                                            <div class="w-24 bg-slate-100 rounded-full h-2 border border-slate-200 overflow-hidden">
+                                                <div class="bg-primary h-full rounded-full" style="width: {{ ($progress['submitted'] / $progress['total']) * 100 }}%"></div>
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-700">{{ $progress['submitted'] }} / {{ $progress['total'] }} Selesai</span>
+                                        </div>
+                                    @else
+                                        <span class="text-xs font-medium text-slate-400 italic">Belum Ada Tugas</span>
+                                    @endif
+                                </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
                                 @include('pages.orangtua.progress._chart_item', ['label' => 'Tes Awal', 'score' => $grade->pre_test_score, 'avg' => $avgs['pre_test'], 'color' => 'bg-blue-500'])
