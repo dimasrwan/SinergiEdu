@@ -107,7 +107,8 @@ class DashboardController extends Controller
                     ->get();
 
                 // Rata-rata Nilai
-                $avg = $gradesQuery->avg('average_score');
+                $allGrades = $gradesQuery->get();
+                $avg = $allGrades->avg('average_score');
                 if ($avg !== null) {
                     $stats['rata_nilai'] = round((float)$avg, 1);
                 }
