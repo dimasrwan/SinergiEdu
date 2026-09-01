@@ -32,7 +32,7 @@ class StudentMonitoringController extends Controller
         $students = Student::query()
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
-                    $q->where('classroom_id', $selectedClassId)
+                    $q->where('classes.id', $selectedClassId)
                       ->wherePivot('academic_year_id', $activeYear?->id);
                 });
             })
@@ -85,7 +85,7 @@ class StudentMonitoringController extends Controller
         // Dapatkan rata-rata kelas untuk perbandingan
         $classAverage = StudentGrade::whereHas('student', function ($q) use ($activeClassroom) {
             $q->whereHas('classes', function ($sq) use ($activeClassroom) {
-                $sq->where('classroom_id', $activeClassroom?->id);
+                $sq->where('classes.id', $activeClassroom?->id);
             });
         })
             ->where('academic_year_id', $activeYear?->id)
@@ -110,7 +110,7 @@ class StudentMonitoringController extends Controller
         $students = Student::query()
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
-                    $q->where('classroom_id', $selectedClassId)
+                    $q->where('classes.id', $selectedClassId)
                       ->wherePivot('academic_year_id', $activeYear?->id);
                 });
             })
