@@ -25,6 +25,11 @@ class StudentGrade extends Model
         'character_score',
         'memorization_score',
         'notes',
+        'supervisor_feedback',
+        'supervisor_action_plan',
+        'supervisor_priority',
+        'supervisor_id',
+        'grade_note',
     ];
 
     public function student(): BelongsTo
@@ -55,6 +60,11 @@ class StudentGrade extends Model
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class);
+    }
+
+    public function supervisor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'supervisor_id');
     }
 
     /**
