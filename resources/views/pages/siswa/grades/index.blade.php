@@ -4,37 +4,130 @@
     <div class="w-full space-y-6">
         
         <!-- Header -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col gap-6 md:gap-8 shadow-sm">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900 mb-1">Nilai Akademik</h1>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-2">Nilai Akademik</h1>
                 <p class="text-slate-500 text-sm max-w-xl">Ringkasan nilai Anda pada periode akademik saat ini.</p>
             </div>
             
-            <form action="{{ route('siswa.grades.index') }}" method="GET" class="shrink-0 flex items-center gap-3">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl flex items-center p-1 relative shadow-sm overflow-hidden">
-                    <select name="academic_year_id" onchange="this.form.submit()" class="bg-transparent border-none text-sm font-semibold text-slate-700 focus:ring-0 pl-3 pr-8 py-1.5 cursor-pointer outline-none appearance-none z-10 w-32">
+            <form x-ref="filterForm" action="{{ route('siswa.grades.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                
+                <!-- Custom Dropdown Tahun Ajaran -->
+                <div x-data="{
+                    open: false,
+                    selectedId: '{{ $selectedAcademicYearId }}',
+                    selectedLabel: '{{ $academicYears->firstWhere('id', $selectedAcademicYearId)?->year ? 'TA ' . $academicYears->firstWhere('id', $selectedAcademicYearId)->year : 'Pilih Tahun' }}',
+                    select(id, label) {
+                        this.selectedId = id;
+                        this.selectedLabel = label;
+                        this.open = false;
+                        $refs.yearInput.value = id;
+                        $refs.filterForm.submit();
+                    }
+                }" class="relative w-full sm:w-[240px]" @keydown.escape.prevent.stop="open = false" @click.away="open = false">
+                    
+                    <input type="hidden" name="academic_year_id" x-ref="yearInput" :value="selectedId">
+                    
+                    <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Tahun Ajaran</span>
+                    
+                    <button type="button" 
+                            @click="open = !open" 
+                            @keydown.space.prevent="open = !open"
+                            @keydown.enter.prevent="open = !open"
+                            @keydown.arrow-down.prevent="open = true"
+                            aria-haspopup="listbox" 
+                            :aria-expanded="open"
+                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
+                    >
+                        <span x-text="selectedLabel" class="truncate"></span>
+                        <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <ul x-show="open" 
+                        x-transition:enter="transition ease-out duration-100" 
+                        x-transition:enter-start="transform opacity-0 scale-95" 
+                        x-transition:enter-end="transform opacity-100 scale-100" 
+                        x-transition:leave="transition ease-in duration-75" 
+                        x-transition:leave-start="transform opacity-100 scale-100" 
+                        x-transition:leave-end="transform opacity-0 scale-95" 
+                        class="absolute z-50 mt-2 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto py-1 focus:outline-none" 
+                        role="listbox" 
+                        style="display: none;"
+                    >
                         @foreach($academicYears as $year)
-                            <option value="{{ $year->id }}" {{ $selectedAcademicYearId == $year->id ? 'selected' : '' }}>
+                            <li @click="select('{{ $year->id }}', 'TA {{ $year->year }}')" 
+                                class="cursor-pointer select-none px-4 py-2.5 text-[14px] transition-colors flex items-center justify-between"
+                                :class="selectedId == '{{ $year->id }}' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50 font-medium'"
+                                role="option"
+                                :aria-selected="selectedId == '{{ $year->id }}'">
                                 TA {{ $year->year }}
-                            </option>
+                                <svg x-show="selectedId == '{{ $year->id }}'" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </li>
                         @endforeach
-                    </select>
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
+                    </ul>
                 </div>
                 
-                <div class="bg-slate-50 border border-slate-200 rounded-xl flex items-center p-1 relative shadow-sm overflow-hidden">
-                    <select name="semester_id" onchange="this.form.submit()" class="bg-transparent border-none text-sm font-semibold text-slate-700 focus:ring-0 pl-3 pr-8 py-1.5 cursor-pointer outline-none appearance-none z-10 w-32">
+                <!-- Custom Dropdown Semester -->
+                <div x-data="{
+                    open: false,
+                    selectedId: '{{ $selectedSemesterId }}',
+                    selectedLabel: '{{ $semesters->firstWhere('id', $selectedSemesterId)?->name ?? 'Pilih Semester' }}',
+                    select(id, label) {
+                        this.selectedId = id;
+                        this.selectedLabel = label;
+                        this.open = false;
+                        $refs.semesterInput.value = id;
+                        $refs.filterForm.submit();
+                    }
+                }" class="relative w-full sm:w-[240px]" @keydown.escape.prevent.stop="open = false" @click.away="open = false">
+                    
+                    <input type="hidden" name="semester_id" x-ref="semesterInput" :value="selectedId">
+                    
+                    <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Semester</span>
+                    
+                    <button type="button" 
+                            @click="open = !open" 
+                            @keydown.space.prevent="open = !open"
+                            @keydown.enter.prevent="open = !open"
+                            @keydown.arrow-down.prevent="open = true"
+                            aria-haspopup="listbox" 
+                            :aria-expanded="open"
+                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
+                    >
+                        <span x-text="selectedLabel" class="truncate"></span>
+                        <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <ul x-show="open" 
+                        x-transition:enter="transition ease-out duration-100" 
+                        x-transition:enter-start="transform opacity-0 scale-95" 
+                        x-transition:enter-end="transform opacity-100 scale-100" 
+                        x-transition:leave="transition ease-in duration-75" 
+                        x-transition:leave-start="transform opacity-100 scale-100" 
+                        x-transition:leave-end="transform opacity-0 scale-95" 
+                        class="absolute z-50 mt-2 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto py-1 focus:outline-none" 
+                        role="listbox" 
+                        style="display: none;"
+                    >
                         @foreach($semesters as $sem)
-                            <option value="{{ $sem->id }}" {{ $selectedSemesterId == $sem->id ? 'selected' : '' }}>
+                            <li @click="select('{{ $sem->id }}', '{{ $sem->name }}')" 
+                                class="cursor-pointer select-none px-4 py-2.5 text-[14px] transition-colors flex items-center justify-between"
+                                :class="selectedId == '{{ $sem->id }}' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50 font-medium'"
+                                role="option"
+                                :aria-selected="selectedId == '{{ $sem->id }}'">
                                 {{ $sem->name }}
-                            </option>
+                                <svg x-show="selectedId == '{{ $sem->id }}'" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </li>
                         @endforeach
-                    </select>
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
+                    </ul>
                 </div>
             </form>
         </div>
