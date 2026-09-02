@@ -29,7 +29,7 @@
                     <p class="text-sm text-slate-600">NIS: {{ $student->nis }} | NISN: {{ $student->nisn }}</p>
                     <p class="text-xs text-slate-500 mt-1">Rata-rata Nilai: 
                         <span class="font-semibold text-blue-600">
-                            {{ number_format($lastFeedback?->student?->studentGrades->avg('average_score') ?? 0, 1) }}
+                            {{ number_format($student->studentGrades->avg('average_score') ?? 0, 1) }}
                         </span>
                     </p>
                 </div>

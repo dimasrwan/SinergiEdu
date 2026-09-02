@@ -24,7 +24,9 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs text-slate-500 uppercase font-semibold">Sudah Feedback</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-2">{{ $feedbacks->items()->count() }}</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-2">
+                            {{ $feedbacks->filter(fn($f) => $f->studentGrades->where('supervisor_feedback')->isNotEmpty())->count() }}
+                        </p>
                     </div>
                     <svg class="h-12 w-12 text-emerald-500/20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                 </div>
@@ -34,7 +36,9 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs text-slate-500 uppercase font-semibold">Perlu Follow-up</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-2">0</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-2">
+                            {{ $feedbacks->filter(fn($f) => !$f->studentGrades->where('supervisor_feedback')->isNotEmpty())->count() }}
+                        </p>
                     </div>
                     <svg class="h-12 w-12 text-orange-500/20" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/></svg>
                 </div>
@@ -69,7 +73,7 @@
                                 <td class="px-6 py-3 text-slate-600">
                                     @php
                                         $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-                                        $classroom = $feedback->classes()->wherePivot('academic_year_id', $activeYear?->id)->first();
+                                        $classroom = $feedback->classes()->where('student_classes.academic_year_id', $activeYear?->id)->first();
                                     @endphp
                                     {{ $classroom?->name ?? '-' }}
                                 </td>

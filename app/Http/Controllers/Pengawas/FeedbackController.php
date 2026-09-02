@@ -8,8 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\AcademicYear;
 use App\Models\Semester;
+use App\Models\StudentGrade;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class FeedbackController extends Controller
@@ -156,5 +158,69 @@ class FeedbackController extends Controller
         return redirect()
             ->route('pengawas.students.show', $student->id)
             ->with('success', 'Feedback berhasil diperbarui');
+    }
+
+    /**
+     * Arsipkan feedback siswa.
+     */
+    public function archive(Request $request, Student $student): RedirectResponse
+    {
+        if ($student->school_id !== auth()->user()->school_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
+
+        $student->studentGrades()
+            ->where('academic_year_id', $activeYear?->id)
+            ->where('semester_id', $activeSemester?->id)
+            ->where('supervisor_id', auth()->id())
+            ->update(['is_archived' => true]);
+
+        return back()->with('success', 'Feedback berhasil diarsipkan');
+    }
+
+    /**
+     * Batalkan arsip feedback siswa.
+     */
+    public function unarchive(Request $request, Student $student): RedirectResponse
+    {
+        if ($student->school_id !== auth()->user()->school_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
+
+        $student->studentGrades()
+            ->where('academic_year_id', $activeYear?->id)
+            ->where('semester_id', $activeSemester?->id)
+            ->where('supervisor_id', auth()->id())
+            ->update(['is_archived' => false]);
+
+        return back()->with('success', 'Arsip feedback berhasil dibatalkan');
+    }
+
+    /**
+     * Tampilkan daftar feedback yang diarsipkan.
+     */
+    public function archived(): View
+    {
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
+
+        $archived = StudentGrade::query()
+            ->with(['student.user', 'subject', 'teacher'])
+            ->where('supervisor_id', auth()->id())
+            ->where('is_archived', true)
+            ->where('academic_year_id', $activeYear?->id)
+            ->where('semester_id', $activeSemester?->id)
+            ->latest()
+            ->paginate(15);
+
+        return view('pages.pengawas.feedback.archived', compact(
+            'archived', 'activeYear', 'activeSemester'
+        ));
     }
 }

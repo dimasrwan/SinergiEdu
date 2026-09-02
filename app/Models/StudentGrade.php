@@ -30,6 +30,7 @@ class StudentGrade extends Model
         'supervisor_priority',
         'supervisor_id',
         'grade_note',
+        'is_archived',
     ];
 
     public function student(): BelongsTo

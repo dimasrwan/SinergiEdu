@@ -10,6 +10,7 @@ use App\Models\Classroom;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentGrade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -30,10 +31,12 @@ class StudentMonitoringController extends Controller
         
         // Dapatkan siswa dengan hasil belajar
         $students = Student::query()
-            ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
+            ->when($selectedClassId && $activeYear, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
-                      ->wherePivot('academic_year_id', '=', $activeYear?->id);
+                      ->whereHas('students', function ($sq) use ($activeYear) {
+                          $sq->where('student_classes.academic_year_id', $activeYear->id);
+                      });
                 });
             })
             ->with(['user', 'parent.user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
@@ -62,7 +65,7 @@ class StudentMonitoringController extends Controller
 
         // Dapatkan kelas aktif siswa
         $activeClassroom = $student->classes()
-            ->wherePivot('academic_year_id', '=', $activeYear?->id)
+            ->where('student_classes.academic_year_id', $activeYear?->id)
             ->first();
 
         // Dapatkan hasil belajar
@@ -90,7 +93,7 @@ class StudentMonitoringController extends Controller
         })
             ->where('academic_year_id', $activeYear?->id)
             ->where('semester_id', $activeSemester?->id)
-            ->avg('average_score') ?? 0;
+            ->avg(DB::raw('(COALESCE(pre_test_score, 0) + COALESCE(assignment_score, 0) + COALESCE(post_test_score, 0) + COALESCE(character_score, 0) + COALESCE(memorization_score, 0)) / 5')) ?? 0;
 
         return view('pages.pengawas.students.show', compact(
             'student', 'grades', 'stats', 'classAverage', 'activeClassroom', 
@@ -108,10 +111,12 @@ class StudentMonitoringController extends Controller
         $selectedClassId = request('class_id');
 
         $students = Student::query()
-            ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
+            ->when($selectedClassId && $activeYear, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
-                      ->wherePivot('academic_year_id', '=', $activeYear?->id);
+                      ->whereHas('students', function ($sq) use ($activeYear) {
+                          $sq->where('student_classes.academic_year_id', $activeYear->id);
+                      });
                 });
             })
             ->with(['user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {

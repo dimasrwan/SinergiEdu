@@ -9,6 +9,7 @@ use App\Models\SchoolEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class EvaluationController extends Controller
 {
@@ -70,5 +71,42 @@ class EvaluationController extends Controller
         $evaluation->delete();
 
         return redirect()->route('pengawas.evaluations.index')->with('success', 'Evaluasi sekolah berhasil dihapus.');
+    }
+
+    /**
+     * Arsipkan evaluasi sekolah.
+     */
+    public function archive(SchoolEvaluation $evaluation): RedirectResponse
+    {
+        abort_if($evaluation->user_id !== auth()->id(), 403, 'Akses ditolak.');
+
+        $evaluation->update(['is_archived' => true]);
+
+        return redirect()->route('pengawas.evaluations.index')->with('success', 'Evaluasi sekolah berhasil diarsipkan.');
+    }
+
+    /**
+     * Batalkan arsip evaluasi sekolah.
+     */
+    public function unarchive(SchoolEvaluation $evaluation): RedirectResponse
+    {
+        abort_if($evaluation->user_id !== auth()->id(), 403, 'Akses ditolak.');
+
+        $evaluation->update(['is_archived' => false]);
+
+        return redirect()->route('pengawas.evaluations.index')->with('success', 'Arsip evaluasi berhasil dibatalkan.');
+    }
+
+    /**
+     * Tampilkan daftar evaluasi yang diarsipkan.
+     */
+    public function archived(): View
+    {
+        $archived = SchoolEvaluation::where('user_id', auth()->id())
+            ->where('is_archived', true)
+            ->latest()
+            ->paginate(10);
+
+        return view('pages.pengawas.evaluations.archived', compact('archived'));
     }
 }
