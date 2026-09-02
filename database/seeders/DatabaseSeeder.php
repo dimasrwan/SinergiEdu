@@ -27,5 +27,11 @@ class DatabaseSeeder extends Seeder
         if (app()->environment('local', 'testing')) {
             $this->call(DevelopmentTestDataSeeder::class);
         }
+
+        // Data akademik (Tahun Ajaran & Semester) untuk setiap sekolah
+        $this->call(AcademicSeeder::class);
+
+        // Akun Kepala Sekolah default (idempotent, role tidak fallback)
+        $this->call(KepalaSekolahSeeder::class);
     }
 }

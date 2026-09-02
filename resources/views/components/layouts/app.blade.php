@@ -92,6 +92,8 @@
                                     <x-sidebars.waka />
                                 @elseif($role === 'pengawas')
                                     <x-sidebars.pengawas />
+                                @elseif($role === 'kepala_sekolah')
+                                    <x-sidebars.kepala-sekolah />
                                 @else
                                     {{ $sidebar ?? '' }}
                                 @endif

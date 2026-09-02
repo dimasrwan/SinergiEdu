@@ -12,7 +12,7 @@ Route::get('/reports', function () {
     return view('pages.placeholder');
 })->name('reports.index');
 
-Route::resource('/evaluations', EvaluationController::class);
+Route::resource('/evaluations', EvaluationController::class)->except(['show']);
 
 Route::get('/inspections', function () {
     return view('pages.placeholder');

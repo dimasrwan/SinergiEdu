@@ -17,7 +17,7 @@ Route::get('/classes', [ClassroomController::class, 'index'])->name('classes.ind
 Route::get('/classes/{class}', [ClassroomController::class, 'show'])->name('classes.show');
 
 Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
-Route::resource('/materials', MaterialController::class);
+Route::resource('/materials', MaterialController::class)->except(['show']);
 Route::get('/assignments/{assignment}/download', [AssignmentController::class, 'download'])->name('assignments.download');
 Route::get('/assignments/{assignment}/submissions/{submission}/download', [AssignmentController::class, 'downloadSubmission'])->name('assignments.submissions.download');
     Route::post('/assignments/{assignment}/submissions/{submission}/grade', [AssignmentController::class, 'grade'])
