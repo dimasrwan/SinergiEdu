@@ -6,14 +6,14 @@
         <div class="mb-6 flex flex-col items-start gap-4">
             @if(request('redirect_to') === 'student' && request('student_id'))
                 <a href="{{ route('admin.students.show', request('student_id')) }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                     Kembali ke Detail Siswa
                 </a>
             @else
                 <a href="{{ route('admin.student-placements.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                     Kembali ke Daftar
@@ -124,7 +124,7 @@
                     @else
                         <x-button variant="secondary" href="{{ route('admin.student-placements.index') }}" class="w-full sm:w-auto">Batal</x-button>
                     @endif
-                    <x-button variant="primary" type="submit" class="w-full sm:w-auto justify-center" {{ $students->isEmpty() || $classrooms->isEmpty() || $academicYears->isEmpty() ? 'disabled' : '' }}>
+                    <x-button variant="primary" type="submit" class="w-full sm:w-auto justify-center" :disabled="$students->isEmpty() || $classrooms->isEmpty() || $academicYears->isEmpty()">
                         Simpan Penempatan
                     </x-button>
                 </div>

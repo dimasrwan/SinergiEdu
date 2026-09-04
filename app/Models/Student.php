@@ -11,9 +11,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Student extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     protected $fillable = [
+        'school_id',
         'user_id',
         'parent_id',
         'nisn',
@@ -56,6 +59,14 @@ class Student extends Model
     }
 
     /**
+     * Alias untuk grades() - digunakan di controller feedback.
+     */
+    public function studentGrades(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->grades();
+    }
+
+    /**
      * Relasi ke Riwayat Kelas (via tabel pivot student_classes).
      */
     public function classes(): BelongsToMany
@@ -75,6 +86,17 @@ class Student extends Model
             return null;
         }
 
-        return $this->classes()->wherePivot('academic_year_id', $activeYear->id)->first();
+        return $this->classes()->where('student_classes.academic_year_id', $activeYear->id)->first();
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
+    }
+    
+    public function submissions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\AssignmentSubmission::class);
     }
 }

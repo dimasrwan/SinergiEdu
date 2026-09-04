@@ -30,6 +30,14 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'school_id' => \App\Models\School::firstOrCreate(
+                ['npsn' => 'TEST'],
+                [
+                    'name' => 'Test School',
+                    'email' => 'test@school.com',
+                    'is_active' => true
+                ]
+            )->id,
             'role_id' => \App\Models\Role::firstOrCreate([
                 'name' => 'siswa'
             ], [

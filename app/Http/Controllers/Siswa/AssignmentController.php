@@ -79,11 +79,47 @@ class AssignmentController extends Controller
         $data['student_id'] = $student->id;
         
         if ($request->hasFile('file')) {
-            $data['file_path'] = $request->file('file')->store('assignments/submissions', 'public');
+            $data['file_path'] = $request->file('file')->store('assignments/submissions', 'local');
         }
 
         AssignmentSubmission::create($data);
 
         return back()->with('success', 'Jawaban tugas Anda berhasil dikumpulkan.');
+    }
+
+    public function download(Assignment $assignment)
+    {
+        $student = $this->getStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $path = $assignment->attachment_path;
+        
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File lampiran tidak ditemukan.');
+        }
+        
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path);
+    }
+
+    public function downloadSubmission(Assignment $assignment)
+    {
+        $student = $this->getStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $submission = AssignmentSubmission::where('assignment_id', $assignment->id)
+            ->where('student_id', $student->id)
+            ->firstOrFail();
+            
+        $path = $submission->file_path;
+        
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban Anda tidak ditemukan.');
+        }
+        
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path);
     }
 }

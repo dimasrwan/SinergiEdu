@@ -1,185 +1,179 @@
 <x-layouts.app>
     <x-slot:title>Ruang Belajar</x-slot:title>
 
-    <div class="w-full space-y-8">
+    <div class="w-full space-y-6">
         
-        <!-- Learning Banner -->
-        <div class="bg-primary rounded-3xl p-8 text-white shadow-lg shadow-primary/20 relative overflow-hidden">
-            <!-- Decorative Elements -->
-            <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-            <div class="absolute left-1/2 bottom-0 w-32 h-32 bg-white/5 rounded-full blur-2xl translate-y-1/2"></div>
-            
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight mb-2">Hai, Siswa Berprestasi!</h1>
-                    <p class="text-blue-50 text-sm max-w-xl mb-4">Minggu ini kamu sudah menyelesaikan 4 tugas. Teruskan semangat belajarmu, ada 2 tugas baru yang menunggu.</p>
-                    <div class="flex items-center gap-3 mt-2">
-                        <div class="bg-white/20 rounded-full h-2 w-48 overflow-hidden backdrop-blur-sm">
-                            <div class="bg-white h-full rounded-full w-[70%]"></div>
-                        </div>
-                        <span class="text-xs font-semibold">Progres Mingguan: 70%</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 shrink-0">
-                    <a href="{{ route('siswa.learning.index') }}" class="inline-flex items-center justify-center px-6 py-3 bg-accent text-white hover:bg-accent-hover rounded-xl text-sm font-bold transition shadow-sm">
-                        Lanjutkan Belajar &rarr;
+        <!-- Hero Minimalist -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-2">Hai, {{ auth()->user()->name }}!</h1>
+                @if(!$classroom)
+                    <p class="text-slate-500 text-sm max-w-xl">Anda belum didaftarkan pada kelas aktif.<br>Hubungi admin sekolah untuk mendapatkan penempatan kelas.</p>
+                @else
+                    <p class="text-slate-500 text-sm max-w-xl">Selamat datang kembali di ruang belajar Anda.</p>
+                    <span class="sr-only">Kamu telah menyelesaikan {{ $stats['tugas_selesai'] }} dari total {{ $stats['total_tugas'] }} tugas di {{ $classroom->name }}</span>
+                @endif
+            </div>
+            @if($classroom && $upcomingAssignments->isNotEmpty())
+                <div class="shrink-0">
+                    <a href="{{ route('siswa.assignments.index') }}" class="inline-flex items-center justify-center px-6 py-2.5 bg-primary text-white hover:bg-primary/90 rounded-xl text-sm font-bold transition">
+                        Lihat Tugas
                     </a>
                 </div>
-            </div>
+            @endif
         </div>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            <!-- Left Column: Upcoming Tasks & Materials -->
-            <div class="xl:col-span-2 space-y-8">
+        @if(!$classroom)
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto mt-8">
+                <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Kelas Aktif</h3>
+                <p class="text-sm text-slate-500">Anda belum didaftarkan pada kelas aktif pada periode akademik saat ini. Hubungi admin sekolah untuk informasi lebih lanjut.</p>
+            </div>
+        @else
+            <!-- 4 KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                <!-- Tugas Aktif -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Tugas Aktif</p>
+                    <p class="text-3xl font-bold text-slate-900">{{ max(0, $stats['total_tugas'] - $stats['tugas_selesai']) }}</p>
+                    <p class="text-xs text-slate-400 mt-2">Belum diselesaikan</p>
+                </div>
                 
-                <!-- Upcoming Assignments -->
-                <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-slate-900">Tugas Mendatang</h2>
-                        <a href="{{ route('siswa.assignments.index') }}" class="text-sm font-medium text-accent hover:text-accent-hover">Lihat Semua Tugas</a>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Task Card 1 (Urgent) -->
-                        <div class="bg-white border-2 border-red-100 rounded-2xl p-5 hover:border-red-300 transition relative overflow-hidden group shadow-sm">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                                    Besok, 23:59
-                                </div>
-                                <span class="text-xs font-semibold text-slate-400">Matematika Peminatan</span>
-                            </div>
-                            <h3 class="font-bold text-slate-900 text-base mb-1">Tugas Integral Substitusi</h3>
-                            <p class="text-xs text-slate-500 mb-4 line-clamp-2">Kerjakan latihan soal pada halaman 45 buku cetak mengenai aturan integral substitusi trigonometri.</p>
-                            <a href="#" class="block w-full text-center py-2 bg-slate-50 hover:bg-red-50 text-red-600 rounded-xl text-sm font-semibold transition">
-                                Kerjakan Tugas
-                            </a>
-                        </div>
-
-                        <!-- Task Card 2 -->
-                        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-accent transition relative overflow-hidden shadow-sm">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                                    Jumat, 10 Nov
-                                </div>
-                                <span class="text-xs font-semibold text-slate-400">Fisika Lintas Minat</span>
-                            </div>
-                            <h3 class="font-bold text-slate-900 text-base mb-1">Laporan Praktikum Termodinamika</h3>
-                            <p class="text-xs text-slate-500 mb-4 line-clamp-2">Kumpulkan laporan sementara praktikum minggu lalu dalam format PDF.</p>
-                            <a href="#" class="block w-full text-center py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold transition">
-                                Kerjakan Tugas
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Recent Materials -->
-                <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-slate-900">Materi Baru Saja Diunggah</h2>
-                        <a href="{{ route('siswa.materials.index') }}" class="text-sm font-medium text-accent hover:text-accent-hover">Materi Lainnya</a>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-                        <a href="#" class="block p-4 border-b border-slate-100 flex items-center justify-between hover:bg-slate-50 transition group">
-                            <div class="flex items-center gap-4">
-                                <div class="bg-blue-50 text-primary p-2.5 rounded-xl group-hover:scale-110 transition-transform">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-slate-900 text-sm">Modul 4: Termodinamika Dasar</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Fisika • Bapak Budi Santoso</p>
-                                </div>
-                            </div>
-                            <span class="text-accent text-xs font-semibold flex items-center">
-                                Baca <svg class="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                            </span>
-                        </a>
-                        <a href="#" class="block p-4 flex items-center justify-between hover:bg-slate-50 transition group">
-                            <div class="flex items-center gap-4">
-                                <div class="bg-blue-50 text-primary p-2.5 rounded-xl group-hover:scale-110 transition-transform">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-slate-900 text-sm">Video: Konsep Dasar Limit</h4>
-                                    <p class="text-xs text-slate-500 mt-0.5">Matematika Peminatan • Ibu Siti Aminah</p>
-                                </div>
-                            </div>
-                            <span class="text-accent text-xs font-semibold flex items-center">
-                                Tonton <svg class="h-3 w-3 ml-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                            </span>
-                        </a>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Right Column: Progress & Feedback -->
-            <div class="col-span-1 space-y-8">
-                <!-- Vitals Summary -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                    <h2 class="text-base font-bold text-slate-900 mb-6">Status Akademik</h2>
-                    
-                    <div class="space-y-5">
-                        <div>
-                            <div class="flex justify-between items-end mb-1.5">
-                                <span class="text-xs font-semibold text-slate-500">Rata-rata Nilai (Semester ini)</span>
-                                <span class="text-lg font-bold text-primary">85.4</span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-2">
-                                <div class="bg-primary h-2 rounded-full" style="width: 85%"></div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex justify-between items-end mb-1.5">
-                                <span class="text-xs font-semibold text-slate-500">Tingkat Kehadiran</span>
-                                <span class="text-lg font-bold text-success">98%</span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-2">
-                                <div class="bg-success h-2 rounded-full" style="width: 98%"></div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex justify-between items-end mb-1.5">
-                                <span class="text-xs font-semibold text-slate-500">Penyelesaian Tugas</span>
-                                <span class="text-lg font-bold text-orange-500">12/15</span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-2">
-                                <div class="bg-orange-400 h-2 rounded-full" style="width: 80%"></div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Sudah Dikumpulkan -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Sudah Kumpul</p>
+                    <p class="text-3xl font-bold text-slate-900">{{ $stats['tugas_selesai'] }}</p>
+                    <p class="text-xs text-slate-400 mt-2">Dari {{ $stats['total_tugas'] }} tugas total</p>
                 </div>
-
-                <!-- Recent Feedback -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold text-slate-900">Feedback Terbaru</h2>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 relative">
-                            <!-- Arrow pointing to avatar conceptually -->
-                            <div class="flex items-center gap-3 mb-2">
-                                <div class="h-8 w-8 bg-blue-100 text-primary rounded-full flex items-center justify-center font-bold text-xs">
-                                    BS
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-slate-900">Bapak Budi Santoso</p>
-                                    <p class="text-[10px] text-slate-500">Fisika • 2 hari yang lalu</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-700 italic">"Laporan praktikummu sangat rapi. Pemahaman konsep termodinamika sudah terlihat baik. Pertahankan!"</p>
-                            <a href="#" class="mt-3 inline-block text-xs font-semibold text-accent hover:underline">Lihat Detail Nilai</a>
-                        </div>
-                        
-                        <div class="text-center mt-2 border-t border-slate-100 pt-3">
-                            <a href="{{ route('siswa.feedbacks.index') }}" class="text-xs font-semibold text-slate-500 hover:text-accent transition">Lihat Semua Feedback</a>
-                        </div>
-                    </div>
+                
+                <!-- Progres -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Progres Selesai</p>
+                    <p class="text-3xl font-bold text-slate-900">{{ $stats['progres'] }}% <span class="sr-only">Progres Tugas: {{ $stats['progres'] }}%</span></p>
+                    <p class="text-xs text-slate-400 mt-2">Penyelesaian tugas kelas</p>
+                </div>
+                
+                <!-- Rata-rata Nilai -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                    <p class="text-[13px] font-semibold text-slate-500 uppercase tracking-wide mb-1">Rata-rata Nilai</p>
+                    <p class="text-3xl font-bold text-primary">{{ $stats['rata_rata'] }}</p>
+                    <p class="text-xs text-slate-400 mt-2">Semester ini</p>
                 </div>
             </div>
-        </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-4">
+                
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Tugas Terdekat -->
+                    <section>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-[18px] font-bold text-slate-900">Tugas Terdekat</h2>
+                            <a href="{{ route('siswa.assignments.index') }}" class="text-sm font-semibold text-primary hover:underline">Lihat Semua</a>
+                        </div>
+                        
+                        @if($upcomingAssignments->isEmpty())
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-8 text-center">
+                                <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-200/50 mb-3 text-slate-400">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" /></svg>
+                                </div>
+                                <h3 class="text-[15px] font-bold text-slate-900 mb-1">Belum Ada Tugas</h3>
+                                <p class="text-sm text-slate-500">Saat ini tidak ada tugas mendatang yang harus dikerjakan.</p>
+                            </div>
+                        @else
+                            <div class="space-y-4">
+                                @foreach($upcomingAssignments as $task)
+                                    <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-primary/30 transition">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1">{{ $task->subject->name ?? '-' }} &bull; {{ $classroom->name }}</p>
+                                            <h3 class="text-base font-bold text-slate-900 mb-1 truncate">{{ $task->title }}</h3>
+                                            <div class="flex items-center text-sm text-slate-500 gap-2">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                                Deadline: {{ $task->deadline->format('d M Y, H:i') }}
+                                            </div>
+                                        </div>
+                                        <div class="shrink-0 flex items-center justify-between sm:block mt-2 sm:mt-0">
+                                            <span class="sm:hidden text-xs font-medium text-slate-500">Status: Belum Dikerjakan</span>
+                                            <a href="{{ route('siswa.assignments.show', $task->id) }}" class="inline-flex items-center justify-center px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-sm font-semibold transition">
+                                                Kerjakan
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </section>
+                </div>
+
+                <div class="lg:col-span-1 space-y-8">
+                    <!-- Materi Terbaru -->
+                    <section>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-[18px] font-bold text-slate-900">Materi Terbaru</h2>
+                        </div>
+                        
+                        @if($recentMaterials->isEmpty())
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl py-8 px-4 text-center">
+                                <h3 class="text-[14px] font-bold text-slate-900 mb-1">Belum Ada Materi</h3>
+                                <p class="text-[13px] text-slate-500">Belum ada materi pembelajaran yang tersedia untuk kelas Anda.</p>
+                            </div>
+                        @else
+                            <div class="space-y-3">
+                                @foreach($recentMaterials as $material)
+                                    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm group">
+                                        <div class="flex items-start gap-3">
+                                            <div class="mt-0.5 shrink-0 h-8 w-8 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <p class="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">{{ $material->subject->name ?? '-' }}</p>
+                                                <h4 class="text-sm font-bold text-slate-900 mb-1 truncate">{{ $material->title }}</h4>
+                                                <p class="text-xs text-slate-500 truncate mb-3">Oleh: {{ $material->teacher->user->name ?? '-' }}</p>
+                                                <a href="{{ route('siswa.materials.show', $material->id) }}" class="inline-flex text-[13px] font-semibold text-primary hover:underline">
+                                                    Buka Materi &rarr;
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </section>
+
+                    <!-- Feedback Terbaru -->
+                    <section>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-[18px] font-bold text-slate-900">Feedback Terbaru</h2>
+                        </div>
+                        
+                        @if(!$recentFeedback)
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl py-8 px-4 text-center">
+                                <h3 class="text-[14px] font-bold text-slate-900 mb-1">Belum Ada Feedback</h3>
+                                <p class="text-[13px] text-slate-500">Guru belum memberikan feedback kepada Anda.</p>
+                            </div>
+                        @else
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="h-6 w-6 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                                        <svg class="h-3 w-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-900">{{ $recentFeedback->teacher->user->name ?? '-' }}</p>
+                                    <span class="text-xs text-slate-400 ml-auto">{{ $recentFeedback->created_at->format('d/m') }}</span>
+                                </div>
+                                <p class="text-[11px] font-semibold text-primary uppercase tracking-wider mb-1">{{ $recentFeedback->subject->name ?? '-' }}</p>
+                                <p class="text-[13px] text-slate-700 line-clamp-3 mb-3">"{{ $recentFeedback->message }}"</p>
+                                <a href="{{ route('siswa.feedbacks.show', $recentFeedback->id) }}" class="inline-flex text-[13px] font-semibold text-primary hover:underline">
+                                    Lihat Feedback &rarr;
+                                </a>
+                            </div>
+                        @endif
+                    </section>
+                </div>
+            </div>
+        @endif
         
     </div>
 </x-layouts.app>

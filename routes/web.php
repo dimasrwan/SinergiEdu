@@ -23,17 +23,13 @@ Route::middleware(['auth'])->group(function () {
     
     // Pengalihan dashboard umum jika user mengakses '/dashboard'
     Route::get('/dashboard', function () {
-        $user = auth()->user();
-        return match ($user->role->name ?? null) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'waka' => redirect()->route('waka.dashboard'),
-            'guru' => redirect()->route('guru.dashboard'),
-            'siswa' => redirect()->route('siswa.dashboard'),
-            'orangtua' => redirect()->route('orangtua.dashboard'),
-            'pengawas' => redirect()->route('pengawas.dashboard'),
-            default => redirect('/'),
-        };
+        $route = \App\Support\DashboardRouter::forUser(auth()->user());
+
+        return $route ? redirect()->route($route) : redirect('/');
     })->name('dashboard');
+
+    // Super Admin
+    Route::prefix('super-admin')->name('super_admin.')->middleware('role:super_admin')->group(base_path('routes/web/super_admin.php'));
 
     // Admin
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(base_path('routes/web/admin.php'));
@@ -52,4 +48,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Pengawas
     Route::prefix('pengawas')->name('pengawas.')->middleware('role:pengawas')->group(base_path('routes/web/pengawas.php'));
+    
+    // Kepala Sekolah
+    Route::prefix('kepala-sekolah')->name('kepala-sekolah.')->middleware('role:kepala_sekolah')->group(base_path('routes/web/kepala_sekolah.php'));
 });

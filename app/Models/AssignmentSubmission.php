@@ -19,6 +19,7 @@ class AssignmentSubmission extends Model
         'notes',
         'score',
         'submitted_at',
+        'feedback',
     ];
 
     protected $casts = [

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\DashboardRouter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,15 +30,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        $redirectRoute = match ($user->role->name ?? null) {
-            'admin' => 'admin.dashboard',
-            'waka' => 'waka.dashboard',
-            'guru' => 'guru.dashboard',
-            'siswa' => 'siswa.dashboard',
-            'orangtua' => 'orangtua.dashboard',
-            'pengawas' => 'pengawas.dashboard',
-            default => 'dashboard',
-        };
+        $redirectRoute = DashboardRouter::forUser($user) ?? 'dashboard';
 
         return redirect()->intended(route($redirectRoute, absolute: false));
     }

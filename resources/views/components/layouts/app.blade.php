@@ -78,7 +78,9 @@
                                 @php
                                     $role = strtolower(Auth::user()->role->name ?? '');
                                 @endphp
-                                @if($role === 'admin')
+                                @if($role === 'super_admin')
+                                    <x-sidebars.super-admin />
+                                @elseif($role === 'admin')
                                     <x-sidebars.admin />
                                 @elseif($role === 'guru')
                                     <x-sidebars.guru />
@@ -90,30 +92,49 @@
                                     <x-sidebars.waka />
                                 @elseif($role === 'pengawas')
                                     <x-sidebars.pengawas />
+                                @elseif($role === 'kepala_sekolah')
+                                    <x-sidebars.kepala-sekolah />
                                 @else
                                     {{ $sidebar ?? '' }}
                                 @endif
                             </ul>
                         </li>
-                        @if(strtolower(Auth::user()->role->name ?? '') !== 'admin')
+                        @if(!in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
                         <li class="mt-auto px-2 pb-4">
-                            <!-- Profil & Logout -->
-                            <div class="bg-[#123B82] rounded-xl p-3 flex items-center gap-x-3 shadow-md shadow-[#123B82]/10 h-[60px]">
-                                <div class="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center border border-white/30 text-white font-bold shrink-0 text-xs">
-                                    {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                            <!-- Compact Profile Dropdown -->
+                            <div class="relative" x-data="{ open: false }">
+                                <button type="button" @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100 rounded-xl p-2.5 flex items-center justify-between gap-x-3 transition-colors border border-slate-200/60">
+                                    <div class="flex items-center gap-x-3 min-w-0">
+                                        <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0 text-xs">
+                                            {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0 text-left">
+                                            <p class="text-[13px] font-semibold text-slate-900 truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
+                                            <p class="text-[10px] text-slate-500 truncate mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
+                                        </div>
+                                    </div>
+                                    <svg class="h-4 w-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+                                    </svg>
+                                </button>
+                                
+                                <!-- Dropdown Menu -->
+                                <div x-show="open" 
+                                     @click.away="open = false"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute bottom-full left-0 mb-2 w-full rounded-xl bg-white shadow-lg ring-1 ring-slate-900/5 py-1 z-50"
+                                     style="display: none;">
+                                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">Profil</a>
+                                    <form action="{{ route('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Logout</button>
+                                    </form>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-[13px] font-semibold text-white truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
-                                    <p class="text-[9px] text-blue-200 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
-                                </div>
-                                <form action="{{ route('logout') }}" method="POST" class="shrink-0">
-                                    @csrf
-                                    <button type="submit" class="p-1.5 text-blue-200 hover:text-white hover:bg-white/10 rounded-lg transition duration-150">
-                                        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                                        </svg>
-                                    </button>
-                                </form>
                             </div>
                         </li>
                         @else
@@ -121,7 +142,9 @@
                             <!-- Admin Subtle Footer -->
                             <div class="border-t border-slate-200/60 pt-3">
                                 <p class="text-xs font-bold text-slate-700">SinergiEdu</p>
-                                <p class="text-[11px] font-medium text-slate-400 mt-0.5">Admin Workspace</p>
+                                <p class="text-[11px] font-medium text-slate-400 mt-0.5">
+                                    {{ strtolower(Auth::user()->role->name ?? '') === 'super_admin' ? 'Platform Console' : 'Admin Workspace' }}
+                                </p>
                             </div>
                         </li>
                         @endif
@@ -144,28 +167,47 @@
                 <div class="h-6 w-px bg-slate-200 lg:hidden" aria-hidden="true"></div>
 
                 <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between">
-                    <div>
+                    <div class="flex items-center gap-x-3">
+                        <!-- Desktop Logo/Brand -->
+                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center lg:hidden">
+                            <span class="text-white font-bold text-sm">S</span>
+                        </div>
                         <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6">{{ $title ?? 'Dashboard' }}</h2>
                     </div>
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
-                        <!-- Search (Hidden on small screens) -->
-                        <div class="hidden md:block relative">
+                        @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')
+                        <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
                             </div>
-                            <input type="text" class="block w-64 rounded-full border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                            <input type="text" x-model="query" @input.debounce.500ms="fetchResults" @keydown.escape="close()" class="block w-64 rounded-full border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                            
+                            <!-- Dropdown Results -->
+                            <div x-show="open" x-transition.opacity class="absolute top-full mt-2 w-[400px] bg-white rounded-xl shadow-lg ring-1 ring-slate-900/5 py-2 z-50 lg:right-auto right-0 max-h-96 overflow-y-auto" style="display: none;">
+                                <template x-if="loading">
+                                    <div class="px-4 py-3 text-sm text-slate-500 text-center">Mencari...</div>
+                                </template>
+                                <template x-if="!loading && results.length === 0 && query.length >= 2">
+                                    <div class="px-4 py-3 text-sm text-slate-500 text-center">Tidak ada hasil ditemukan.</div>
+                                </template>
+                                <template x-if="!loading && results.length > 0">
+                                    <ul class="divide-y divide-slate-100">
+                                        <template x-for="(result, index) in results" :key="index">
+                                            <li>
+                                                <a :href="result.url" class="block px-4 py-2.5 hover:bg-slate-50 transition-colors group">
+                                                    <p class="text-[10px] font-bold uppercase tracking-wider text-primary mb-0.5" x-text="result.category"></p>
+                                                    <p class="text-sm font-semibold text-slate-900 group-hover:text-primary transition-colors" x-text="result.title"></p>
+                                                    <p class="text-xs text-slate-500 mt-0.5" x-text="result.subtitle"></p>
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </template>
+                            </div>
                         </div>
-                        
-                        <!-- Notifications -->
-                        <button type="button" class="-m-2.5 p-2.5 text-slate-400 hover:text-slate-500 relative transition">
-                            <span class="sr-only">Lihat notifikasi</span>
-                            <span class="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                            </svg>
-                        </button>
+                        @endif
 
                         <!-- Divider -->
                         <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200" aria-hidden="true"></div>
@@ -195,7 +237,7 @@
                                  x-transition:leave-end="transform opacity-0 scale-95"
                                  @click.away="open = false"
                                  style="display: none;">
-                                @if(strtolower(Auth::user()->role->name ?? '') === 'admin')
+                                @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
                                 <div class="px-4 py-3 border-b border-slate-100 mb-1">
                                     <p class="text-sm font-semibold text-slate-900 truncate">{{ Auth::user()->name ?? 'Guest' }}</p>
                                     <p class="text-xs text-slate-500 truncate uppercase tracking-widest font-bold mt-0.5">{{ Auth::user()->role->display_name ?? Auth::user()->role->name ?? 'Admin' }}</p>
@@ -212,7 +254,6 @@
                 </div>
             </div>
 
-            <!-- Content Area -->
             <main class="py-10 flex-1">
                 <div class="px-4 sm:px-6 lg:px-8">
                     {{ $slot }}
@@ -223,14 +264,47 @@
             <footer class="bg-white border-t border-slate-200/50 py-6 mt-auto">
                 <div class="px-4 sm:px-6 lg:px-8 flex items-center justify-between text-sm text-slate-500">
                     <p>&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</p>
-                    <div class="flex gap-4">
-                        <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full uppercase tracking-wider font-semibold">{{ Auth::user()->role->name ?? 'guest' }} Mode</span>
-                    </div>
                 </div>
             </footer>
         </div>
     </div>
     
     @stack('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('globalSearch', () => ({
+                query: '',
+                results: [],
+                loading: false,
+                open: false,
+                
+                async fetchResults() {
+                    if (this.query.length < 2) {
+                        this.results = [];
+                        this.open = false;
+                        return;
+                    }
+                    
+                    this.loading = true;
+                    this.open = true;
+                    
+                    try {
+                        const response = await fetch('/admin/search?q=' + encodeURIComponent(this.query));
+                        if (response.ok) {
+                            this.results = await response.json();
+                        }
+                    } catch (e) {
+                        console.error('Search error', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                close() {
+                    this.open = false;
+                }
+            }))
+        });
+    </script>
 </body>
 </html>

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Classroom extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     /**
@@ -17,6 +19,8 @@ class Classroom extends Model
     protected $table = 'classes';
 
     protected $fillable = [
+        'school_id',
+        'education_level',
         'name',
         'grade_level',
         'academic_year_id',
@@ -47,5 +51,19 @@ class Classroom extends Model
         return $this->belongsToMany(Student::class, 'student_classes', 'class_id', 'student_id')
                     ->withPivot('academic_year_id')
                     ->withTimestamps();
+    }
+
+    /**
+     * Dapatkan format tampilan tingkat kelas.
+     */
+    public function getFormattedGradeLevelAttribute()
+    {
+        return $this->grade_level;
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\WakaRequest;
 use App\Models\Role;
@@ -18,14 +19,17 @@ class WakaController extends Controller
 {
     public function index(): View
     {
+        Gate::authorize('viewAny', \App\Models\Waka::class);
         $search = request('search');
         
         $wakas = Waka::with(['user'])
             ->when($search, function ($query) use ($search) {
+                $query->where(function($query) use ($search) {
                 $query->whereHas('user', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                       ->orWhere('email', 'like', "%{$search}%");
                 })->orWhere('nip', 'like', "%{$search}%");
+            });
             })
             ->latest()
             ->paginate(10)
@@ -36,11 +40,13 @@ class WakaController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('create', \App\Models\Waka::class);
         return view('pages.admin.wakas.create');
     }
 
     public function store(WakaRequest $request): RedirectResponse
     {
+        Gate::authorize('create', \App\Models\Waka::class);
         DB::transaction(function () use ($request) {
             $roleWaka = Role::where('name', 'waka')->firstOrFail();
 
@@ -64,18 +70,21 @@ class WakaController extends Controller
 
     public function show(Waka $waka): View
     {
+        Gate::authorize('view', $waka);
         $waka->load(['user']);
         return view('pages.admin.wakas.show', compact('waka'));
     }
 
     public function edit(Waka $waka): View
     {
+        Gate::authorize('update', $waka);
         $waka->load(['user']);
         return view('pages.admin.wakas.edit', compact('waka'));
     }
 
     public function update(WakaRequest $request, Waka $waka): RedirectResponse
     {
+        Gate::authorize('update', $waka);
         DB::transaction(function () use ($request, $waka) {
             $userData = [
                 'name' => $request->name,
@@ -100,6 +109,7 @@ class WakaController extends Controller
 
     public function destroy(Waka $waka): RedirectResponse
     {
+        Gate::authorize('delete', $waka);
         $waka->user->delete(); // Cascade will delete the Waka profile
         
         return redirect()->route('admin.wakas.index')->with('success', 'Data Waka Kurikulum berhasil dihapus.');

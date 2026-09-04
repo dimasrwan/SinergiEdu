@@ -1,87 +1,181 @@
 <x-layouts.app>
     <x-slot:title>Nilai Akademik</x-slot:title>
 
-    <div class="space-y-6">
-        <x-page-header title="Nilai Akademik" description="Lihat rekapitulasi nilai Anda berdasarkan tahun ajaran dan semester." />
+    <div class="w-full space-y-6">
+        
+        <!-- Header -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col gap-6 md:gap-8 shadow-sm">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 mb-2">Nilai Akademik</h1>
+                <p class="text-slate-500 text-sm max-w-xl">Ringkasan nilai Anda pada periode akademik saat ini.</p>
+            </div>
+            
+            <form x-ref="filterForm" action="{{ route('siswa.grades.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                
+                <!-- Custom Dropdown Tahun Ajaran -->
+                <div x-data="{
+                    open: false,
+                    selectedId: '{{ $selectedAcademicYearId }}',
+                    selectedLabel: '{{ $academicYears->firstWhere('id', $selectedAcademicYearId)?->year ? 'TA ' . $academicYears->firstWhere('id', $selectedAcademicYearId)->year : 'Pilih Tahun' }}',
+                    select(id, label) {
+                        this.selectedId = id;
+                        this.selectedLabel = label;
+                        this.open = false;
+                        $refs.yearInput.value = id;
+                        $refs.filterForm.submit();
+                    }
+                }" class="relative w-full sm:w-[240px]" @keydown.escape.prevent.stop="open = false" @click.away="open = false">
+                    
+                    <input type="hidden" name="academic_year_id" x-ref="yearInput" :value="selectedId">
+                    
+                    <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Tahun Ajaran</span>
+                    
+                    <button type="button" 
+                            @click="open = !open" 
+                            @keydown.space.prevent="open = !open"
+                            @keydown.enter.prevent="open = !open"
+                            @keydown.arrow-down.prevent="open = true"
+                            aria-haspopup="listbox" 
+                            :aria-expanded="open"
+                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
+                    >
+                        <span x-text="selectedLabel" class="truncate"></span>
+                        <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
 
-        <x-card padding="lg" class="mb-6">
-            <!-- Filter -->
-            <form action="{{ route('siswa.grades.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <x-input-label for="academic_year_id" :value="__('Tahun Ajaran')" />
-                    <x-select id="academic_year_id" name="academic_year_id" onchange="this.form.submit()">
+                    <ul x-show="open" 
+                        x-transition:enter="transition ease-out duration-100" 
+                        x-transition:enter-start="transform opacity-0 scale-95" 
+                        x-transition:enter-end="transform opacity-100 scale-100" 
+                        x-transition:leave="transition ease-in duration-75" 
+                        x-transition:leave-start="transform opacity-100 scale-100" 
+                        x-transition:leave-end="transform opacity-0 scale-95" 
+                        class="absolute z-50 mt-2 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto py-1 focus:outline-none" 
+                        role="listbox" 
+                        style="display: none;"
+                    >
                         @foreach($academicYears as $year)
-                            <option value="{{ $year->id }}" {{ $selectedAcademicYearId == $year->id ? 'selected' : '' }}>
-                                {{ $year->year }} {{ $year->is_active ? '(Aktif)' : '' }}
-                            </option>
+                            <li @click="select('{{ $year->id }}', 'TA {{ $year->year }}')" 
+                                class="cursor-pointer select-none px-4 py-2.5 text-[14px] transition-colors flex items-center justify-between"
+                                :class="selectedId == '{{ $year->id }}' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50 font-medium'"
+                                role="option"
+                                :aria-selected="selectedId == '{{ $year->id }}'">
+                                TA {{ $year->year }}
+                                <svg x-show="selectedId == '{{ $year->id }}'" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </li>
                         @endforeach
-                    </x-select>
+                    </ul>
                 </div>
-                <div>
-                    <x-input-label for="semester_id" :value="__('Semester')" />
-                    <x-select id="semester_id" name="semester_id" onchange="this.form.submit()">
+                
+                <!-- Custom Dropdown Semester -->
+                <div x-data="{
+                    open: false,
+                    selectedId: '{{ $selectedSemesterId }}',
+                    selectedLabel: '{{ $semesters->firstWhere('id', $selectedSemesterId)?->name ?? 'Pilih Semester' }}',
+                    select(id, label) {
+                        this.selectedId = id;
+                        this.selectedLabel = label;
+                        this.open = false;
+                        $refs.semesterInput.value = id;
+                        $refs.filterForm.submit();
+                    }
+                }" class="relative w-full sm:w-[240px]" @keydown.escape.prevent.stop="open = false" @click.away="open = false">
+                    
+                    <input type="hidden" name="semester_id" x-ref="semesterInput" :value="selectedId">
+                    
+                    <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">Semester</span>
+                    
+                    <button type="button" 
+                            @click="open = !open" 
+                            @keydown.space.prevent="open = !open"
+                            @keydown.enter.prevent="open = !open"
+                            @keydown.arrow-down.prevent="open = true"
+                            aria-haspopup="listbox" 
+                            :aria-expanded="open"
+                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
+                    >
+                        <span x-text="selectedLabel" class="truncate"></span>
+                        <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <ul x-show="open" 
+                        x-transition:enter="transition ease-out duration-100" 
+                        x-transition:enter-start="transform opacity-0 scale-95" 
+                        x-transition:enter-end="transform opacity-100 scale-100" 
+                        x-transition:leave="transition ease-in duration-75" 
+                        x-transition:leave-start="transform opacity-100 scale-100" 
+                        x-transition:leave-end="transform opacity-0 scale-95" 
+                        class="absolute z-50 mt-2 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-auto py-1 focus:outline-none" 
+                        role="listbox" 
+                        style="display: none;"
+                    >
                         @foreach($semesters as $sem)
-                            <option value="{{ $sem->id }}" {{ $selectedSemesterId == $sem->id ? 'selected' : '' }}>
-                                {{ $sem->name }} {{ $sem->is_active ? '(Aktif)' : '' }}
-                            </option>
+                            <li @click="select('{{ $sem->id }}', '{{ $sem->name }}')" 
+                                class="cursor-pointer select-none px-4 py-2.5 text-[14px] transition-colors flex items-center justify-between"
+                                :class="selectedId == '{{ $sem->id }}' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50 font-medium'"
+                                role="option"
+                                :aria-selected="selectedId == '{{ $sem->id }}'">
+                                {{ $sem->name }}
+                                <svg x-show="selectedId == '{{ $sem->id }}'" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            </li>
                         @endforeach
-                    </x-select>
-                </div>
-                <div class="hidden md:flex items-end text-sm text-slate-400 pb-2">
-                    <p>Pilih filter untuk melihat riwayat nilai.</p>
+                    </ul>
                 </div>
             </form>
-        </x-card>
+        </div>
 
         @if($grades->isEmpty())
-            <x-card padding="lg" class="text-center py-16">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto">
+                <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-slate-900">Belum Ada Nilai</h3>
-                <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Guru belum mengunggah rekapitulasi nilai untuk Anda di periode yang dipilih.</p>
-            </x-card>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Nilai</h3>
+                <p class="text-sm text-slate-500">Guru belum mengunggah rekapitulasi nilai untuk Anda pada periode akademik yang dipilih.</p>
+            </div>
         @else
-        <x-table>
-            <x-slot:head>
-                <tr>
-                    <th class="px-6 py-4 text-left">Mata Pelajaran</th>
-                    <th class="px-4 py-4 w-24 text-center">Tes Awal</th>
-                    <th class="px-4 py-4 w-24 text-center">Tugas</th>
-                    <th class="px-4 py-4 w-24 text-center">Tes Akhir</th>
-                    <th class="px-4 py-4 w-24 text-center">Karakter</th>
-                    <th class="px-4 py-4 w-24 text-center">Hafalan</th>
-                    <th class="px-6 py-4 w-32 text-center">Rata-Rata</th>
-                </tr>
-            </x-slot:head>
-            <x-slot:body>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 @foreach($grades as $grade)
-                    <tr class="hover:bg-slate-50/50 transition-colors text-center group">
-                        <td class="px-6 py-4 text-left">
-                            <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{{ $grade->subject->name ?? '-' }}</div>
-                            <div class="text-xs text-slate-500 mt-0.5">Guru: <span class="font-medium text-slate-600">{{ $grade->teacher->user->name ?? '-' }}</span></div>
-                        </td>
-                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->pre_test_score ?? '-' }}</td>
-                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->assignment_score ?? '-' }}</td>
-                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->post_test_score ?? '-' }}</td>
-                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->character_score ?? '-' }}</td>
-                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->memorization_score ?? '-' }}</td>
-                        <td class="px-6 py-4">
-                            @php
-                                $avg = $grade->average_score;
-                            @endphp
-                            <div class="flex items-center justify-center gap-2">
-                                <span class="inline-flex items-center justify-center h-10 w-12 rounded-xl {{ $avg >= 80 ? 'bg-emerald-100 text-emerald-700 shadow-sm shadow-emerald-200' : ($avg >= 60 ? 'bg-amber-100 text-amber-700 shadow-sm shadow-amber-200' : ($avg > 0 ? 'bg-red-100 text-red-700 shadow-sm shadow-red-200' : 'bg-slate-100 text-slate-600')) }} font-bold text-base border border-white">
-                                    {{ $avg > 0 ? $avg : '-' }}
+                    @php
+                        $avg = $grade->average_score;
+                    @endphp
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md hover:border-primary/30 transition group">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg uppercase tracking-wider mb-2">
+                                    Mata Pelajaran
                                 </span>
+                                <h3 class="text-lg font-bold text-slate-900 leading-tight group-hover:text-primary transition-colors">{{ $grade->subject->name ?? '-' }}</h3>
                             </div>
-                        </td>
-                    </tr>
+                            <div class="flex items-center justify-center h-14 w-14 shrink-0 rounded-2xl {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : ($avg >= 60 ? 'bg-amber-50 text-amber-600 border border-amber-100' : ($avg > 0 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-slate-50 text-slate-500 border border-slate-200')) }}">
+                                <span class="text-xl font-bold">{{ $avg > 0 ? $avg : '-' }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 text-sm text-slate-500 mb-5 pb-5 border-b border-slate-100">
+                            <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            </svg>
+                            <span class="truncate">Guru: <span class="font-semibold text-slate-700">{{ $grade->teacher->user->name ?? '-' }}</span></span>
+                        </div>
+                        
+                        <div class="mt-auto">
+                            <a href="{{ route('siswa.grades.show', $grade) }}" class="flex items-center justify-center w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-primary rounded-xl text-sm font-semibold transition">
+                                Lihat Rincian Nilai
+                            </a>
+                        </div>
+                    </div>
                 @endforeach
-            </x-slot:body>
-        </x-table>
+            </div>
         @endif
     </div>
 </x-layouts.app>

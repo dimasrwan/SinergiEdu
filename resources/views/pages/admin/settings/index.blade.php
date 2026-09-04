@@ -71,7 +71,7 @@
                             <script>
                                 function logoPreview() {
                                     return {
-                                        imageUrl: '{{ $setting->school_logo ? Storage::url($setting->school_logo) : '' }}',
+                                        imageUrl: '{{ $school->logo ? Storage::url($school->logo) : '' }}',
                                         fileName: '',
                                         fileChosen(event) {
                                             const file = event.target.files[0];
@@ -88,31 +88,31 @@
                             <!-- Fields -->
                             <div class="md:col-span-2">
                                 <label for="school_name" class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Sekolah/Madrasah <span class="text-danger">*</span></label>
-                                <x-text-input id="school_name" name="school_name" type="text" :value="old('school_name', $setting->school_name)" placeholder="Misal: SMA Negeri 1 Sinergi" required class="w-full" />
+                                <x-text-input id="school_name" name="school_name" type="text" :value="old('school_name', $school->name)" placeholder="Misal: SMA Negeri 1 Sinergi" required class="w-full" />
                                 <x-input-error :messages="$errors->get('school_name')" class="mt-2 text-xs" />
                             </div>
 
                             <div>
                                 <label for="school_npsn" class="block text-sm font-semibold text-slate-700 mb-1.5">NPSN</label>
-                                <x-text-input id="school_npsn" name="school_npsn" type="text" :value="old('school_npsn', $setting->school_npsn)" placeholder="Nomor Pokok Sekolah Nasional" class="w-full" />
+                                <x-text-input id="school_npsn" name="school_npsn" type="text" :value="old('school_npsn', $school->npsn)" placeholder="Nomor Pokok Sekolah Nasional" class="w-full" />
                                 <x-input-error :messages="$errors->get('school_npsn')" class="mt-2 text-xs" />
                             </div>
 
                             <div>
                                 <label for="school_phone" class="block text-sm font-semibold text-slate-700 mb-1.5">Nomor Telepon</label>
-                                <x-text-input id="school_phone" name="school_phone" type="text" :value="old('school_phone', $setting->school_phone)" placeholder="Misal: (021) 1234567" class="w-full" />
+                                <x-text-input id="school_phone" name="school_phone" type="text" :value="old('school_phone', $school->phone)" placeholder="Misal: (021) 1234567" class="w-full" />
                                 <x-input-error :messages="$errors->get('school_phone')" class="mt-2 text-xs" />
                             </div>
 
                             <div class="md:col-span-2">
                                 <label for="school_email" class="block text-sm font-semibold text-slate-700 mb-1.5">Email Sekolah</label>
-                                <x-text-input id="school_email" name="school_email" type="email" :value="old('school_email', $setting->school_email)" placeholder="Misal: info@sekolah.sch.id" class="w-full" />
+                                <x-text-input id="school_email" name="school_email" type="email" :value="old('school_email', $school->email)" placeholder="Misal: info@sekolah.sch.id" class="w-full" />
                                 <x-input-error :messages="$errors->get('school_email')" class="mt-2 text-xs" />
                             </div>
 
                             <div class="md:col-span-2">
                                 <label for="school_address" class="block text-sm font-semibold text-slate-700 mb-1.5">Alamat Lengkap</label>
-                                <x-textarea id="school_address" name="school_address" rows="3" placeholder="Masukkan alamat lengkap sekolah/madrasah">{{ old('school_address', $setting->school_address) }}</x-textarea>
+                                <x-textarea id="school_address" name="school_address" rows="3" placeholder="Masukkan alamat lengkap sekolah/madrasah">{{ old('school_address', $school->address) }}</x-textarea>
                                 <x-input-error :messages="$errors->get('school_address')" class="mt-2 text-xs" />
                             </div>
 

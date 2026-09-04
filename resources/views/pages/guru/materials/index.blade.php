@@ -22,6 +22,20 @@
             </div>
         @endif
 
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <form action="{{ route('guru.materials.index') }}" method="GET" class="w-full md:w-1/3 relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul materi..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent sm:text-sm transition">
+            </form>
+            @if(request('search'))
+                <a href="{{ route('guru.materials.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-700">Clear Search</a>
+            @endif
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($materials as $material)
                 <x-card padding="lg" class="flex flex-col relative group">
@@ -61,7 +75,7 @@
                     
                     <div class="flex items-center gap-2">
                         @if($material->file_path)
-                            <a href="{{ asset('storage/' . $material->file_path) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-danger hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition" title="Lihat PDF">
+                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-danger hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition" title="Unduh PDF">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -69,13 +83,13 @@
                             </a>
                         @endif
                         @if($material->video_path)
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent bg-blue-50 px-3 py-1.5 rounded-lg" title="Ada Video Pembelajaran">
+                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition" title="Unduh Video">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 Video
-                            </span>
+                            </a>
                         @endif
                         
                         @if(!$material->file_path && !$material->video_path)
@@ -107,8 +121,8 @@
                             </svg>
                         </div>
                         <h3 class="text-lg font-bold text-slate-900">Belum Ada Materi</h3>
-                        <p class="text-sm text-slate-500 mt-2 max-w-md mx-auto mb-6">Anda belum mengunggah materi pembelajaran apapun. Silakan tambah materi pertama Anda untuk mulai berbagi dengan siswa.</p>
-                        <x-button variant="primary" href="{{ route('guru.materials.create') }}">Upload Materi Sekarang</x-button>
+                        <p class="text-sm text-slate-500 mt-2 max-w-md mx-auto mb-6">Belum ada materi pembelajaran yang Anda buat.</p>
+                        <x-button variant="primary" href="{{ route('guru.materials.create') }}">Upload Materi</x-button>
                     </x-card>
                 </div>
             @endforelse

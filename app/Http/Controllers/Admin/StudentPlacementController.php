@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
@@ -15,15 +16,18 @@ class StudentPlacementController extends Controller
 {
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', \App\Models\StudentClass::class);
         $query = StudentClass::with(['student.user', 'classroom', 'academicYear']);
 
         // Search based on student name or NIS
         if ($search = $request->input('search')) {
             $query->whereHas('student', function ($q) use ($search) {
-                $q->where('nis', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($q2) use ($search) {
-                      $q2->where('name', 'like', "%{$search}%");
-                  });
+                $q->where(function($q) use ($search) {
+                  $q->where('nis', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+              });
             });
         }
 
@@ -51,6 +55,7 @@ class StudentPlacementController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', \App\Models\StudentClass::class);
         $students = Student::with('user')->get()->sortBy('user.name');
         $classrooms = Classroom::orderBy('name')->get();
         $academicYears = AcademicYear::orderByDesc('year')->get();
@@ -64,6 +69,7 @@ class StudentPlacementController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('create', \App\Models\StudentClass::class);
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'class_id' => 'required|exists:classes,id',
@@ -93,12 +99,18 @@ class StudentPlacementController extends Controller
                 ->with('success', 'Penempatan siswa berhasil ditambahkan.');
         }
 
+        if ($request->input('redirect_to') === 'students_index') {
+            return redirect()->route('admin.students.index')
+                ->with('success', 'Penempatan siswa berhasil ditambahkan.');
+        }
+
         return redirect()->route('admin.student-placements.index')
             ->with('success', 'Penempatan siswa berhasil ditambahkan.');
     }
 
     public function edit(StudentClass $studentPlacement)
     {
+        Gate::authorize('update', $studentPlacement);
         $students = Student::with('user')->get()->sortBy('user.name');
         $classrooms = Classroom::orderBy('name')->get();
         $academicYears = AcademicYear::orderByDesc('year')->get();
@@ -113,6 +125,7 @@ class StudentPlacementController extends Controller
 
     public function update(Request $request, StudentClass $studentPlacement)
     {
+        Gate::authorize('update', $studentPlacement);
         $validated = $request->validate([
             'student_id' => 'required|exists:students,id',
             'class_id' => 'required|exists:classes,id',
@@ -149,6 +162,7 @@ class StudentPlacementController extends Controller
 
     public function destroy(StudentClass $studentPlacement)
     {
+        Gate::authorize('delete', $studentPlacement);
         // Only deletes the relationship, not the student or class.
         $studentId = $studentPlacement->student_id;
         $studentPlacement->delete();

@@ -13,7 +13,7 @@
                 </a>
             @else
                 <a href="{{ route('admin.teacher-assignments.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                     Kembali ke Daftar
@@ -119,14 +119,7 @@
                             <!-- Semester -->
                             <div>
                                 <label for="semester_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Semester <span class="text-danger">*</span></label>
-                                <select id="semester_id" name="semester_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
-                                    <option value="" disabled>Pilih semester...</option>
-                                    @foreach($semesters as $semester)
-                                        <option value="{{ $semester->id }}" {{ old('semester_id', $teacherAssignment->semester_id) == $semester->id ? 'selected' : '' }}>
-                                            {{ $semester->name }} ({{ $semester->academicYear->year }})
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <x-semester-select id="semester_id" name="semester_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required :selected="old('semester_id', $teacherAssignment->semester_id)" empty-label="Pilih semester..." disabled-empty />
                             </div>
                         </div>
 

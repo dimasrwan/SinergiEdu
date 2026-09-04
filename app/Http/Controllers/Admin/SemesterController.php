@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Semester;
@@ -15,14 +16,17 @@ class SemesterController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Semester::with('academicYear');
+        Gate::authorize('viewAny', \App\Models\Semester::class);
+        $query = Semester::with('academicYear')
+            ->select('semesters.*')
+            ->join('academic_years', 'semesters.academic_year_id', '=', 'academic_years.id');
 
         if ($request->filled('academic_year_id')) {
-            $query->where('academic_year_id', $request->academic_year_id);
+            $query->where('semesters.academic_year_id', $request->academic_year_id);
         }
 
-        $semesters = $query->orderByDesc('academic_year_id')
-                           ->orderBy('name')
+        $semesters = $query->orderByDesc('academic_years.year')
+                           ->orderByRaw("CASE WHEN semesters.name = 'Genap' THEN 1 WHEN semesters.name = 'Ganjil' THEN 2 ELSE 3 END")
                            ->paginate(10)
                            ->withQueryString();
 
@@ -36,6 +40,7 @@ class SemesterController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', \App\Models\Semester::class);
         $academicYears = AcademicYear::orderByDesc('year')->get();
         return view('pages.admin.semesters.create', compact('academicYears'));
     }
@@ -45,6 +50,7 @@ class SemesterController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', \App\Models\Semester::class);
         $validated = $request->validate([
             'academic_year_id' => 'required|exists:academic_years,id',
             'name' => [
@@ -87,6 +93,7 @@ class SemesterController extends Controller
      */
     public function show(Semester $semester)
     {
+        Gate::authorize('view', $semester);
         $semester->load('academicYear');
         
         // Count student grades directly from DB
@@ -100,6 +107,7 @@ class SemesterController extends Controller
      */
     public function edit(Semester $semester)
     {
+        Gate::authorize('update', $semester);
         $academicYears = AcademicYear::orderByDesc('year')->get();
         return view('pages.admin.semesters.edit', compact('semester', 'academicYears'));
     }
@@ -109,6 +117,7 @@ class SemesterController extends Controller
      */
     public function update(Request $request, Semester $semester)
     {
+        Gate::authorize('update', $semester);
         $validated = $request->validate([
             'academic_year_id' => 'required|exists:academic_years,id',
             'name' => [
@@ -151,6 +160,7 @@ class SemesterController extends Controller
      */
     public function destroy(Semester $semester)
     {
+        Gate::authorize('delete', $semester);
         $dependenciesCount = \DB::table('student_grades')->where('semester_id', $semester->id)->count();
 
         if ($dependenciesCount > 0) {

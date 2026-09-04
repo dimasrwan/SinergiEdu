@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
@@ -16,6 +17,7 @@ class ClassroomController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', \App\Models\Classroom::class);
         $query = Classroom::with(['academicYear', 'homeroomTeacher.user'])
                           ->withCount('students');
 
@@ -26,6 +28,10 @@ class ClassroomController extends Controller
 
         if ($request->filled('grade_level')) {
             $query->where('grade_level', $request->grade_level);
+        }
+
+        if ($request->filled('education_level')) {
+            $query->where('education_level', $request->education_level);
         }
 
         if ($request->filled('academic_year_id')) {
@@ -44,6 +50,7 @@ class ClassroomController extends Controller
      */
     public function create()
     {
+        Gate::authorize('create', \App\Models\Classroom::class);
         $academicYears = AcademicYear::orderBy('year', 'desc')->get();
         $teachers = Teacher::with('user')->get()->sortBy(fn($t) => $t->user->name ?? '');
 
@@ -55,7 +62,9 @@ class ClassroomController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('create', \App\Models\Classroom::class);
         $validated = $request->validate([
+            'education_level' => 'required|in:SD,SMP,SMA',
             'name' => [
                 'required',
                 'string',
@@ -68,11 +77,6 @@ class ClassroomController extends Controller
                 'required',
                 'string',
                 'max:50',
-                function ($attribute, $value, $fail) use ($request) {
-                    if (!str_starts_with(strtoupper($request->name), strtoupper($value))) {
-                        $fail('Tingkat kelas (' . $value . ') tidak sesuai dengan awalan nama kelas (' . $request->name . ').');
-                    }
-                }
             ],
             'academic_year_id' => 'required|exists:academic_years,id',
             'homeroom_teacher_id' => [
@@ -97,6 +101,7 @@ class ClassroomController extends Controller
      */
     public function show(Classroom $class)
     {
+        Gate::authorize('view', $class);
         $class->load(['academicYear', 'homeroomTeacher.user', 'students.user']);
         
         // Memuat mapel dan guru yang mengajar (jika relationship ada)
@@ -119,6 +124,7 @@ class ClassroomController extends Controller
      */
     public function edit(Classroom $class)
     {
+        Gate::authorize('update', $class);
         $academicYears = AcademicYear::orderBy('year', 'desc')->get();
         $teachers = Teacher::with('user')->get()->sortBy(fn($t) => $t->user->name ?? '');
 
@@ -130,7 +136,9 @@ class ClassroomController extends Controller
      */
     public function update(Request $request, Classroom $class)
     {
+        Gate::authorize('update', $class);
         $validated = $request->validate([
+            'education_level' => 'required|in:SD,SMP,SMA',
             'name' => [
                 'required',
                 'string',
@@ -143,11 +151,6 @@ class ClassroomController extends Controller
                 'required',
                 'string',
                 'max:50',
-                function ($attribute, $value, $fail) use ($request) {
-                    if (!str_starts_with(strtoupper($request->name), strtoupper($value))) {
-                        $fail('Tingkat kelas (' . $value . ') tidak sesuai dengan awalan nama kelas (' . $request->name . ').');
-                    }
-                }
             ],
             'academic_year_id' => 'required|exists:academic_years,id',
             'homeroom_teacher_id' => [
@@ -172,6 +175,7 @@ class ClassroomController extends Controller
      */
     public function destroy(Classroom $class)
     {
+        Gate::authorize('delete', $class);
         if ($class->students()->count() > 0) {
             return redirect()->route('admin.classes.index')->with('error', 'Kelas tidak dapat dihapus karena masih memiliki ' . $class->students()->count() . ' siswa. Pindahkan atau keluarkan siswa terlebih dahulu.');
         }

@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StudentParent extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     /**
@@ -19,6 +21,7 @@ class StudentParent extends Model
     protected $table = 'parents';
 
     protected $fillable = [
+        'school_id',
         'user_id',
         'phone',
         'address',
@@ -38,5 +41,11 @@ class StudentParent extends Model
     public function students(): HasMany
     {
         return $this->hasMany(Student::class, 'parent_id');
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
     }
 }

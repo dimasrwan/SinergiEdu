@@ -39,9 +39,9 @@
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-bold text-slate-900">Perbandingan Performa Kelas (Paralel XI)</h2>
                         <select class="text-sm border-slate-200 rounded-lg text-slate-600 focus:ring-accent focus:border-accent py-1.5 pl-3 pr-8">
-                            <option>Kelas X</option>
-                            <option selected>Kelas XI</option>
-                            <option>Kelas XII</option>
+                            <option>Tingkat 10</option>
+                            <option selected>Tingkat 11</option>
+                            <option>Tingkat 12</option>
                         </select>
                     </div>
                     
@@ -60,31 +60,31 @@
                                 <div class="w-full max-w-[3rem] bg-indigo-500 rounded-t-md h-[85%] group-hover:bg-indigo-400 transition cursor-pointer relative">
                                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">85.0</div>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">XI IPA 1</span>
+                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">11 IPA 1</span>
                             </div>
                             <div class="flex-1 flex flex-col items-center group z-10">
                                 <div class="w-full max-w-[3rem] bg-indigo-500 rounded-t-md h-[78%] group-hover:bg-indigo-400 transition cursor-pointer relative">
                                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">78.4</div>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">XI IPA 2</span>
+                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">11 IPA 2</span>
                             </div>
                             <div class="flex-1 flex flex-col items-center group z-10">
                                 <div class="w-full max-w-[3rem] bg-indigo-500 rounded-t-md h-[82%] group-hover:bg-indigo-400 transition cursor-pointer relative">
                                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">82.1</div>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">XI IPA 3</span>
+                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">11 IPA 3</span>
                             </div>
                             <div class="flex-1 flex flex-col items-center group z-10">
                                 <div class="w-full max-w-[3rem] bg-sky-500 rounded-t-md h-[72%] group-hover:bg-sky-400 transition cursor-pointer relative">
                                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">72.5</div>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">XI IPS 1</span>
+                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">11 IPS 1</span>
                             </div>
                             <div class="flex-1 flex flex-col items-center group z-10">
                                 <div class="w-full max-w-[3rem] bg-sky-500 rounded-t-md h-[76%] group-hover:bg-sky-400 transition cursor-pointer relative">
                                     <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap">76.0</div>
                                 </div>
-                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">XI IPS 2</span>
+                                <span class="text-xs font-semibold text-slate-600 mt-3 truncate w-full text-center">11 IPS 2</span>
                             </div>
                         </div>
                     </div>
@@ -166,7 +166,7 @@
                             <!-- Alert Item 1 -->
                             <div class="bg-red-50 p-3 rounded-xl border border-red-100">
                                 <div class="flex justify-between items-start">
-                                    <h4 class="font-bold text-slate-900 text-sm">Kelas XI IPS 1</h4>
+                                    <h4 class="font-bold text-slate-900 text-sm">11 IPS 1</h4>
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded text-red-700 bg-red-200">-12%</span>
                                 </div>
                                 <p class="text-xs text-slate-600 mt-1">Rata-rata nilai Sosiologi menurun drastis dalam 2 minggu terakhir.</p>
@@ -179,7 +179,7 @@
                                     <h4 class="font-bold text-slate-900 text-sm">Keterlambatan Input</h4>
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded text-orange-700 bg-orange-200">Urgent</span>
                                 </div>
-                                <p class="text-xs text-slate-600 mt-1">3 Guru belum memasukkan nilai UTS untuk kelas XII IPA.</p>
+                                <p class="text-xs text-slate-600 mt-1">3 Guru belum memasukkan nilai UTS untuk kelas 12 IPA.</p>
                             </div>
                         </div>
                     </div>

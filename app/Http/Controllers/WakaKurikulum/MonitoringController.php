@@ -94,7 +94,9 @@ class MonitoringController extends Controller
         $activeYear = AcademicYear::where('is_active', true)->first();
         
         $classes = Classroom::all()->map(function ($class) use ($activeYear) {
-            $studentsCount = $activeYear ? $class->students()->wherePivot('academic_year_id', $activeYear->id)->count() : 0;
+            $studentsCount = $activeYear 
+                ? $class->students()->where('student_classes.academic_year_id', $activeYear->id)->count() 
+                : 0;
 
             $averageGrade = $activeYear ? StudentAssessment::whereHas('learningMeeting', function ($query) use ($class, $activeYear) {
                 $query->where('class_id', $class->id)->where('academic_year_id', $activeYear->id);

@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class KepalaSekolah extends Model
 {
+    use \App\Traits\TenantScoped;
+
     use HasFactory;
 
     protected $fillable = [
+        'school_id',
         'user_id',
         'nip',
         'phone',
@@ -23,5 +26,11 @@ class KepalaSekolah extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\School::class);
     }
 }

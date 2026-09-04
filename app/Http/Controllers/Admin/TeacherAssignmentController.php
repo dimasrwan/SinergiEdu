@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
@@ -18,20 +19,23 @@ class TeacherAssignmentController extends Controller
 {
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', \App\Models\TeacherSubject::class);
         $query = TeacherSubject::with(['teacher.user', 'subject', 'classroom', 'academicYear', 'semester']);
 
         // Search based on teacher user name, subject name, or class name
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->whereHas('teacher.user', function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('subject', function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('classroom', function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%");
-                });
+                $q->where(function($q) use ($search) {
+                  $q->whereHas('teacher.user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('subject', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('classroom', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+              });
             });
         }
 
@@ -76,6 +80,7 @@ class TeacherAssignmentController extends Controller
 
     public function create()
     {
+        Gate::authorize('create', \App\Models\TeacherSubject::class);
         $teachers = Teacher::with('user')->get()->sortBy('user.name');
         $subjects = Subject::orderBy('name')->get();
         $classrooms = Classroom::orderBy('name')->get();
@@ -95,6 +100,7 @@ class TeacherAssignmentController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('create', \App\Models\TeacherSubject::class);
         $validated = $request->validate([
             'teacher_id' => 'required|exists:teachers,id',
             'subject_id' => 'required|exists:subjects,id',
@@ -130,12 +136,18 @@ class TeacherAssignmentController extends Controller
                 ->with('success', 'Penugasan guru berhasil ditambahkan.');
         }
 
+        if ($request->input('redirect_to') === 'teachers_index') {
+            return redirect()->route('admin.teachers.index')
+                ->with('success', 'Penugasan guru berhasil ditambahkan.');
+        }
+
         return redirect()->route('admin.teacher-assignments.index')
             ->with('success', 'Penugasan guru berhasil ditambahkan.');
     }
 
     public function edit(TeacherSubject $teacherAssignment)
     {
+        Gate::authorize('update', $teacherAssignment);
         $teachers = Teacher::with('user')->get()->sortBy('user.name');
         $subjects = Subject::orderBy('name')->get();
         $classrooms = Classroom::orderBy('name')->get();
@@ -156,6 +168,7 @@ class TeacherAssignmentController extends Controller
 
     public function update(Request $request, TeacherSubject $teacherAssignment)
     {
+        Gate::authorize('update', $teacherAssignment);
         $validated = $request->validate([
             'teacher_id' => 'required|exists:teachers,id',
             'subject_id' => 'required|exists:subjects,id',
@@ -198,6 +211,7 @@ class TeacherAssignmentController extends Controller
 
     public function destroy(TeacherSubject $teacherAssignment)
     {
+        Gate::authorize('delete', $teacherAssignment);
         // Dependency checks (Materials, Assignments, etc.)
         // Since the prompt instructs to check if it's used by materials/assignments,
         // let's check the database if those tables reference teacher_id, subject_id, class_id, etc.

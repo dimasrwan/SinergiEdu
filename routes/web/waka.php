@@ -20,10 +20,10 @@ Route::patch('/academic-years/{academic_year}/toggle', [AcademicYearController::
 Route::patch('/semesters/{semester}/toggle', [SemesterController::class, 'toggleActive'])->name('semesters.toggle');
 
 // Resources
-Route::resource('/academic-years', AcademicYearController::class);
-Route::resource('/semesters', SemesterController::class);
-Route::resource('/classes', ClassroomController::class);
-Route::resource('/subjects', SubjectController::class);
+Route::resource('/academic-years', AcademicYearController::class)->except(['show']);
+Route::resource('/semesters', SemesterController::class)->except(['show']);
+Route::resource('/classes', ClassroomController::class)->except(['show']);
+Route::resource('/subjects', SubjectController::class)->except(['show']);
 
 // Monitoring
 Route::get('/monitoring/learning', [MonitoringController::class, 'learning'])->name('monitoring.learning');

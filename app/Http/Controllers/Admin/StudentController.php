@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StudentRequest;
 use App\Models\AcademicYear;
@@ -22,6 +23,7 @@ class StudentController extends Controller
 {
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', \App\Models\Student::class);
         $query = Student::with(['user', 'parent.user', 'classes']);
 
         if ($search = $request->input('search')) {
@@ -41,12 +43,14 @@ class StudentController extends Controller
         $students = $query->latest()->paginate(10)->withQueryString();
         $totalStudents = Student::count();
         $classes = Classroom::all();
+        $academicYears = AcademicYear::orderByDesc('year')->get();
 
-        return view('pages.admin.students.index', compact('students', 'totalStudents', 'classes'));
+        return view('pages.admin.students.index', compact('students', 'totalStudents', 'classes', 'academicYears'));
     }
 
     public function create(): View
     {
+        Gate::authorize('create', \App\Models\Student::class);
         $classes = Classroom::all();
         $parents = StudentParent::with('user')->get();
         return view('pages.admin.students.create', compact('classes', 'parents'));
@@ -54,6 +58,7 @@ class StudentController extends Controller
 
     public function store(StudentRequest $request): RedirectResponse
     {
+        Gate::authorize('create', \App\Models\Student::class);
         DB::transaction(function () use ($request) {
             $roleSiswa = Role::where('name', 'siswa')->firstOrFail();
 
@@ -73,18 +78,6 @@ class StudentController extends Controller
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
             ]);
-
-            // 3. Tambahkan ke Kelas Aktif (Tahun Ajaran aktif)
-            $activeYear = AcademicYear::where('is_active', true)->first();
-            if ($activeYear) {
-                DB::table('student_classes')->insert([
-                    'student_id' => $student->id,
-                    'class_id' => (int) $request->class_id,
-                    'academic_year_id' => $activeYear->id,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
         });
 
         return redirect()->route('admin.students.index')->with('success', 'Data Siswa berhasil ditambahkan.');
@@ -92,18 +85,23 @@ class StudentController extends Controller
 
     public function show(Student $student): View
     {
+        Gate::authorize('view', $student);
         $student->load(['user', 'parent.user', 'classes.academicYear']);
         $activeClass = $student->activeClassroom();
         $placements = \App\Models\StudentClass::with(['classroom', 'academicYear'])
             ->where('student_id', $student->id)
             ->orderByDesc('academic_year_id')
             ->get();
+            
+        $classes = Classroom::all();
+        $academicYears = AcademicYear::orderByDesc('year')->get();
         
-        return view('pages.admin.students.show', compact('student', 'activeClass', 'placements'));
+        return view('pages.admin.students.show', compact('student', 'activeClass', 'placements', 'classes', 'academicYears'));
     }
 
     public function edit(Student $student): View
     {
+        Gate::authorize('update', $student);
         $student->load(['user', 'classes']);
         $classes = Classroom::all();
         $parents = StudentParent::with('user')->get();
@@ -117,6 +115,7 @@ class StudentController extends Controller
 
     public function update(StudentRequest $request, Student $student): RedirectResponse
     {
+        Gate::authorize('update', $student);
         DB::transaction(function () use ($request, $student) {
             // 1. Update User
             $user = $student->user;
@@ -136,16 +135,6 @@ class StudentController extends Controller
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
             ]);
-
-            // 3. Update/Sinkron Kelas Aktif (Tahun Ajaran aktif)
-            $activeYear = AcademicYear::where('is_active', true)->first();
-            if ($activeYear) {
-                DB::table('student_classes')
-                    ->updateOrInsert(
-                        ['student_id' => $student->id, 'academic_year_id' => $activeYear->id],
-                        ['class_id' => (int) $request->class_id, 'updated_at' => now()]
-                    );
-            }
         });
 
         return redirect()->route('admin.students.index')->with('success', 'Data Siswa berhasil diperbarui.');
@@ -153,6 +142,7 @@ class StudentController extends Controller
 
     public function destroy(Student $student): RedirectResponse
     {
+        Gate::authorize('delete', $student);
         DB::transaction(function () use ($student) {
             $user = $student->user;
             $student->delete();
