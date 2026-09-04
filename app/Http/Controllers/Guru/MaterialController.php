@@ -86,7 +86,7 @@ class MaterialController extends Controller
             $subjects = $teacherSubjects->pluck('subject')->unique('id')->values();
         }
 
-        return view('pages.guru.materials.create', compact('classes', 'subjects'));
+        return view('pages.guru.materials.create', compact('classes', 'subjects', 'meetings'));
     }
 
     public function store(MaterialRequest $request): RedirectResponse
@@ -94,6 +94,8 @@ class MaterialController extends Controller
         $teacher = $this->getTeacherProfile();
         $data = $request->validated();
         $data['teacher_id'] = $teacher->id;
+
+        $this->ensureMeetingMatchesMaterial($data, $teacher);
 
         if ($request->hasFile('file')) {
             $data['file_path'] = $request->file('file')->store('materials/pdfs', 'local');
@@ -139,7 +141,7 @@ class MaterialController extends Controller
             $subjects->push($material->subject);
         }
 
-        return view('pages.guru.materials.edit', compact('material', 'classes', 'subjects'));
+        return view('pages.guru.materials.edit', compact('material', 'classes', 'subjects', 'meetings'));
     }
 
     public function update(MaterialRequest $request, Material $material): RedirectResponse
@@ -150,6 +152,8 @@ class MaterialController extends Controller
         $data = $request->validated();
         // Prevent modifying teacher_id
         unset($data['teacher_id']);
+
+        $this->ensureMeetingMatchesMaterial($data, $teacher);
 
         if ($request->hasFile('file')) {
             if ($material->file_path) {
@@ -187,7 +191,6 @@ class MaterialController extends Controller
 
         return redirect()->route('guru.materials.index')->with('success', 'Materi pembelajaran berhasil dihapus.');
     }
-    
     public function download(Material $material)
     {
         $teacher = $this->getTeacherProfile();

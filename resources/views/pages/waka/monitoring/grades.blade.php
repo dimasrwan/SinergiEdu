@@ -2,17 +2,34 @@
     <x-slot:title>Monitoring Nilai Akademik</x-slot:title>
 
     <div class="space-y-6">
-        <x-page-header title="Monitoring Nilai Akademik" description="Periksa sebaran rata-rata nilai kelas, mata pelajaran, dan lima komponen penilaian." />
+        <x-page-header title="Monitoring Nilai Akademik" description="Periksa sebaran rata-rata nilai kelas, mata pelajaran, dan lima komponen penilaian.">
+            <x-slot:actions>
+                <x-button variant="secondary" href="{{ route('waka.monitoring.export-excel-klasikal', request()->query()) }}">
+                    Unduh Excel
+                </x-button>
+            </x-slot:actions>
+        </x-page-header>
 
         <x-card padding="none" class="mb-6">
             <div class="p-6">
-                <form action="{{ route('waka.monitoring.grades') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <form action="{{ route('waka.monitoring.grades') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div>
                         <x-input-label for="class_id" value="Filter Kelas" class="mb-1.5" />
                         <x-select id="class_id" name="class_id" onchange="this.form.submit()">
                             <option value="">Semua Kelas</option>
                             @foreach($classes as $c)
                                 <option value="{{ $c->id }}" {{ $selectedClassId == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
+                            @endforeach
+                        </x-select>
+                    </div>
+                    <div>
+                        <x-input-label for="meeting_id" value="Filter Pertemuan" class="mb-1.5" />
+                        <x-select id="meeting_id" name="meeting_id" onchange="this.form.submit()">
+                            <option value="">Semua Pertemuan</option>
+                            @foreach($meetings as $meeting)
+                                <option value="{{ $meeting->id }}" {{ $selectedMeetingId == $meeting->id ? 'selected' : '' }}>
+                                    P{{ $meeting->meeting_number }} · {{ $meeting->meeting_date->format('d M Y') }} · {{ $meeting->topic }}
+                                </option>
                             @endforeach
                         </x-select>
                     </div>
@@ -53,6 +70,49 @@
                     </div>
                 </x-card>
             </div>
+
+        <x-card padding="none">
+            <div class="border-b border-slate-100 p-6">
+                <h2 class="text-lg font-bold text-slate-900">Rekap Nilai Siswa</h2>
+                <p class="mt-1 text-sm text-slate-500">Bandingkan setiap capaian siswa dengan rata-rata komponen pada filter aktif.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[1120px] text-left text-sm">
+                    <thead class="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="px-5 py-4">Siswa</th>
+                            <th class="px-5 py-4">Kelas / Mapel</th>
+                            <th class="px-5 py-4">Pertemuan</th>
+                            <th class="px-5 py-4 text-center">Tes Awal</th>
+                            <th class="px-5 py-4 text-center">Tugas</th>
+                            <th class="px-5 py-4 text-center">Tes Akhir</th>
+                            <th class="px-5 py-4 text-center">Karakter</th>
+                            <th class="px-5 py-4 text-center">Hafalan</th>
+                            <th class="px-5 py-4 text-center">Rata-rata</th>
+                            <th class="px-5 py-4">Catatan Guru</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse ($gradesData as $grade)
+                            <tr class="hover:bg-slate-50/70">
+                                <td class="px-5 py-4"><p class="font-semibold text-slate-900">{{ $grade->student->user->name ?? '-' }}</p><p class="text-xs text-slate-400">NIS: {{ $grade->student->nis ?? '-' }}</p></td>
+                                <td class="px-5 py-4 text-slate-600"><p>{{ $grade->learningMeeting->classroom->name ?? '-' }}</p><p class="text-xs text-slate-400">{{ $grade->learningMeeting->subject->name ?? '-' }}</p></td>
+                                <td class="px-5 py-4 text-slate-600"><p>P{{ $grade->learningMeeting->meeting_number ?? '-' }}</p><p class="text-xs text-slate-400">{{ $grade->learningMeeting->meeting_date?->format('d M Y') ?? '-' }}</p></td>
+                                <td class="px-5 py-4 text-center">{{ $grade->pre_test_score ?? '-' }}</td>
+                                <td class="px-5 py-4 text-center">{{ $grade->assignment_score ?? '-' }}</td>
+                                <td class="px-5 py-4 text-center">{{ $grade->post_test_score ?? '-' }}</td>
+                                <td class="px-5 py-4 text-center">{{ $grade->character_score ?? '-' }}</td>
+                                <td class="px-5 py-4 text-center">{{ $grade->memorization_score ?? '-' }}</td>
+                                <td class="px-5 py-4 text-center"><span class="font-bold text-blue-700">{{ $grade->average_score }}</span></td>
+                                <td class="max-w-xs px-5 py-4 text-xs text-slate-500">{{ $grade->notes ?: '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="10" class="px-5 py-12 text-center text-slate-500">Belum ada penilaian per pertemuan pada tahun ajaran dan semester aktif.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-card>
     </div>
 
     <!-- Script Load Chart.js CDN -->
