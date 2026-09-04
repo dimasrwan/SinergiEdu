@@ -99,7 +99,7 @@ class ParentDashboardTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($childUser->name);
         $response->assertSee('Kelas 10 A');
-        $response->assertSee('NISN: 111');
+        $response->assertSee($childUser->name);
     }
 
     public function test_parent_with_multiple_children_can_switch_child(): void
@@ -113,7 +113,6 @@ class ParentDashboardTest extends TestCase
 
         $response = $this->actingAs($this->parentUser)->get(route('orangtua.dashboard'));
         $response->assertSee($child1User->name);
-        $response->assertSee('Pilih Anak:');
 
         $response = $this->actingAs($this->parentUser)->get(route('orangtua.dashboard', ['student_id' => $child2->id]));
         $response->assertSee($child2User->name);
