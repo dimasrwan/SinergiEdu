@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     protected static function booted()
     {
-        static::saving(function ($user) {
+        $checkSchoolId = function ($user) {
             $roleName = is_string($user->role) ? $user->role : ($user->role->name ?? null);
 
             if ($roleName === 'super_admin' || $roleName === 'superadmin') {
@@ -60,6 +60,9 @@ class User extends Authenticatable
                     throw new \Exception('Normal user must have a valid school_id');
                 }
             }
-        });
+        };
+
+        static::creating($checkSchoolId);
+        static::updating($checkSchoolId);
     }
 }

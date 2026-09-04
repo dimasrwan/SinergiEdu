@@ -17,6 +17,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/classes', [ClassroomController::class, 'index'])->name('classes.index');
 Route::get('/classes/{class}', [ClassroomController::class, 'show'])->name('classes.show');
 
+Route::resource('/learning-meetings', LearningMeetingController::class);
 Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
 Route::resource('/materials', MaterialController::class)->except(['show']);
 Route::get('/assignments/{assignment}/download', [AssignmentController::class, 'download'])->name('assignments.download');
