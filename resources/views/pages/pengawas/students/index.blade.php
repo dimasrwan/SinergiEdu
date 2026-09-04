@@ -99,7 +99,7 @@
                 </table>
             </div>
 
-            @if($students->hasPages())
+            @if($students instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $students->hasPages())
                 <div class="p-6 border-t border-slate-200">
                     {{ $students->links() }}
                 </div>

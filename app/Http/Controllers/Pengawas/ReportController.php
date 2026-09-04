@@ -44,4 +44,22 @@ class ReportController extends Controller
             'evaluations', 'inspections'
         ));
     }
+
+    /**
+     * Tampilkan daftar laporan yang diarsipkan.
+     */
+    public function archived(): View
+    {
+        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+        $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+
+        $archivedGrades = \App\Models\StudentGrade::query()
+            ->when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear->id))
+            ->when($activeSemester, fn ($q) => $q->where('semester_id', $activeSemester->id))
+            ->whereNotNull('supervisor_feedback')
+            ->latest()
+            ->paginate(15);
+
+        return view('pages.pengawas.reports.archived', compact('archivedGrades', 'activeYear', 'activeSemester'));
+    }
 }

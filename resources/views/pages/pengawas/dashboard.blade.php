@@ -8,7 +8,7 @@
             
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight mb-2">School Oversight Experience</h1>
+                    <h1 class="text-3xl font-bold tracking-tight mb-2">Pengawasan Sekolah</h1>
                     <p class="text-blue-200 text-sm max-w-xl">Pantau performa agregat sekolah, sebaran nilai akademik, serta kelola evaluasi sekolah dengan mudah.</p>
                 </div>
             </div>

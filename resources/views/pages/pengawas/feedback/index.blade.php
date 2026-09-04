@@ -60,23 +60,24 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
-                        @forelse($feedbacks as $feedback)
-                            @php
-                                $hasFeedback = $feedback->studentGrades->where('supervisor_feedback')->isNotEmpty();
-                                $lastFeedback = $feedback->studentGrades->where('supervisor_feedback')->sortByDesc('updated_at')->first();
-                            @endphp
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-3">
-                                    <div class="font-medium text-slate-900">{{ $feedback->user?->name }}</div>
-                                    <div class="text-xs text-slate-500">{{ $feedback->nis }}</div>
-                                </td>
-                                <td class="px-6 py-3 text-slate-600">
-                                    @php
-                                        $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-                                        $classroom = $feedback->classes()->where('student_classes.academic_year_id', $activeYear?->id)->first();
-                                    @endphp
-                                    {{ $classroom?->name ?? '-' }}
-                                </td>
+@php
+    $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+    $feedbacks = $feedbacks->load('classes');
+@endphp
+@forelse($feedbacks as $feedback)
+    @php
+        $hasFeedback = $feedback->studentGrades->where('supervisor_feedback')->isNotEmpty();
+        $lastFeedback = $feedback->studentGrades->where('supervisor_feedback')->sortByDesc('updated_at')->first();
+        $classroom = $activeYear ? $feedback->classes->first(fn ($c) => $c->pivot?->academic_year_id == $activeYear->id) : null;
+    @endphp
+    <tr class="hover:bg-slate-50 transition">
+        <td class="px-6 py-3">
+            <div class="font-medium text-slate-900">{{ $feedback->user?->name }}</div>
+            <div class="text-xs text-slate-500">{{ $feedback->nis }}</div>
+        </td>
+        <td class="px-6 py-3 text-slate-600">
+            {{ $classroom?->name ?? '-' }}
+        </td>
                                 <td class="px-6 py-3 text-center">
                                     <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold
                                         {{ $feedback->studentGrades->avg('average_score') >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
