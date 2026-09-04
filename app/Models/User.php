@@ -49,12 +49,9 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::saving(function ($user) {
-            // Load role if not loaded to check name safely
-            if ($user->role_id && !$user->relationLoaded('role')) {
-                $user->load('role');
-            }
+            $roleName = is_string($user->role) ? $user->role : ($user->role->name ?? null);
 
-            if ($user->role && $user->role->name === 'super_admin') {
+            if ($roleName === 'super_admin' || $roleName === 'superadmin') {
                 if ($user->school_id !== null) {
                     throw new \Exception('Super Admin must have school_id = NULL');
                 }

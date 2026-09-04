@@ -62,9 +62,8 @@
                 </x-slot:body>
             </x-table>
 
-            <div class="p-6 border-t border-slate-100">
-                {{ $evaluations->links() }}
-            </div>
-        </x-card>
+        <div class="p-6 border-t border-slate-100">
+            {{ $evaluations->links() }}
+        </div>
     </div>
 </x-layouts.app>

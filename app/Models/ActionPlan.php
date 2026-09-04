@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\TenantScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActionPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, TenantScoped;
 
     protected $fillable = [
         'pengawas_user_id',
@@ -43,6 +44,18 @@ class ActionPlan extends Model
         return $this->belongsTo(Semester::class);
     }
 
+    public function getStatusLabelAttribute(): string
+    {
+        return $this->status === 'published' ? 'Diterbitkan' : 'Draft';
+    }
+
+    public function getStatusBadgeClassAttribute(): string
+    {
+        return $this->status === 'published'
+            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+            : 'bg-slate-100 text-slate-500 border border-slate-200';
+    }
+
     public function getPriorityLabelAttribute(): string
     {
         return match ($this->priority) {
@@ -59,17 +72,5 @@ class ActionPlan extends Model
             'low'    => 'bg-slate-100 text-slate-600 border border-slate-200',
             default  => 'bg-amber-100 text-amber-700 border border-amber-200',
         };
-    }
-
-    public function getStatusLabelAttribute(): string
-    {
-        return $this->status === 'published' ? 'Diterbitkan' : 'Draft';
-    }
-
-    public function getStatusBadgeClassAttribute(): string
-    {
-        return $this->status === 'published'
-            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-            : 'bg-slate-100 text-slate-500 border border-slate-200';
     }
 }

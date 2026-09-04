@@ -86,12 +86,14 @@
                                     <x-sidebars.guru />
                                 @elseif($role === 'siswa')
                                     <x-sidebars.siswa />
-                                @elseif($role === 'orang tua')
+                                @elseif($role === 'orangtua')
                                     <x-sidebars.orangtua />
-                                @elseif($role === 'waka kurikulum')
+                                @elseif($role === 'waka')
                                     <x-sidebars.waka />
                                 @elseif($role === 'pengawas')
                                     <x-sidebars.pengawas />
+                                @elseif($role === 'kepala_sekolah')
+                                    <x-sidebars.kepala-sekolah />
                                 @else
                                     {{ $sidebar ?? '' }}
                                 @endif

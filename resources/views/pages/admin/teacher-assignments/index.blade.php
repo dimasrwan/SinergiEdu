@@ -65,14 +65,7 @@
                             </select>
                         </div>
                         <div class="w-full md:w-1/6">
-                            <select name="semester_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="">Semester</option>
-                                @foreach($semesters as $semester)
-                                    <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
-                                        {{ $semester->name }} ({{ $semester->academicYear->year }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-semester-select name="semester_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent" :selected="request('semester_id')" empty-label="Semester" />
                         </div>
                         <div class="w-full md:w-1/6">
                             <select name="class_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">

@@ -204,12 +204,7 @@
                                                         </div>
                                                         <div>
                                                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Semester <span class="text-danger">*</span></label>
-                                                            <select name="semester_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
-                                                                <option value="" disabled selected>-- Pilih Semester --</option>
-                                                                @foreach($semesters as $sem)
-                                                                    <option value="{{ $sem->id }}" @selected(old('semester_id') == $sem->id)>{{ $sem->academicYear->year }} - {{ $sem->name }}</option>
-                                                                @endforeach
-                                                            </select>
+                                                            <x-semester-select name="semester_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer" :selected="old('semester_id')" empty-label="-- Pilih Semester --" disabled-empty />
                                                         </div>
                                                     </div>
                                                 </div>
