@@ -23,9 +23,7 @@
                         <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $schoolAvgGrade > 0 ? $schoolAvgGrade : '0.00' }}</h3>
                     </div>
                     <div class="text-primary bg-blue-50/50 p-3 rounded-xl border border-blue-100">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292" />
-                        </svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                     </div>
                 </div>
             </x-card>
@@ -37,9 +35,7 @@
                         <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalTeachers }}</h3>
                     </div>
                     <div class="text-accent bg-sky-50/50 p-3 rounded-xl border border-sky-100">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493" />
-                        </svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
                     </div>
                 </div>
             </x-card>
@@ -51,9 +47,7 @@
                         <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalStudents }}</h3>
                     </div>
                     <div class="text-primary bg-blue-50/50 p-3 rounded-xl border border-blue-100">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.005 9.005 0 00-3.096-1.51 4.5 4.5 0 00-5.808 0 9.005 9.005 0 00-3.096 1.51M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     </div>
                 </div>
             </x-card>
@@ -65,9 +59,7 @@
                         <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalClasses }}</h3>
                     </div>
                     <div class="text-accent bg-sky-50/50 p-3 rounded-xl border border-sky-100">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25" />
-                        </svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg>
                     </div>
                 </div>
             </x-card>
