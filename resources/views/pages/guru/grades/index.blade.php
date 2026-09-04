@@ -2,7 +2,7 @@
     <x-slot:title>Input Penilaian Siswa</x-slot:title>
 
     <div class="space-y-6">
-        <x-page-header title="Penilaian Siswa" description="Isi rekapitulasi nilai akhir semester siswa secara massal berdasarkan kelas dan mata pelajaran." />
+        <x-page-header title="Penilaian Siswa per Pertemuan" description="Input capaian siswa untuk setiap pertemuan agar perkembangan belajar dapat ditelusuri dari waktu ke waktu." />
 
         @if(session('success'))
             <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-sm text-emerald-800 flex items-center gap-3">
@@ -23,7 +23,7 @@
         @endif
 
         <x-card padding="lg" class="mb-6">
-            <form action="{{ route('guru.grades.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <form action="{{ route('guru.grades.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div>
                     <x-input-label for="class_id" :value="__('Pilih Kelas')" />
                     <x-select id="class_id" name="class_id" required onchange="this.form.submit()">
@@ -39,6 +39,17 @@
                         <option value="">-- Semua Mapel --</option>
                         @foreach($subjects as $subject)
                             <option value="{{ $subject->id }}" {{ $selectedSubjectId == $subject->id ? 'selected' : '' }}>{{ $subject->name }} ({{ $subject->code }})</option>
+                        @endforeach
+                    </x-select>
+                </div>
+                <div>
+                    <x-input-label for="meeting_id" :value="__('Pertemuan')" />
+                    <x-select id="meeting_id" name="meeting_id" required onchange="this.form.submit()">
+                        <option value="">-- Pilih Pertemuan --</option>
+                        @foreach($meetings as $meeting)
+                            <option value="{{ $meeting->id }}" {{ $selectedMeetingId == $meeting->id ? 'selected' : '' }}>
+                                P{{ $meeting->meeting_number }} · {{ $meeting->meeting_date->format('d M Y') }} · {{ $meeting->topic }}
+                            </option>
                         @endforeach
                     </x-select>
                 </div>
@@ -63,12 +74,13 @@
             @endif
 
             <!-- Bulk Input Table -->
-            @if($students->isNotEmpty())
+            @if($students->isNotEmpty() && $selectedMeetingId)
                 <x-card padding="none">
                     <form action="{{ route('guru.grades.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="class_id" value="{{ $selectedClassId }}">
                         <input type="hidden" name="subject_id" value="{{ $selectedSubjectId }}">
+                        <input type="hidden" name="meeting_id" value="{{ $selectedMeetingId }}">
                         
                         <x-table>
                             <x-slot:head>
@@ -79,6 +91,9 @@
                                     <th class="px-4 py-4 w-28 text-center">Tes Akhir</th>
                                     <th class="px-4 py-4 w-28 text-center">Karakter</th>
                                     <th class="px-4 py-4 w-28 text-center">Hafalan</th>
+                                    <th class="px-4 py-4 w-32 text-center">Juz</th>
+                                    <th class="px-4 py-4 w-32 text-center">Ayat</th>
+                                    <th class="px-4 py-4 min-w-52">Catatan</th>
                                 </tr>
                             </x-slot:head>
                             <x-slot:body>
@@ -106,6 +121,15 @@
                                         <td class="px-4 py-4">
                                             <x-text-input type="number" name="grades[{{ $index }}][memorization_score]" value="{{ old("grades.{$index}.memorization_score", $grade?->memorization_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
                                         </td>
+                                        <td class="px-4 py-4">
+                                            <x-text-input name="grades[{{ $index }}][memorization_juz]" value="{{ old("grades.{$index}.memorization_juz", $grade?->memorization_juz) }}" class="w-full text-center" placeholder="Contoh: 30" />
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <x-text-input name="grades[{{ $index }}][memorization_ayat]" value="{{ old("grades.{$index}.memorization_ayat", $grade?->memorization_ayat) }}" class="w-full text-center" placeholder="Contoh: 1–20" />
+                                        </td>
+                                        <td class="px-4 py-4">
+                                            <x-text-input name="grades[{{ $index }}][notes]" value="{{ old("grades.{$index}.notes", $grade?->notes) }}" class="w-full" placeholder="Catatan singkat" />
+                                        </td>
                                     </tr>
                                 @endforeach
                             </x-slot:body>
@@ -120,6 +144,12 @@
                             </x-button>
                         </div>
                     </form>
+                </x-card>
+            @elseif($selectedClassId && $selectedSubjectId && !$selectedMeetingId)
+                <x-card padding="lg" class="text-center py-12">
+                    <h3 class="text-lg font-bold text-slate-900">Pilih Pertemuan</h3>
+                    <p class="mt-1 text-sm text-slate-500">Buat pertemuan pembelajaran terlebih dahulu bila daftar pertemuan masih kosong.</p>
+                    <x-button variant="secondary" href="{{ route('guru.learning-meetings.create') }}" class="mt-4">Tambah Pertemuan</x-button>
                 </x-card>
             @elseif($selectedClassId && $selectedSubjectId)
                 <x-card padding="lg" class="text-center py-16">

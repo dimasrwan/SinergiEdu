@@ -10,6 +10,7 @@
                     <th class="px-6 py-4">Nama Kelas</th>
                     <th class="px-6 py-4">Tingkat Kelas</th>
                     <th class="px-6 py-4 text-center">Jumlah Siswa</th>
+                    <th class="px-6 py-4 text-center">Partisipasi</th>
                     <th class="px-6 py-4 text-center">Rata-rata Nilai Kelas</th>
                 </tr>
             </x-slot:head>
@@ -22,6 +23,12 @@
                             <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium">
                                 {{ $class->students_count }} Siswa
                             </span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                             <div class="w-full bg-slate-200 rounded-full h-2 max-w-[100px] mx-auto">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ $class->participation_rate }}%"></div>
+                            </div>
+                            <span class="text-xs text-slate-500 mt-1 block">{{ $class->participation_rate }}%</span>
                         </td>
                         <td class="px-6 py-4 text-center font-bold text-blue-700">
                             {{ $class->average_grade > 0 ? $class->average_grade : '-' }}

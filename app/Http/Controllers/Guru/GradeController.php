@@ -6,16 +6,15 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
-use App\Models\Classroom;
+use App\Models\LearningMeeting;
 use App\Models\Semester;
 use App\Models\Student;
-use App\Models\StudentGrade;
+use App\Models\StudentAssessment;
 use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
 
 class GradeController extends Controller
 {
@@ -36,14 +35,24 @@ class GradeController extends Controller
 
         $selectedClassId = $request->query('class_id');
         $selectedSubjectId = $request->query('subject_id');
+        $selectedMeetingId = $request->query('meeting_id');
 
         $students = collect();
         $grades = collect();
+        $meetings = collect();
 
         if ($selectedClassId && $selectedSubjectId && $academicYear && $semester) {
             // Validasi kepemilikan
             abort_if(!$classes->contains('id', $selectedClassId) || !$subjects->contains('id', $selectedSubjectId), 403, 'Akses ditolak.');
             
+            $meetings = LearningMeeting::where('teacher_id', $teacher->id)
+                ->where('class_id', $selectedClassId)
+                ->where('subject_id', $selectedSubjectId)
+                ->where('academic_year_id', $academicYear->id)
+                ->where('semester_id', $semester->id)
+                ->orderBy('meeting_number')
+                ->get();
+
             $students = Student::whereHas('classes', function ($q) use ($selectedClassId, $academicYear) {
                     $q->where('class_id', $selectedClassId)
                       ->where('academic_year_id', $academicYear->id);
@@ -57,17 +66,19 @@ class GradeController extends Controller
                 })
                 ->get();
 
-            $grades = StudentGrade::where('class_id', $selectedClassId)
-                ->where('subject_id', $selectedSubjectId)
-                ->where('academic_year_id', $academicYear->id)
-                ->where('semester_id', $semester->id)
-                ->get()
-                ->keyBy('student_id');
+            if ($selectedMeetingId) {
+                $meeting = $meetings->firstWhere('id', (int) $selectedMeetingId);
+                abort_unless($meeting, 403, 'Pertemuan tidak dapat diakses.');
+
+                $grades = StudentAssessment::where('learning_meeting_id', $meeting->id)
+                    ->get()
+                    ->keyBy('student_id');
+            }
         }
 
         return view('pages.guru.grades.index', compact(
             'classes', 'subjects', 'academicYear', 'semester', 
-            'selectedClassId', 'selectedSubjectId', 'students', 'grades'
+            'selectedClassId', 'selectedSubjectId', 'selectedMeetingId', 'meetings', 'students', 'grades'
         ));
     }
 
@@ -76,6 +87,7 @@ class GradeController extends Controller
         $request->validate([
             'class_id' => 'required|exists:classes,id',
             'subject_id' => 'required|exists:subjects,id',
+            'meeting_id' => 'required|exists:learning_meetings,id',
             'grades' => 'required|array',
             'grades.*.student_id' => 'required|exists:students,id',
             'grades.*.pre_test_score' => 'nullable|integer|min:0|max:100',
@@ -83,6 +95,9 @@ class GradeController extends Controller
             'grades.*.post_test_score' => 'nullable|integer|min:0|max:100',
             'grades.*.character_score' => 'nullable|integer|min:0|max:100',
             'grades.*.memorization_score' => 'nullable|integer|min:0|max:100',
+            'grades.*.memorization_juz' => 'nullable|string|max:30',
+            'grades.*.memorization_ayat' => 'nullable|string|max:100',
+            'grades.*.notes' => 'nullable|string|max:1000',
         ]);
 
         $teacher = $this->getTeacherProfile();
@@ -91,34 +106,38 @@ class GradeController extends Controller
 
         $classId = $request->input('class_id');
         $subjectId = $request->input('subject_id');
+        $meetingId = $request->integer('meeting_id');
 
         abort_if(!$teacher->classes->contains('id', $classId) || !$teacher->subjects->contains('id', $subjectId), 403, 'Akses ditolak.');
 
-        DB::transaction(function () use ($request, $teacher, $academicYear, $semester, $classId, $subjectId) {
-            foreach ($request->input('grades') as $gradeData) {
-                StudentGrade::updateOrCreate(
-                    [
-                        'student_id' => $gradeData['student_id'],
-                        'subject_id' => $subjectId,
-                        'academic_year_id' => $academicYear->id,
-                        'semester_id' => $semester->id,
-                    ],
-                    [
-                        'teacher_id' => $teacher->id,
-                        'class_id' => $classId,
-                        'pre_test_score' => $gradeData['pre_test_score'],
-                        'assignment_score' => $gradeData['assignment_score'],
-                        'post_test_score' => $gradeData['post_test_score'],
-                        'character_score' => $gradeData['character_score'],
-                        'memorization_score' => $gradeData['memorization_score'],
-                    ]
-                );
-            }
-        });
+        $meeting = LearningMeeting::whereKey($meetingId)
+            ->where('teacher_id', $teacher->id)
+            ->where('class_id', $classId)
+            ->where('subject_id', $subjectId)
+            ->where('academic_year_id', $academicYear->id)
+            ->where('semester_id', $semester->id)
+            ->firstOrFail();
+
+        foreach ($request->input('grades') as $gradeData) {
+            StudentAssessment::updateOrCreate(
+                ['learning_meeting_id' => $meeting->id, 'student_id' => $gradeData['student_id']],
+                [
+                    'pre_test_score' => $gradeData['pre_test_score'],
+                    'assignment_score' => $gradeData['assignment_score'],
+                    'post_test_score' => $gradeData['post_test_score'],
+                    'character_score' => $gradeData['character_score'],
+                    'memorization_score' => $gradeData['memorization_score'],
+                    'memorization_juz' => $gradeData['memorization_juz'],
+                    'memorization_ayat' => $gradeData['memorization_ayat'],
+                    'notes' => $gradeData['notes'],
+                ]
+            );
+        }
 
         return redirect()->route('guru.grades.index', [
             'class_id' => $classId,
             'subject_id' => $subjectId,
-        ])->with('success', 'Nilai siswa berhasil disimpan.');
+            'meeting_id' => $meeting->id,
+        ])->with('success', 'Penilaian pertemuan berhasil disimpan.');
     }
 }

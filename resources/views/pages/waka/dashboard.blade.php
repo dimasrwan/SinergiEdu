@@ -15,13 +15,15 @@
                 <div class="flex flex-wrap gap-4 shrink-0">
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 min-w-[140px]">
                         <p class="text-xs text-indigo-200 font-semibold uppercase tracking-wider mb-1">Rata-rata Sekolah</p>
-                        <h3 class="text-3xl font-bold">82.5</h3>
-                        <p class="text-xs text-green-300 mt-1 flex items-center"><svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg> +1.2 dari smt lalu</p>
+                        <h3 class="text-3xl font-bold">{{ number_format($stats['avg_grade'], 1) }}</h3>
                     </div>
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 min-w-[140px]">
-                        <p class="text-xs text-indigo-200 font-semibold uppercase tracking-wider mb-1">Kehadiran Agregat</p>
-                        <h3 class="text-3xl font-bold">96%</h3>
-                        <p class="text-xs text-green-300 mt-1 flex items-center"><svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg> Stabil</p>
+                        <p class="text-xs text-indigo-200 font-semibold uppercase tracking-wider mb-1">Total Pertemuan</p>
+                        <h3 class="text-3xl font-bold">{{ $stats['meeting_count'] }}</h3>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 min-w-[140px]">
+                        <p class="text-xs text-indigo-200 font-semibold uppercase tracking-wider mb-1">Pencapaian Hafalan</p>
+                        <h3 class="text-3xl font-bold">Juz {{ $stats['max_juz'] ?? '-' }} : {{ $stats['max_ayat'] ?? '-' }}</h3>
                     </div>
                 </div>
             </div>
@@ -168,7 +170,7 @@
                                     <span class="text-[10px] font-bold px-2 py-0.5 rounded text-red-700 bg-red-200">-12%</span>
                                 </div>
                                 <p class="text-xs text-slate-600 mt-1">Rata-rata nilai Sosiologi menurun drastis dalam 2 minggu terakhir.</p>
-                                <a href="#" class="inline-block mt-2 text-[10px] uppercase tracking-wider font-bold text-red-600 hover:underline">Lihat Detail &rarr;</a>
+                                <a href="{{ route('waka.monitoring.grades', ['class_id' => 4, 'subject_id' => 1]) }}" class="inline-block mt-2 text-[10px] uppercase tracking-wider font-bold text-red-600 hover:underline">Lihat Detail &rarr;</a>
                             </div>
                             
                             <!-- Alert Item 2 -->

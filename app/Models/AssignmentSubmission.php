@@ -18,6 +18,11 @@ class AssignmentSubmission extends Model
         'file_path',
         'notes',
         'score',
+        'submitted_at',
+    ];
+
+    protected $casts = [
+        'submitted_at' => 'datetime',
     ];
 
     /**

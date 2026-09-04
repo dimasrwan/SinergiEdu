@@ -42,6 +42,20 @@
                 </div>
 
                 <div>
+                    <x-input-label for="learning_meeting_id" :value="__('Pertemuan Pembelajaran (Opsional)')" />
+                    <x-select id="learning_meeting_id" name="learning_meeting_id">
+                        <option value="">-- Belum dikaitkan ke pertemuan --</option>
+                        @foreach($meetings as $meeting)
+                            <option value="{{ $meeting->id }}" @selected(old('learning_meeting_id', $material->learning_meeting_id) == $meeting->id)>
+                                P{{ $meeting->meeting_number }} · {{ $meeting->meeting_date->format('d M Y') }} · {{ $meeting->classroom->name }} · {{ $meeting->subject->name }}
+                            </option>
+                        @endforeach
+                    </x-select>
+                    <p class="mt-1 text-xs text-slate-500">Pertemuan harus memakai kelas dan mata pelajaran yang sama dengan materi.</p>
+                    <x-input-error :messages="$errors->get('learning_meeting_id')" class="mt-2" />
+                </div>
+
+                <div>
                     <x-input-label for="title" :value="__('Judul Materi')" />
                     <x-text-input id="title" name="title" type="text" :value="old('title', $material->title)" required placeholder="Contoh: Pengenalan Aljabar Linear" />
                     <x-input-error :messages="$errors->get('title')" class="mt-2" />

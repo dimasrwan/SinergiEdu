@@ -20,6 +20,7 @@ class MaterialRequest extends FormRequest
             'description' => 'nullable|string',
             'class_id' => 'required|exists:classes,id',
             'subject_id' => 'required|exists:subjects,id',
+            'learning_meeting_id' => 'nullable|exists:learning_meetings,id',
             'file' => 'nullable|file|mimes:pdf|max:10240', // PDF Max 10MB
             'video' => 'nullable|file|mimes:mp4,mkv,avi|max:51200', // Video Max 50MB
         ];

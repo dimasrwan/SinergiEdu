@@ -50,6 +50,11 @@ class Student extends Model
         return $this->hasMany(StudentGrade::class);
     }
 
+    public function assessments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentAssessment::class);
+    }
+
     /**
      * Relasi ke Riwayat Kelas (via tabel pivot student_classes).
      */

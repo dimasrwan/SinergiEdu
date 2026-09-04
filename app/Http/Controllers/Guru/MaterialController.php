@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Guru\MaterialRequest;
+use App\Models\LearningMeeting;
 use App\Models\Material;
 use App\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
@@ -36,8 +37,12 @@ class MaterialController extends Controller
         // Ambil kelas dan mapel yang ditugaskan ke guru ini
         $classes = $teacher->classes;
         $subjects = $teacher->subjects;
+        $meetings = LearningMeeting::where('teacher_id', $teacher->id)
+            ->with(['classroom', 'subject'])
+            ->orderByDesc('meeting_date')
+            ->get();
 
-        return view('pages.guru.materials.create', compact('classes', 'subjects'));
+        return view('pages.guru.materials.create', compact('classes', 'subjects', 'meetings'));
     }
 
     public function store(MaterialRequest $request): RedirectResponse
@@ -45,6 +50,8 @@ class MaterialController extends Controller
         $teacher = $this->getTeacherProfile();
         $data = $request->validated();
         $data['teacher_id'] = $teacher->id;
+
+        $this->ensureMeetingMatchesMaterial($data, $teacher);
 
         if ($request->hasFile('file')) {
             $data['file_path'] = $request->file('file')->store('materials/pdfs', 'public');
@@ -66,8 +73,12 @@ class MaterialController extends Controller
 
         $classes = $teacher->classes;
         $subjects = $teacher->subjects;
+        $meetings = LearningMeeting::where('teacher_id', $teacher->id)
+            ->with(['classroom', 'subject'])
+            ->orderByDesc('meeting_date')
+            ->get();
 
-        return view('pages.guru.materials.edit', compact('material', 'classes', 'subjects'));
+        return view('pages.guru.materials.edit', compact('material', 'classes', 'subjects', 'meetings'));
     }
 
     public function update(MaterialRequest $request, Material $material): RedirectResponse
@@ -76,6 +87,8 @@ class MaterialController extends Controller
         abort_if($material->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke materi ini.');
 
         $data = $request->validated();
+
+        $this->ensureMeetingMatchesMaterial($data, $teacher);
 
         if ($request->hasFile('file')) {
             if ($material->file_path) {
@@ -112,5 +125,20 @@ class MaterialController extends Controller
         $material->delete();
 
         return redirect()->route('guru.materials.index')->with('success', 'Materi pembelajaran berhasil dihapus.');
+    }
+
+    private function ensureMeetingMatchesMaterial(array $data, Teacher $teacher): void
+    {
+        if (empty($data['learning_meeting_id'])) {
+            return;
+        }
+
+        $matches = LearningMeeting::whereKey($data['learning_meeting_id'])
+            ->where('teacher_id', $teacher->id)
+            ->where('class_id', $data['class_id'])
+            ->where('subject_id', $data['subject_id'])
+            ->exists();
+
+        abort_unless($matches, 422, 'Pertemuan pembelajaran harus sesuai dengan guru, kelas, dan mata pelajaran materi.');
     }
 }
