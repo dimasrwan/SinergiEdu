@@ -78,10 +78,10 @@
                         </div>
                         <div class="mt-4 flex flex-wrap gap-2">
                             @if ($material->file_path)
-                                <a href="{{ asset('storage/'.$material->file_path) }}" target="_blank" class="inline-flex items-center rounded-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Buka PDF</a>
+                                <a href="{{ asset('storage/'.$material->file_path) }}" target="_blank" class="inline-flex items-center rounded-lg-lg bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100">Buka PDF</a>
                             @endif
                             @if ($material->video_path)
-                                <a href="{{ asset('storage/'.$material->video_path) }}" target="_blank" class="inline-flex items-center rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Putar Video</a>
+                                <a href="{{ asset('storage/'.$material->video_path) }}" target="_blank" class="inline-flex items-center rounded-lg-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100">Putar Video</a>
                             @endif
                             @if (! $material->file_path && ! $material->video_path)
                                 <span class="text-xs italic text-slate-400">Materi teks</span>

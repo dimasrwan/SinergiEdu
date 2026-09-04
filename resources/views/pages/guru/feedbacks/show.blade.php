@@ -56,7 +56,7 @@
                 </div>
 
                 @if($feedback->subject)
-                    <div class="mb-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50/50 text-blue-700 text-xs font-semibold border border-blue-100">
+                    <div class="mb-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg-lg bg-blue-50/50 text-blue-700 text-xs font-semibold border border-blue-100">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>

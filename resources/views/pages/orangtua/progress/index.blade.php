@@ -20,7 +20,7 @@
                     </x-select>
                 </div>
                 <div class="text-right">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                         {{ $activeYear ? $activeYear->year : 'Tahun Ajaran' }} - {{ $activeSemester ? $activeSemester->name : 'Semester' }}
                     </span>
                 </div>

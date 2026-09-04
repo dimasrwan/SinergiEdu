@@ -23,7 +23,7 @@
                 <div>
                     <x-input-label for="description" :value="__('Deskripsi (Opsional)')" />
                     <textarea id="description" name="description" rows="4" placeholder="Uraikan rencana aksi secara detail..."
-                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('description') }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('description') }}</textarea>
                     @error('description') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 
@@ -97,7 +97,7 @@
                 <div>
                     <x-input-label for="notes" :value="__('Catatan (Opsional)')" />
                     <textarea id="notes" name="notes" rows="3" placeholder="Catatan tambahan..."
-                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('notes') }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('notes') }}</textarea>
                     @error('notes') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 

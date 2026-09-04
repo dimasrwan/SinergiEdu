@@ -51,13 +51,13 @@
                                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}" class="block w-full rounded-lg border-0 py-2 pl-10 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6" placeholder="Cari nama atau NIS...">
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" class="block w-full rounded-lg-lg border-0 py-2 pl-10 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6" placeholder="Cari nama atau NIS...">
                         </div>
                     </div>
                     
                     <div class="sm:w-48">
                         <label for="class_id" class="sr-only">Kelas</label>
-                        <select id="class_id" name="class_id" class="block w-full rounded-lg border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
+                        <select id="class_id" name="class_id" class="block w-full rounded-lg-lg border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
                             <option value="">Semua Kelas</option>
                             @foreach($classes as $c)
                                 <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
@@ -67,7 +67,7 @@
                     
                     <div class="sm:w-48">
                         <label for="subject_id" class="sr-only">Mata Pelajaran</label>
-                        <select id="subject_id" name="subject_id" class="block w-full rounded-lg border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
+                        <select id="subject_id" name="subject_id" class="block w-full rounded-lg-lg border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
                             <option value="">Semua Mapel</option>
                             @foreach($subjects as $s)
                                 <option value="{{ $s->id }}" {{ request('subject_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
@@ -75,11 +75,11 @@
                         </select>
                     </div>
                     
-                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-lg-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-700">
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'class_id', 'subject_id']))
-                        <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+                        <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
                             Reset
                         </a>
                     @endif
@@ -105,7 +105,7 @@
                         <tr>
                             <td class="whitespace-nowrap py-4 pl-4 pr-3 sm:pl-6">
                                 <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                                    <div class="h-10 w-10 flex-shrink-0 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                         {{ strtoupper(substr($item->student->user->name, 0, 1)) }}
                                     </div>
                                     <div class="ml-4">
@@ -123,16 +123,16 @@
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                 @if($item->avg_score !== null)
-                                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ $item->avg_score }}</span>
+                                    <span class="inline-flex items-center rounded-lg bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">{{ $item->avg_score }}</span>
                                 @else
                                     <span class="text-slate-400 italic">Belum Ada</span>
                                 @endif
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                                 @if($item->status == 'Lengkap')
-                                    <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Lengkap</span>
+                                    <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Lengkap</span>
                                 @else
-                                    <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Ada Tunggakan Tugas</span>
+                                    <span class="inline-flex items-center rounded-lg bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Ada Tunggakan Tugas</span>
                                 @endif
                             </td>
                             <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">

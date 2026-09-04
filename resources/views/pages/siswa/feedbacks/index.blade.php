@@ -45,13 +45,13 @@
                                 <p class="text-[11px] text-slate-500 truncate">{{ $feedback->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
-                        <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $badgeColor }}">
+                        <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider {{ $badgeColor }}">
                             {{ $feedback->type_label ?? $feedback->type }}
                         </span>
                     </div>
                     
                     @if($feedback->subject)
-                        <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2 py-0.5 rounded-md uppercase tracking-wider mb-2 w-fit">
+                        <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2 py-0.5 rounded-lg uppercase tracking-wider mb-2 w-fit">
                             {{ $feedback->subject->name }}
                         </span>
                     @endif

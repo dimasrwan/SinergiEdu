@@ -31,7 +31,7 @@
         <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
             <div class="mb-8 border-b border-slate-100 pb-6">
                 <div class="flex items-center gap-3 mb-4">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $badgeColor }}">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider {{ $badgeColor }}">
                         {{ $feedback->type_label ?? $feedback->type }}
                     </span>
                     <span class="text-xs font-semibold text-slate-500">{{ $feedback->created_at->format('d M Y, H:i') }}</span>

@@ -8,7 +8,7 @@
                 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Daftar Pengawas</h1>
                 <p class="mt-2 text-sm text-slate-500 max-w-2xl">
                     Kelola data dan akun akses Pengawas Sekolah/Madrasah.
-                    <span class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
+                    <span class="inline-flex items-center ml-2 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
                         {{ $pengawas->total() }} Pengawas
                     </span>
                 </p>
@@ -41,7 +41,7 @@
                     </svg>
                 </div>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, NIP, atau email..." 
-                    class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm transition-shadow">
+                    class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm transition-shadow">
             </form>
         </div>
 

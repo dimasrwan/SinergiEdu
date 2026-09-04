@@ -3,7 +3,7 @@
 
     <div class="space-y-6">
         <div class="flex items-center gap-4">
-            <a href="{{ route('orangtua.feedbacks.index', ['student_id' => $feedback->student_id]) }}" class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors">
+            <a href="{{ route('orangtua.feedbacks.index', ['student_id' => $feedback->student_id]) }}" class="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                 </svg>

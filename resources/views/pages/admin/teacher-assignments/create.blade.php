@@ -59,7 +59,7 @@
                             <label for="teacher_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Guru <span class="text-danger">*</span></label>
                             @if(request('teacher_id'))
                                 @php $selectedTeacher = $teachers->firstWhere('id', request('teacher_id')); @endphp
-                                <select id="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" disabled>
+                                <select id="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" disabled>
                                     <option value="{{ $selectedTeacher->id }}" selected>
                                         {{ $selectedTeacher->user->name }} (NIP. {{ $selectedTeacher->nip ?? '-' }})
                                     </option>
@@ -68,7 +68,7 @@
                                 @if($teachers->isEmpty())
                                     <p class="text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">Belum ada guru yang dapat ditugaskan.</p>
                                 @else
-                                    <select id="teacher_id" name="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                                    <select id="teacher_id" name="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                         <option value="" disabled {{ old('teacher_id') ? '' : 'selected' }}>Pilih guru...</option>
                                         @foreach($teachers as $teacher)
                                             <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
@@ -86,7 +86,7 @@
                             @if($subjects->isEmpty())
                                 <p class="text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">Belum ada mata pelajaran tersedia.</p>
                             @else
-                                <select id="subject_id" name="subject_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                                <select id="subject_id" name="subject_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                     <option value="" disabled {{ old('subject_id') ? '' : 'selected' }}>Pilih mata pelajaran...</option>
                                     @foreach($subjects as $subject)
                                         <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -103,7 +103,7 @@
                             @if($classrooms->isEmpty())
                                 <p class="text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">Belum ada kelas tersedia.</p>
                             @else
-                                <select id="class_id" name="class_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                                <select id="class_id" name="class_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                     <option value="" disabled {{ old('class_id') ? '' : 'selected' }}>Pilih kelas...</option>
                                     @foreach($classrooms as $class)
                                         <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
@@ -121,7 +121,7 @@
                                 @if($academicYears->isEmpty())
                                     <p class="text-sm text-red-600 bg-red-50 p-2 rounded-lg border border-red-100">Belum ada tahun ajaran.</p>
                                 @else
-                                    <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                                    <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                         <option value="" disabled {{ old('academic_year_id') ? '' : 'selected' }}>Pilih tahun ajaran...</option>
                                         @foreach($academicYears as $year)
                                             <option value="{{ $year->id }}" {{ old('academic_year_id') == $year->id ? 'selected' : '' }}>

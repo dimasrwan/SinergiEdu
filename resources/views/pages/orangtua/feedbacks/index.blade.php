@@ -75,7 +75,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <a href="{{ route('orangtua.feedbacks.show', $feedback->id) }}" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-300 rounded-md font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 transition ease-in-out duration-150">
+                                <a href="{{ route('orangtua.feedbacks.show', $feedback->id) }}" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 transition ease-in-out duration-150">
                                     Detail
                                 </a>
                             </div>

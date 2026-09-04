@@ -26,7 +26,7 @@
                         <label class="block text-sm font-semibold text-slate-900 mb-2">
                             Judul Inspeksi <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" name="title" value="{{ old('title') }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Contoh: Inspeksi Rutin April 2026">
+                        <input type="text" name="title" value="{{ old('title') }}" required class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Contoh: Inspeksi Rutin April 2026">
                         @error('title')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -34,7 +34,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Sekolah</label>
-                        <select name="school_id" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select name="school_id" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                             <option value="">Pilih Sekolah</option>
                             @foreach($schools as $school)
                                 <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
@@ -48,7 +48,7 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-2">Lokasi</label>
-                    <input type="text" name="location" value="{{ old('location') }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Alamat atau lokasi inspeksi">
+                    <input type="text" name="location" value="{{ old('location') }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Alamat atau lokasi inspeksi">
                     @error('location')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -57,7 +57,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Inspeksi</label>
-                        <input type="date" name="inspection_date" value="{{ old('inspection_date') }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <input type="date" name="inspection_date" value="{{ old('inspection_date') }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                         @error('inspection_date')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -65,7 +65,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Status</label>
-                        <select name="status" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select name="status" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                             <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>Menunggu</option>
                             <option value="scheduled" {{ old('status') == 'scheduled' ? 'selected' : '' }}>Dijadwalkan</option>
                             <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
@@ -78,14 +78,14 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-2">Deskripsi / Catatan</label>
-                    <textarea name="content" rows="4" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Tuliskan catatan atau deskripsi inspeksi...">{{ old('content') }}</textarea>
+                    <textarea name="content" rows="4" class="w-full px-4 py-4 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" placeholder="Tuliskan catatan atau deskripsi inspeksi...">{{ old('content') }}</textarea>
                     @error('content')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-semibold">
+                    <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg-lg hover:bg-blue-700 transition font-semibold">
                         Simpan Jadwal
                     </button>
                     <a href="{{ route('pengawas.inspections.index') }}" class="px-6 py-2.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition font-semibold">

@@ -79,7 +79,7 @@
                             <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" /></svg>
                             Penempatan & Riwayat Kelas
                         </h3>
-                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-placement')" class="px-4 py-2 text-xs font-semibold text-white bg-accent hover:bg-blue-600 rounded-lg transition duration-150 inline-flex items-center gap-1.5">
+                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-placement')" class="px-4 py-2 text-xs font-semibold text-white bg-accent hover:bg-blue-600 rounded-lg-lg transition duration-150 inline-flex items-center gap-1.5">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                             Tambah Penempatan
                         </button>
@@ -90,7 +90,7 @@
                             <div class="p-4 bg-green-50 border border-green-100 rounded-xl flex items-start gap-3 shadow-sm mb-4">
                                 <svg class="h-5 w-5 text-green-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 <div>
-                                    <h3 class="text-sm font-bold text-green-800">Berhasil</h3>
+                                    <h3 class="text-sm font-bold text-emerald-700">Berhasil</h3>
                                     <p class="text-sm text-green-700 mt-0.5">{{ session('success') }}</p>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@
                         <div class="space-y-3">
                             <h4 class="text-sm font-bold text-slate-800">Kelas Aktif Saat Ini</h4>
                             @if($activeClass)
-                                <div class="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+                                <div class="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-white p-5 rounded-lg border border-blue-100 shadow-sm">
                                     <div class="w-14 h-14 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center text-primary shrink-0">
                                         <span class="text-lg font-bold">{{ $activeClass->formatted_grade_level }}</span>
                                     </div>
@@ -149,7 +149,7 @@
                                                     <p class="text-sm font-bold text-slate-900">{{ $placement->academicYear->year }}</p>
                                                 </td>
                                                 <td class="py-3 px-4">
-                                                    <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                                    <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">
                                                         {{ $placement->classroom->name }}
                                                     </span>
                                                 </td>
@@ -183,7 +183,7 @@
                                                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                                             <div>
                                                                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
-                                                                                <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                                                <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
                                                                                     <option value="" disabled>-- Pilih Kelas --</option>
                                                                                     @foreach($classes as $cls)
                                                                                         <option value="{{ $cls->id }}" @selected(old('class_id', $placement->class_id) == $cls->id)>{{ $cls->name }}</option>
@@ -192,7 +192,7 @@
                                                                             </div>
                                                                             <div>
                                                                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                                                                <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                                                <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
                                                                                     <option value="" disabled>-- Pilih Tahun Ajaran --</option>
                                                                                     @foreach($academicYears as $ay)
                                                                                         <option value="{{ $ay->id }}" @selected(old('academic_year_id', $placement->academic_year_id) == $ay->id)>{{ $ay->year }}</option>
@@ -204,7 +204,7 @@
 
                                                                     <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
                                                                         <button type="button" x-on:click.prevent="$dispatch('close-modal', 'edit-placement-{{ $placement->id }}')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
-                                                                        <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
+                                                                        <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
                                                                     </div>
                                                                 </div>
                                                             </form>
@@ -272,7 +272,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
-                                        <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                        <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
                                             <option value="" disabled selected>-- Pilih Kelas --</option>
                                             @foreach($classes as $cls)
                                                 <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ $cls->name }}</option>
@@ -281,7 +281,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                        <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                        <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
                                             <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
                                             @foreach($academicYears as $ay)
                                                 <option value="{{ $ay->id }}" @selected(old('academic_year_id', $academicYears->first()->id ?? null) == $ay->id)>{{ $ay->year }}</option>
@@ -292,8 +292,8 @@
                             </div>
 
                             <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
-                                <button type="button" x-on:click.prevent="$dispatch('close-modal', 'add-placement')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
-                                <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
+                                <button type="button" x-on:click.prevent="$dispatch('close-modal', 'add-placement')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg-lg hover:bg-slate-50 transition-colors">Batal</button>
+                                <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
                             </div>
                         </div>
                     </form>

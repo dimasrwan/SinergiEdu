@@ -14,7 +14,7 @@
         <x-card padding="md">
             <form method="GET" class="flex flex-col sm:flex-row gap-4">
                 <div class="flex-1">
-                    <select name="class_id" onchange="this.form.submit()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    <select name="class_id" onchange="this.form.submit()" class="w-full px-4 py-2 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary">
                         <option value="">Pilih Kelas</option>
                         @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ $selectedClassId == $class->id ? 'selected' : '' }}>
@@ -39,45 +39,45 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="px-6 py-3 text-left font-semibold text-slate-700">Nama Siswa</th>
-                            <th class="px-6 py-3 text-left font-semibold text-slate-700">NIS/NISN</th>
-                            <th class="px-6 py-3 text-center font-semibold text-slate-700">Rata-rata</th>
-                            <th class="px-6 py-3 text-center font-semibold text-slate-700">Tes Akhir</th>
-                            <th class="px-6 py-3 text-center font-semibold text-slate-700">Karakter</th>
-                            <th class="px-6 py-3 text-center font-semibold text-slate-700">Aksi</th>
+                            <th class="px-4 py-4 text-left font-semibold text-slate-700">Nama Siswa</th>
+                            <th class="px-4 py-4 text-left font-semibold text-slate-700">NIS/NISN</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Rata-rata</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Tes Akhir</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Karakter</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse($students as $student)
                             <tr class="hover:bg-slate-50 transition">
-                                <td class="px-6 py-3">
+                                <td class="px-4 py-4">
                                     <div class="font-medium text-slate-900">{{ $student->user?->name }}</div>
                                     <div class="text-xs text-slate-500">{{ $student->user?->email }}</div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td class="px-4 py-4">
                                     <div class="text-sm text-slate-600">{{ $student->nis }}</div>
                                     <div class="text-xs text-slate-400">{{ $student->nisn }}</div>
                                 </td>
-                                <td class="px-6 py-3 text-center">
-                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold
+                                <td class="px-4 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-sm font-semibold
                                         {{ $student->studentGrades->avg('average_score') >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
                                         {{ number_format($student->studentGrades->avg('average_score') ?? 0, 1) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-3 text-center text-slate-600">
+                                <td class="px-4 py-4 text-center text-slate-600">
                                     {{ number_format($student->studentGrades->avg('post_test_score') ?? 0, 1) }}
                                 </td>
-                                <td class="px-6 py-3 text-center text-slate-600">
+                                <td class="px-4 py-4 text-center text-slate-600">
                                     {{ number_format($student->studentGrades->avg('character_score') ?? 0, 1) }}
                                 </td>
-                                <td class="px-6 py-3 text-center">
+                                <td class="px-4 py-4 text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('pengawas.students.show', $student->id) }}"
                                            class="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">
                                             Lihat
                                         </a>
                                         <a href="{{ route('pengawas.feedback.create', ['student_id' => $student->id]) }}"
-                                           class="px-3 py-1.5 text-sm bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition">
+                                           class="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">
                                             Feedback
                                         </a>
                                     </div>

@@ -5,7 +5,7 @@
         <x-page-header title="Profil Saya" description="Perbarui informasi akun dan data kepala sekolah Anda." />
 
         @if(session('success'))
-            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-4 py-3 text-sm">
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-6 text-sm">
                 {{ session('success') }}
             </div>
         @endif
@@ -44,7 +44,7 @@
                 <div>
                     <x-input-label for="address" :value="__('Alamat')" />
                     <textarea id="address" name="address" rows="3" placeholder="Alamat lengkap..."
-                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('address', $kepsek?->address) }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('address', $kepsek?->address) }}</textarea>
                     @error('address') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 

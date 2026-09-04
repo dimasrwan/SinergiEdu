@@ -91,17 +91,17 @@
                                         <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
                                     </div>
                                     <input type="text" x-model="searchQuery" placeholder="Cari nama atau NIS siswa..." 
-                                        class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
+                                        class="block w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
                                 </div>
                                 
                                 <div class="max-h-60 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                     <template x-for="student in filteredAvailableStudents" :key="student.id">
-                                        <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl hover:border-accent hover:shadow-sm transition-all group">
+                                        <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-accent hover:shadow-sm transition-all group">
                                             <div>
                                                 <p class="text-sm font-bold text-slate-900" x-text="student.name"></p>
                                                 <p class="text-xs text-slate-500 font-mono mt-0.5" x-text="`NIS: ${student.nis}`"></p>
                                             </div>
-                                            <button type="button" @click="addStudent(student)" class="text-xs font-semibold text-primary bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors shrink-0">
+                                            <button type="button" @click="addStudent(student)" class="text-xs font-semibold text-primary bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg-lg transition-colors shrink-0">
                                                 Tambahkan
                                             </button>
                                         </div>
@@ -119,20 +119,20 @@
                             <div>
                                 <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
                                     Siswa yang dipilih
-                                    <span class="inline-flex items-center justify-center bg-blue-100 text-primary text-[10px] font-bold h-5 min-w-[20px] rounded-full px-1.5" x-text="selectedStudents.length"></span>
+                                    <span class="inline-flex items-center justify-center bg-blue-100 text-primary text-[10px] font-bold h-5 min-w-[20px] rounded-lg px-1.5" x-text="selectedStudents.length"></span>
                                 </h3>
                                 
                                 <div class="space-y-3">
                                     <template x-for="student in selectedStudents" :key="student.id">
-                                        <div class="flex items-start justify-between p-4 bg-white border border-slate-200 shadow-sm rounded-xl relative overflow-hidden group">
+                                        <div class="flex items-start justify-between p-4 bg-white border border-slate-200 shadow-sm rounded-lg relative overflow-hidden group">
                                             <!-- Aksens Kiri -->
                                             <div class="absolute left-0 top-0 bottom-0 w-1 bg-accent"></div>
                                             <div class="pl-2">
                                                 <p class="text-sm font-bold text-slate-900" x-text="student.name"></p>
                                                 <p class="text-xs text-slate-500 font-mono mt-0.5 mb-1" x-text="`NIS: ${student.nis}`"></p>
-                                                <span class="inline-flex text-[10px] font-bold uppercase tracking-wider text-primary bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100" x-text="student.active_class ?? 'Belum ada kelas'"></span>
+                                                <span class="inline-flex text-[10px] font-bold uppercase tracking-wider text-primary bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100" x-text="student.active_class ?? 'Belum ada kelas'"></span>
                                             </div>
-                                            <button type="button" @click="removeStudent(student.id)" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Batal Pilih">
+                                            <button type="button" @click="removeStudent(student.id)" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg-lg transition-colors" title="Batal Pilih">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                             </button>
                                             
@@ -158,7 +158,7 @@
                     <x-button variant="secondary" href="{{ route('admin.parents.index') }}" class="w-full sm:w-auto">Batal</x-button>
                     
                     <button type="submit" :disabled="isSubmitting" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-xl transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-lg transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
                         <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

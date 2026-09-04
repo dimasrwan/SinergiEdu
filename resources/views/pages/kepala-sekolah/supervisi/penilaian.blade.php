@@ -25,25 +25,25 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Guru</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Guru</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($gradingStatus as $status)
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4">
+                                <td class="p-6">
                                     <a href="{{ route('kepala-sekolah.supervision.teacher-detail', $status->teacher_id) }}" class="font-semibold text-slate-900 text-sm hover:text-primary">{{ $status->teacher_name }}</a>
                                 </td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $status->class_name }}</td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $status->subject_name }}</td>
-                                <td class="py-3 px-4">
+                                <td class="p-6 text-slate-600 text-sm">{{ $status->class_name }}</td>
+                                <td class="p-6 text-slate-600 text-sm">{{ $status->subject_name }}</td>
+                                <td class="p-6">
                                     @if($status->status === 'completed')
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Selesai</span>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700">Selesai</span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">Belum Dinilai</span>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-100 text-amber-700">Belum Dinilai</span>
                                     @endif
                                 </td>
                             </tr>

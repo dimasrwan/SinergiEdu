@@ -48,7 +48,7 @@
                         Feedback untuk Siswa <span class="text-red-500">*</span>
                     </label>
                     <textarea name="feedback_text" 
-                              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" 
+                              class="w-full px-4 py-4 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" 
                               rows="5" 
                               placeholder="Berikan feedback yang konstruktif dan mendorong siswa untuk terus berkembang..."
                               required>{{ old('feedback_text', $lastFeedback?->supervisor_feedback) }}</textarea>
@@ -64,7 +64,7 @@
                         Rencana Aksi untuk Peningkatan (Opsional)
                     </label>
                     <textarea name="action_plan" 
-                              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" 
+                              class="w-full px-4 py-4 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none" 
                               rows="4" 
                               placeholder="Tuliskan langkah-langkah konkret yang dapat diambil oleh siswa, guru, orang tua, dan Anda sebagai pengawas...">{{ old('action_plan', $lastFeedback?->supervisor_action_plan) }}</textarea>
                     @error('action_plan')
@@ -77,7 +77,7 @@
                     <label class="block text-sm font-semibold text-slate-900 mb-2">
                         Prioritas Rencana Aksi (Opsional)
                     </label>
-                    <select name="priority" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <select name="priority" class="w-full px-4 py-2 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                         <option value="medium" {{ old('priority', $lastFeedback?->supervisor_priority ?? 'medium') === 'medium' ? 'selected' : '' }}>Prioritas Sedang</option>
                         <option value="low" {{ old('priority', $lastFeedback?->supervisor_priority) === 'low' ? 'selected' : '' }}>Prioritas Rendah</option>
                         <option value="high" {{ old('priority', $lastFeedback?->supervisor_priority) === 'high' ? 'selected' : '' }}>Prioritas Tinggi</option>
@@ -97,7 +97,7 @@
 
                 {{-- Buttons --}}
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-semibold">
+                    <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg-lg hover:bg-blue-700 transition font-semibold">
                         Perbarui Feedback
                     </button>
                     <a href="{{ route('pengawas.feedback.index') }}" class="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition font-semibold">

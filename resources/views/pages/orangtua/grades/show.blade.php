@@ -3,7 +3,7 @@
 
     <div class="space-y-8">
         <div class="flex items-center gap-4">
-            <a href="{{ route('orangtua.grades.index', ['student_id' => $student->id]) }}" class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors">
+            <a href="{{ route('orangtua.grades.index', ['student_id' => $student->id]) }}" class="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                 </svg>
@@ -43,22 +43,22 @@
                             $submission = $assignment->submissions->first();
                             $isDeadlinePassed = $assignment->deadline && $assignment->deadline->isPast();
                             
-                            $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Belum Mengumpulkan</span>';
+                            $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Belum Mengumpulkan</span>';
                             
                             if ($submission) {
                                 $isLate = $assignment->deadline && $submission->submitted_at && \Carbon\Carbon::parse($submission->submitted_at)->gt($assignment->deadline);
                                 
                                 if ($submission->score !== null) {
-                                    $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Dinilai</span>';
+                                    $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Dinilai</span>';
                                 } else {
-                                    $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">Menunggu Penilaian</span>';
+                                    $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">Menunggu Penilaian</span>';
                                 }
                                 
                                 if ($isLate) {
-                                    $statusBadge .= ' <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200 ml-1">Terlambat</span>';
+                                    $statusBadge .= ' <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200 ml-1">Terlambat</span>';
                                 }
                             } elseif ($isDeadlinePassed) {
-                                $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">Terlewat</span>';
+                                $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200">Terlewat</span>';
                             }
                         @endphp
                         <x-card padding="none" class="overflow-hidden border border-slate-200">
@@ -80,7 +80,7 @@
                                         @endif
                                     </div>
                                     @if($submission && $submission->score !== null)
-                                        <div class="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl min-w-[80px] border border-slate-200">
+                                        <div class="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-lg min-w-[80px] border border-slate-200">
                                             <span class="text-[10px] font-bold uppercase text-slate-500">Nilai</span>
                                             <span class="text-xl font-black {{ $submission->score >= 80 ? 'text-emerald-600' : ($submission->score >= 60 ? 'text-amber-600' : 'text-red-600') }}">
                                                 {{ $submission->score }}

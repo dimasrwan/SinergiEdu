@@ -81,7 +81,7 @@
                                 <h2 class="text-base font-bold text-slate-900">Penugasan Kelas & Mata Pelajaran</h2>
                                 <p class="text-sm text-slate-500 mt-0.5">Tentukan kombinasi spesifik kelas dan mata pelajaran untuk guru ini.</p>
                             </div>
-                            <button type="button" @click="addAssignment" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition shrink-0">
+                            <button type="button" @click="addAssignment" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary bg-blue-50 px-3 py-1.5 rounded-lg-lg hover:bg-blue-100 transition shrink-0">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                                 Tambah Penugasan
                             </button>
@@ -125,7 +125,7 @@
                                         <div class="md:col-span-5 relative">
                                             <label class="block text-xs font-semibold text-slate-500 mb-1 md:hidden">Pilih Kelas</label>
                                             <select x-model="assignment.class_id" :name="`assignments[${index}][class_id]`" required
-                                                class="block w-full py-2.5 text-sm border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                class="block w-full py-2.5 text-sm border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
                                                 <option value="" disabled>-- Pilih Kelas --</option>
                                                 <template x-for="cls in classes" :key="cls.id">
                                                     <option :value="cls.id" x-text="`${cls.name} (Tingkat ${cls.grade_level})`"></option>
@@ -137,7 +137,7 @@
                                         <div class="md:col-span-5 relative">
                                             <label class="block text-xs font-semibold text-slate-500 mb-1 md:hidden">Pilih Mata Pelajaran</label>
                                             <select x-model="assignment.subject_id" :name="`assignments[${index}][subject_id]`" required
-                                                class="block w-full py-2.5 text-sm border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer">
+                                                class="block w-full py-2.5 text-sm border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
                                                 <option value="" disabled>-- Pilih Mata Pelajaran --</option>
                                                 <template x-for="sub in subjects" :key="sub.id">
                                                     <option :value="sub.id" x-text="`${sub.name}`"></option>
@@ -155,7 +155,7 @@
 
                                         <!-- Hapus Button -->
                                         <div class="md:col-span-1 flex items-center justify-end md:justify-center md:pt-2">
-                                            <button type="button" @click="removeAssignment(assignment.id)" class="p-2 text-slate-400 hover:text-danger hover:bg-red-50 rounded-lg transition-colors" aria-label="Hapus guru">
+                                            <button type="button" @click="removeAssignment(assignment.id)" class="p-2 text-slate-400 hover:text-danger hover:bg-red-50 rounded-lg-lg transition-colors" aria-label="Hapus guru">
                                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                             </button>
                                         </div>
@@ -164,7 +164,7 @@
                                 
                                 <template x-if="assignments.length === 0">
                                     <div class="px-5 py-8 text-center bg-white">
-                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-50 text-slate-400 mb-3">
+                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-slate-50 text-slate-400 mb-3">
                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                                         </div>
                                         <p class="text-sm font-semibold text-slate-700">Belum ada penugasan yang ditambahkan</p>
@@ -181,7 +181,7 @@
                     <x-button variant="secondary" href="{{ route('admin.teachers.index') }}" class="w-full sm:w-auto">Batal</x-button>
                     
                     <button type="submit" :disabled="isSubmitting || hasDuplicate()" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-xl transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-lg transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
                         <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

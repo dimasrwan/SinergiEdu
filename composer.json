@@ -10,7 +10,8 @@
         "barryvdh/laravel-dompdf": "*",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
-        "maatwebsite/excel": "*"
+        "maatwebsite/excel": "*",
+        "openspout/openspout": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

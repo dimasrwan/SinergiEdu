@@ -9,13 +9,13 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kode</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ketuntasan</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rincian Per Kelas</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Kode</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Ketuntasan</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rincian Per Kelas</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -29,7 +29,7 @@
                                 <td class="py-4 px-4">
                                     <div class="flex items-center gap-2">
                                         <div class="w-20 bg-slate-200 rounded-full h-1.5">
-                                            <div class="{{ $subject['pass_rate'] >= 75 ? 'bg-emerald-500' : 'bg-orange-500' }} h-1.5 rounded-full" style="width: {{ min($subject['pass_rate'], 100) }}%"></div>
+                                            <div class="{{ $subject['pass_rate'] >= 75 ? 'bg-emerald-500' : 'bg-amber-500' }} h-1.5 rounded-full" style="width: {{ min($subject['pass_rate'], 100) }}%"></div>
                                         </div>
                                         <span class="text-xs font-medium text-slate-600">{{ $subject['pass_rate'] }}%</span>
                                     </div>
@@ -39,8 +39,8 @@
                                         @forelse($subject['per_class'] as $pc)
                                             <div class="flex items-center gap-2 text-xs">
                                                 <span class="text-slate-500 w-24 truncate">{{ $pc['class_name'] }}</span>
-                                                <div class="flex-1 bg-slate-100 rounded-full h-1.5">
-                                                    <div class="{{ $pc['avg'] >= 75 ? 'bg-emerald-500' : 'bg-orange-500' }} h-1.5 rounded-full" style="width: {{ min($pc['avg'], 100) }}%"></div>
+                                                <div class="flex-1 bg-slate-100 rounded-lg h-1.5">
+                                                    <div class="{{ $pc['avg'] >= 75 ? 'bg-emerald-500' : 'bg-amber-500' }} h-1.5 rounded-full" style="width: {{ min($pc['avg'], 100) }}%"></div>
                                                 </div>
                                                 <span class="font-semibold text-slate-700 w-8 text-right">{{ $pc['avg'] }}</span>
                                             </div>

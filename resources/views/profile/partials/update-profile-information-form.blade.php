@@ -33,7 +33,7 @@
                         <p class="text-sm text-orange-800">
                             Email Anda belum diverifikasi.
 
-                            <button form="send-verification" class="mt-1 font-semibold underline text-orange-600 hover:text-orange-900 rounded-md focus:outline-none transition">
+                            <button form="send-verification" class="mt-1 font-semibold underline text-orange-600 hover:text-orange-900 rounded-lg focus:outline-none transition">
                                 Klik di sini untuk mengirim ulang tautan verifikasi.
                             </button>
                         </p>

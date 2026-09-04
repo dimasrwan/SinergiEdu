@@ -37,7 +37,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Sekolah</label>
-                        <select name="school_id" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select name="school_id" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                             <option value="">Pilih Sekolah</option>
                             @foreach($schools as $school)
                                 <option value="{{ $school->id }}" {{ old('school_id', $inspection->school_id) == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
@@ -68,7 +68,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Status</label>
-                        <select name="status" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <select name="status" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                             <option value="pending" {{ old('status', $inspection->status) == 'pending' ? 'selected' : '' }}>Menunggu</option>
                             <option value="scheduled" {{ old('status', $inspection->status) == 'scheduled' ? 'selected' : '' }}>Dijadwalkan</option>
                             <option value="completed" {{ old('status', $inspection->status) == 'completed' ? 'selected' : '' }}>Selesai</option>
@@ -81,14 +81,14 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-2">Deskripsi / Catatan</label>
-                    <textarea name="content" rows="4" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none">{{ old('content', $inspection->content) }}</textarea>
+                    <textarea name="content" rows="4" class="w-full px-4 py-4 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none">{{ old('content', $inspection->content) }}</textarea>
                     @error('content')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="flex gap-3 pt-4 border-t border-slate-200">
-                    <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-hover transition font-semibold">
+                    <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg-lg hover:bg-blue-700 transition font-semibold">
                         Perbarui
                     </button>
                     <a href="{{ route('pengawas.inspections.index') }}" class="px-6 py-2.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition font-semibold">

@@ -9,7 +9,7 @@
                 <p class="mt-2 text-sm text-slate-500 max-w-2xl">
                     Kelola data orang tua / wali murid dan pantau data anak yang terhubung.
                     @if($totalParents > 0)
-                        <span class="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
+                        <span class="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
                             {{ $totalParents }} orang tua terdaftar
                         </span>
                     @endif
@@ -44,7 +44,7 @@
                         </svg>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau nomor HP..." 
-                        class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-shadow">
+                        class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-shadow">
                 </div>
             </form>
         </div>

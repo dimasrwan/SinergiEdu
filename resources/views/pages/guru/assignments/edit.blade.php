@@ -50,7 +50,7 @@
                 <div>
                     <x-input-label for="description" :value="__('Instruksi / Soal')" />
                     <textarea id="description" name="description" rows="5" required placeholder="Tuliskan petunjuk pengerjaan tugas secara jelas..."
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white transition duration-150">{{ old('description', $assignment->description) }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white transition duration-150">{{ old('description', $assignment->description) }}</textarea>
                     <x-input-error :messages="$errors->get('description')" class="mt-2" />
                 </div>
 
@@ -65,7 +65,7 @@
                         <x-input-label for="attachment" value="Ubah Lampiran Pendukung (Opsional)" />
                         
                         @if($assignment->attachment_path)
-                            <div class="mb-3 flex items-center justify-between p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                            <div class="mb-3 flex items-center justify-between p-3 bg-blue-50 border border-blue-100 rounded-lg">
                                 <div class="flex items-center gap-3 text-sm">
                                     <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -85,7 +85,7 @@
                             @dragleave.prevent="dragover = false"
                             @drop.prevent="drop($event)"
                             :class="{'border-accent bg-blue-50/50': dragover, 'border-slate-200 bg-slate-50': !dragover}"
-                            class="mt-2 flex justify-center rounded-xl border-2 border-dashed px-6 pt-5 pb-6 transition-colors"
+                            class="mt-2 flex justify-center rounded-lg border-2 border-dashed px-6 pt-5 pb-6 transition-colors"
                         >
                             <div class="space-y-1 text-center">
                                 <svg class="mx-auto h-12 w-12 text-slate-300" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -102,7 +102,7 @@
                             </div>
                         </div>
                         
-                        <div x-show="fileName" style="display: none;" class="mt-3 flex items-center p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div x-show="fileName" style="display: none;" class="mt-3 flex items-center p-3 bg-slate-50 border border-slate-200 rounded-lg-lg">
                             <svg class="h-6 w-6 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm3.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75z" />
                             </svg>

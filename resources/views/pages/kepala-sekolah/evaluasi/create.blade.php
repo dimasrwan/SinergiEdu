@@ -23,7 +23,7 @@
                 <div>
                     <x-input-label for="content" :value="__('Isi Evaluasi')" />
                     <textarea id="content" name="content" rows="8" required placeholder="Tuliskan hasil evaluasi secara mendetail..."
-                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('content') }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('content') }}</textarea>
                     @error('content') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 

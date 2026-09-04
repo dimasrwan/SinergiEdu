@@ -8,9 +8,9 @@
                 Kembali ke Daftar Rencana Aksi
             </a>
             <div class="flex items-center gap-3 flex-wrap mb-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $actionPlan->priority_color }}">{{ $actionPlan->priority_label }}</span>
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">{{ $actionPlan->category_label }}</span>
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $actionPlan->status_color }}">{{ $actionPlan->status_label }}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $actionPlan->priority_color }}">{{ $actionPlan->priority_label }}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">{{ $actionPlan->category_label }}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $actionPlan->status_color }}">{{ $actionPlan->status_label }}</span>
             </div>
             <x-page-header :title="$actionPlan->title" :description="'Dibuat oleh ' . ($actionPlan->creator?->name ?? 'Anda') . ' • Target: ' . ($actionPlan->target?->name ?? $actionPlan->target_role_label)" />
         </div>

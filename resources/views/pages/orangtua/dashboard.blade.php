@@ -62,7 +62,7 @@
                                 • NIS: {{ $selectedStudent->nis }}
                             @endif
                         </p>
-                        <div class="flex items-center gap-2 text-xs font-medium bg-white/10 text-white border border-white/20 rounded-full px-3 py-1 w-max">
+                        <div class="flex items-center gap-2 text-xs font-medium bg-white/10 text-white border border-white/20 rounded-lg px-3 py-1 w-max">
                             @if($activeYear && $activeSemester)
                                 TA {{ $activeYear->year }} - {{ $activeSemester->name }}
                             @else
@@ -171,7 +171,7 @@
                                             @endif
                                         </div>
                                         <div class="shrink-0">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium {{ $statusClass }}">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium {{ $statusClass }}">
                                                 {{ $statusText }}
                                             </span>
                                         </div>
@@ -199,7 +199,7 @@
                                 @php $avg = $grade->average_score; @endphp
                                 <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col items-center justify-center text-center">
                                     <span class="text-xs font-semibold text-slate-500 mb-2 truncate w-full">{{ $grade->subject->name ?? '-' }}</span>
-                                    <div class="flex items-center justify-center h-12 w-12 rounded-full {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-600' : ($avg >= 60 ? 'bg-amber-50 text-amber-600' : ($avg > 0 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-500')) }}">
+                                    <div class="flex items-center justify-center h-12 w-12 rounded-lg {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-600' : ($avg >= 60 ? 'bg-amber-50 text-amber-600' : ($avg > 0 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-500')) }}">
                                         <span class="text-lg font-bold">{{ $avg > 0 ? $avg : '-' }}</span>
                                     </div>
                                 </div>

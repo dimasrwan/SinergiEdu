@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-4 bg-slate-50 px-5 py-4 rounded-xl border border-slate-100 shrink-0">
+                <div class="flex items-center gap-4 bg-slate-50 px-5 py-4 rounded-lg border border-slate-100 shrink-0">
                     <div class="text-right">
                         <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Nilai</span>
                         @php $avg = $grade->average_score; @endphp
@@ -98,7 +98,7 @@
                         <div class="p-5 md:p-6 flex-1">
                             <div class="flex items-center gap-3 mb-2">
                                 <h3 class="text-base font-bold text-slate-900">{{ $assignment->title }}</h3>
-                                <div class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $statusClass }}">
+                                <div class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider {{ $statusClass }}">
                                     {{ $status }}
                                 </div>
                             </div>

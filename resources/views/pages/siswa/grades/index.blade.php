@@ -37,7 +37,7 @@
                             @keydown.arrow-down.prevent="open = true"
                             aria-haspopup="listbox" 
                             :aria-expanded="open"
-                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
+                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-lg px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
                     >
                         <span x-text="selectedLabel" class="truncate"></span>
                         <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -96,7 +96,7 @@
                             @keydown.arrow-down.prevent="open = true"
                             aria-haspopup="listbox" 
                             :aria-expanded="open"
-                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
+                            class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/60 rounded-lg px-4 py-2.5 text-[14px] font-semibold text-slate-700 shadow-sm transition-all"
                     >
                         <span x-text="selectedLabel" class="truncate"></span>
                         <svg class="h-4 w-4 text-slate-400 transition-transform duration-200" :class="{'rotate-180': open}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -151,12 +151,12 @@
                     <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md hover:border-primary/30 transition group">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg uppercase tracking-wider mb-2">
+                                <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg-lg uppercase tracking-wider mb-2">
                                     Mata Pelajaran
                                 </span>
                                 <h3 class="text-lg font-bold text-slate-900 leading-tight group-hover:text-primary transition-colors">{{ $grade->subject->name ?? '-' }}</h3>
                             </div>
-                            <div class="flex items-center justify-center h-14 w-14 shrink-0 rounded-2xl {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : ($avg >= 60 ? 'bg-amber-50 text-amber-600 border border-amber-100' : ($avg > 0 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-slate-50 text-slate-500 border border-slate-200')) }}">
+                            <div class="flex items-center justify-center h-14 w-14 shrink-0 rounded-lg {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : ($avg >= 60 ? 'bg-amber-50 text-amber-600 border border-amber-100' : ($avg > 0 ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-slate-50 text-slate-500 border border-slate-200')) }}">
                                 <span class="text-xl font-bold">{{ $avg > 0 ? $avg : '-' }}</span>
                             </div>
                         </div>
@@ -169,7 +169,7 @@
                         </div>
                         
                         <div class="mt-auto">
-                            <a href="{{ route('siswa.grades.show', $grade) }}" class="flex items-center justify-center w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-primary rounded-xl text-sm font-semibold transition">
+                            <a href="{{ route('siswa.grades.show', $grade) }}" class="flex items-center justify-center w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-primary rounded-lg text-sm font-semibold transition">
                                 Lihat Rincian Nilai
                             </a>
                         </div>

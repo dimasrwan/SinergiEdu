@@ -59,13 +59,13 @@
                         <div>
                             <label for="teacher_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Guru <span class="text-danger">*</span></label>
                             @if(request('redirect_to') === 'teacher')
-                                <select id="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" disabled>
+                                <select id="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" disabled>
                                     <option value="{{ $teacherAssignment->teacher_id }}" selected>
                                         {{ $teacherAssignment->teacher->user->name }} (NIP. {{ $teacherAssignment->teacher->nip ?? '-' }})
                                     </option>
                                 </select>
                             @else
-                                <select id="teacher_id" name="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                                <select id="teacher_id" name="teacher_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                     <option value="" disabled>Pilih guru...</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}" {{ old('teacher_id', $teacherAssignment->teacher_id) == $teacher->id ? 'selected' : '' }}>
@@ -79,7 +79,7 @@
                         <!-- Mata Pelajaran -->
                         <div>
                             <label for="subject_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Mata Pelajaran <span class="text-danger">*</span></label>
-                            <select id="subject_id" name="subject_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                            <select id="subject_id" name="subject_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                 <option value="" disabled>Pilih mata pelajaran...</option>
                                 @foreach($subjects as $subject)
                                     <option value="{{ $subject->id }}" {{ old('subject_id', $teacherAssignment->subject_id) == $subject->id ? 'selected' : '' }}>
@@ -92,7 +92,7 @@
                         <!-- Kelas -->
                         <div>
                             <label for="class_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
-                            <select id="class_id" name="class_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                            <select id="class_id" name="class_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                 <option value="" disabled>Pilih kelas...</option>
                                 @foreach($classrooms as $class)
                                     <option value="{{ $class->id }}" {{ old('class_id', $teacherAssignment->class_id) == $class->id ? 'selected' : '' }}>
@@ -106,7 +106,7 @@
                             <!-- Tahun Ajaran -->
                             <div>
                                 <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                                <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                     <option value="" disabled>Pilih tahun ajaran...</option>
                                     @foreach($academicYears as $year)
                                         <option value="{{ $year->id }}" {{ old('academic_year_id', $teacherAssignment->academic_year_id) == $year->id ? 'selected' : '' }}>

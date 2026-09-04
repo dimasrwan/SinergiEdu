@@ -22,7 +22,7 @@
                             <h2 class="text-lg font-bold text-slate-900">Form Dukungan Mingguan & Umpan Balik</h2>
                             <p class="text-xs text-slate-500 mt-0.5">Isi dokumen kolaborasi mingguan untuk anak Anda</p>
                         </div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                             {{ $activeYear ? $activeYear->year : 'Tahun Ajaran Aktif' }}
                         </span>
                     </div>

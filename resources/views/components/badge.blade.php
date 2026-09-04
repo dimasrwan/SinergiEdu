@@ -1,7 +1,7 @@
 @props(['variant' => 'slate'])
 
 @php
-    $baseClasses = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide uppercase border';
+    $baseClasses = 'inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold tracking-wide uppercase border';
     
     $variantClasses = [
         'slate' => 'bg-slate-50 text-slate-700 border-slate-200',

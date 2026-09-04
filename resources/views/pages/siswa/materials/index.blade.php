@@ -33,17 +33,17 @@
                     <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md hover:border-primary/30 transition group">
                         
                         <div class="flex items-start justify-between mb-3">
-                            <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                            <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg-lg uppercase tracking-wider">
                                 {{ $material->subject->name ?? '-' }}
                             </span>
                             <div class="flex items-center gap-1.5">
                                 @if($material->file_path)
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded-md bg-red-50 text-red-600" title="PDF File">
+                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-red-50 text-red-600" title="PDF File">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                                     </span>
                                 @endif
                                 @if($material->video_path)
-                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded-md bg-blue-50 text-primary" title="Video">
+                                    <span class="inline-flex items-center justify-center h-6 w-6 rounded-lg bg-blue-50 text-primary" title="Video">
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" /></svg>
                                     </span>
                                 @endif
@@ -65,7 +65,7 @@
                                 </div>
                             </div>
                             
-                            <a href="{{ route('siswa.materials.show', $material->id) }}" class="flex items-center justify-center w-full py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 transition">
+                            <a href="{{ route('siswa.materials.show', $material->id) }}" class="flex items-center justify-center w-full py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-semibold rounded-lg border border-slate-200 transition">
                                 Buka Materi
                             </a>
                         </div>

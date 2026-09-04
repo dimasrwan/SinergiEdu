@@ -42,7 +42,7 @@
                      x-transition:leave-end="-translate-x-full">
                     
                     <div class="absolute top-0 right-0 -mr-12 pt-2">
-                        <button type="button" class="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" @click="sidebarOpen = false">
+                        <button type="button" class="ml-1 flex h-10 w-10 items-center justify-center rounded-lg focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" @click="sidebarOpen = false">
                             <span class="sr-only">Tutup sidebar</span>
                             <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" x-description="Heroicon name: outline/x-mark" d="M6 18L18 6M6 6l12 12" />
@@ -103,7 +103,7 @@
                         <li class="mt-auto px-2 pb-4">
                             <!-- Compact Profile Dropdown -->
                             <div class="relative" x-data="{ open: false }">
-                                <button type="button" @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100 rounded-xl p-2.5 flex items-center justify-between gap-x-3 transition-colors border border-slate-200/60">
+                                <button type="button" @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100 rounded-lg p-2.5 flex items-center justify-between gap-x-3 transition-colors border border-slate-200/60">
                                     <div class="flex items-center gap-x-3 min-w-0">
                                         <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-xs" />
                                         <div class="flex-1 min-w-0 text-left">
@@ -180,7 +180,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
                             </div>
-                            <input type="text" x-model="query" @input.debounce.500ms="fetchResults" @keydown.escape="close()" class="block w-64 rounded-full border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                            <input type="text" x-model="query" @input.debounce.500ms="fetchResults" @keydown.escape="close()" class="block w-64 rounded-lg border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
                             
                             <!-- Dropdown Results -->
                             <div x-show="open" x-transition.opacity class="absolute top-full mt-2 w-[400px] bg-white rounded-xl shadow-lg ring-1 ring-slate-900/5 py-2 z-50 lg:right-auto right-0 max-h-96 overflow-y-auto" style="display: none;">

@@ -20,13 +20,13 @@
                     </dl>
                     <div class="mt-5 border-t border-slate-100 pt-5 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{{ $assignment->description }}</div>
                     @if ($assignment->attachment_path)
-                        <a href="{{ asset('storage/'.$assignment->attachment_path) }}" target="_blank" class="mt-5 inline-flex rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">Unduh lampiran tugas</a>
+                        <a href="{{ asset('storage/'.$assignment->attachment_path) }}" target="_blank" class="mt-5 inline-flex rounded-lg-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">Unduh lampiran tugas</a>
                     @endif
                 </x-card>
 
                 <x-card padding="lg" class="bg-blue-700 text-white">
                     <p class="text-xs font-semibold uppercase tracking-wide text-blue-100">Partisipasi Pengumpulan</p>
-                    <p class="mt-2 text-3xl font-bold">{{ $assignment->submissions->count() }} / {{ $enrolledStudents->count() }}</p>
+                    <p class="mt-2 text-2xl font-bold">{{ $assignment->submissions->count() }} / {{ $enrolledStudents->count() }}</p>
                     <p class="mt-1 text-sm text-blue-100">siswa sudah mengumpulkan.</p>
                     @if ($enrolledStudents->isNotEmpty())
                         <div class="mt-4 h-2 overflow-hidden rounded-full bg-blue-950/30"><div class="h-full rounded-full bg-white" style="width: {{ min(100, round(($assignment->submissions->count() / $enrolledStudents->count()) * 100)) }}%"></div></div>

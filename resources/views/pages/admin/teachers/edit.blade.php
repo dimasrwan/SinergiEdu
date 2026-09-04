@@ -74,7 +74,7 @@
                     <x-button variant="secondary" href="{{ route('admin.teachers.index') }}" class="w-full sm:w-auto">Batal</x-button>
                     
                     <button type="submit" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-xl transition-all shadow-sm shadow-primary/20">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-lg transition-all shadow-sm shadow-primary/20">
                         Perbarui Data Guru
                     </button>
                 </div>

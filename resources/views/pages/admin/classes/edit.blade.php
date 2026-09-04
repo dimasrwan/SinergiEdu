@@ -66,7 +66,7 @@
 
                             <div>
                                 <label for="education_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Jenjang Pendidikan <span class="text-danger">*</span></label>
-                                <select id="education_level" name="education_level" x-model="jenjang" @change="onJenjangChange" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
+                                <select id="education_level" name="education_level" x-model="jenjang" @change="onJenjangChange" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
                                     <option value="" disabled>Pilih jenjang...</option>
                                     <option value="SD">SD / MI</option>
                                     <option value="SMP">SMP / MTs</option>
@@ -77,7 +77,7 @@
 
                             <div>
                                 <label for="grade_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Tingkat Kelas <span class="text-danger">*</span></label>
-                                <select id="grade_level" name="grade_level" x-model="tingkat" :disabled="!jenjang" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700 disabled:opacity-50 disabled:bg-slate-50">
+                                <select id="grade_level" name="grade_level" x-model="tingkat" :disabled="!jenjang" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700 disabled:opacity-50 disabled:bg-slate-50">
                                     <option value="" disabled>Pilih tingkat...</option>
                                     <template x-for="val in getTingkatOptions()" :key="val">
                                         <option :value="val" x-text="val" :selected="val == tingkat"></option>
@@ -102,7 +102,7 @@
 
                             <div>
                                 <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                <select id="academic_year_id" name="academic_year_id" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
+                                <select id="academic_year_id" name="academic_year_id" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
                                     <option value="" disabled>Pilih tahun ajaran...</option>
                                     @foreach($academicYears as $year)
                                         <option value="{{ $year->id }}" {{ old('academic_year_id', $class->academic_year_id) == $year->id ? 'selected' : '' }}>
@@ -114,7 +114,7 @@
 
                             <div>
                                 <label for="homeroom_teacher_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Wali Kelas</label>
-                                <select id="homeroom_teacher_id" name="homeroom_teacher_id" class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
+                                <select id="homeroom_teacher_id" name="homeroom_teacher_id" class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
                                     <option value="">-- Belum Ditentukan --</option>
                                     @foreach($teachers as $teacher)
                                         <option value="{{ $teacher->id }}" {{ old('homeroom_teacher_id', $class->homeroom_teacher_id) == $teacher->id ? 'selected' : '' }}>

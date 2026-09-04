@@ -51,25 +51,25 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200">
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pretest</th>
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tugas</th>
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Posttest</th>
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
-                                <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Pretest</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Tugas</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Posttest</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
+                                <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @forelse($rows as $row)
                                 <tr class="hover:bg-slate-50">
-                                    <td class="py-3 px-4 font-semibold text-slate-900 text-sm">{{ $row->subject_name }}</td>
-                                    <td class="py-3 px-4 text-sm font-bold text-slate-900">{{ $row->avg }}</td>
-                                    <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_pre_test }}</td>
-                                    <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_assignment }}</td>
-                                    <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_post_test }}</td>
-                                    <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_character }}</td>
-                                    <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_memorization }}</td>
+                                    <td class="p-6 font-semibold text-slate-900 text-sm">{{ $row->subject_name }}</td>
+                                    <td class="p-6 text-sm font-bold text-slate-900">{{ $row->avg }}</td>
+                                    <td class="p-6 text-slate-600 text-sm">{{ $row->avg_pre_test }}</td>
+                                    <td class="p-6 text-slate-600 text-sm">{{ $row->avg_assignment }}</td>
+                                    <td class="p-6 text-slate-600 text-sm">{{ $row->avg_post_test }}</td>
+                                    <td class="p-6 text-slate-600 text-sm">{{ $row->avg_character }}</td>
+                                    <td class="p-6 text-slate-600 text-sm">{{ $row->avg_memorization }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -91,17 +91,17 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200">
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     @forelse($topStudents as $s)
                                         <tr class="hover:bg-slate-50">
-                                            <td class="py-3 px-4"><span class="inline-flex items-center justify-center h-6 w-6 rounded-full {{ $loop->iteration <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} text-xs font-bold">{{ $loop->iteration }}</span></td>
-                                            <td class="py-3 px-4 font-semibold text-slate-900 text-sm">{{ $s->name }}</td>
-                                            <td class="py-3 px-4 text-sm font-bold text-slate-900">{{ $s->avg }}</td>
+                                            <td class="p-6"><span class="inline-flex items-center justify-center h-6 w-6 rounded-lg {{ $loop->iteration <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} text-xs font-bold">{{ $loop->iteration }}</span></td>
+                                            <td class="p-6 font-semibold text-slate-900 text-sm">{{ $s->name }}</td>
+                                            <td class="p-6 text-sm font-bold text-slate-900">{{ $s->avg }}</td>
                                         </tr>
                                     @empty
                                         <tr><td colspan="3" class="py-8 text-center text-sm text-slate-500">Belum ada data.</td></tr>
@@ -118,7 +118,7 @@
                     <x-card>
                         <div class="space-y-3">
                             @forelse($attentionStudents as $s)
-                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-xl border border-red-100">
+                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
                                     <p class="text-sm font-semibold text-slate-800">{{ $s->name }}</p>
                                     <span class="text-xs font-bold text-red-600">{{ $s->avg }}</span>
                                 </div>

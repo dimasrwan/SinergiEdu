@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-            <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg bg-white p-2 text-slate-400 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 hover:text-slate-500">
+            <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg-lg bg-white p-2 text-slate-400 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 hover:text-slate-500">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
@@ -20,7 +20,7 @@
         <!-- Student Profile Card -->
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="flex items-center gap-4">
-                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-700">
+                <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-blue-100 text-xl font-bold text-blue-700">
                     {{ strtoupper(substr($student->user->name, 0, 1)) }}
                 </div>
                 <div>
@@ -93,7 +93,7 @@
                 </script>
                 @endpush
             @else
-                <div class="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50">
+                <div class="flex h-64 items-center justify-center rounded-lg-lg border-2 border-dashed border-slate-200 bg-slate-50">
                     <div class="text-center">
                         <svg class="mx-auto h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -136,12 +136,12 @@
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm">
                                 @if($submission)
-                                    <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Selesai</span>
+                                    <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Selesai</span>
                                 @else
                                     @if(now()->gt($assignment->deadline))
-                                        <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Terlewat</span>
+                                        <span class="inline-flex items-center rounded-lg bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Terlewat</span>
                                     @else
-                                        <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Belum</span>
+                                        <span class="inline-flex items-center rounded-lg bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Belum</span>
                                     @endif
                                 @endif
                             </td>

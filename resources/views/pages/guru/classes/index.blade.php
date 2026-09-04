@@ -17,7 +17,7 @@
 
         @if($missingContext)
             <div class="bg-amber-50 border border-amber-200 rounded-2xl p-8 text-center max-w-2xl mx-auto">
-                <div class="inline-flex items-center justify-center p-3 bg-amber-100 text-amber-600 rounded-full mb-4">
+                <div class="inline-flex items-center justify-center p-3 bg-amber-100 text-amber-600 rounded-lg mb-4">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">Konteks Akademik Tidak Aktif</h3>
@@ -25,7 +25,7 @@
             </div>
         @elseif($assignments->isEmpty())
             <div class="bg-slate-50 border border-slate-200 rounded-2xl p-8 text-center max-w-2xl mx-auto">
-                <div class="inline-flex items-center justify-center p-3 bg-slate-200 text-slate-500 rounded-full mb-4">
+                <div class="inline-flex items-center justify-center p-3 bg-slate-200 text-slate-500 rounded-lg mb-4">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">Belum ada kelas yang ditugaskan.</h3>

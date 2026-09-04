@@ -27,18 +27,18 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="border-b border-slate-100 bg-slate-50/50">
-                            <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                            <th class="px-4 py-4.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                                 Rencana Aksi</th>
                             <th
-                                class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden md:table-cell">
+                                class="px-4 py-4.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden md:table-cell">
                                 Kelas</th>
                             <th
-                                class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden sm:table-cell">
+                                class="px-4 py-4.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 hidden sm:table-cell">
                                 Prioritas</th>
-                            <th class="px-5 py-3.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                            <th class="px-4 py-4.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
                                 Status</th>
                             <th
-                                class="px-5 py-3.5 text-right text-xs font-bold uppercase tracking-wider text-slate-500">
+                                class="px-4 py-4.5 text-right text-xs font-bold uppercase tracking-wider text-slate-500">
                                 Aksi</th>
                         </tr>
                     </thead>
@@ -53,20 +53,20 @@
                                 <td class="px-5 py-4 hidden md:table-cell">
                                     @if($plan->classroom)
                                         <span
-                                            class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">{{ $plan->classroom->name }}</span>
+                                            class="inline-flex items-center px-2.5 py-1 rounded-lg-lg text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">{{ $plan->classroom->name }}</span>
                                     @else
                                         <span class="text-slate-400 text-xs">Seluruh Sekolah</span>
                                     @endif
                                 </td>
                                 <td class="px-5 py-4 hidden sm:table-cell">
                                     <span
-                                        class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $plan->priority_badge_class }}">
+                                        class="inline-flex items-center px-2.5 py-1 rounded-lg-lg text-xs font-semibold {{ $plan->priority_badge_class }}">
                                         {{ $plan->priority_label }}
                                     </span>
                                 </td>
                                 <td class="px-5 py-4">
                                     <span
-                                        class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $plan->status_badge_class }}">
+                                        class="inline-flex items-center px-2.5 py-1 rounded-lg-lg text-xs font-semibold {{ $plan->status_badge_class }}">
                                         {{ $plan->status_label }}
                                     </span>
                                 </td>
@@ -87,7 +87,7 @@
                             <tr>
                                 <td colspan="5" class="px-5 py-16 text-center">
                                     <div
-                                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-50 text-slate-300 mb-4 ring-8 ring-slate-50/50">
+                                        class="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-slate-50 text-slate-300 mb-4 ring-8 ring-slate-50/50">
                                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                             stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -98,7 +98,7 @@
                                     <p class="text-sm text-slate-400 mt-1">Mulai buat rencana aksi peningkatan mutu sekolah.
                                     </p>
                                     <a href="{{ route('pengawas.action-plans.create') }}"
-                                        class="mt-4 inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 rounded-xl transition">Buat
+                                        class="mt-4 inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition">Buat
                                         Sekarang</a>
                                 </td>
                             </tr>

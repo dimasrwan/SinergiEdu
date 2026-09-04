@@ -3,7 +3,7 @@
     
     <x-slot:sidebar>
         <div class="px-4 py-4 space-y-4">
-            <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 rounded-xl transition">
+            <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 rounded-lg transition">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
@@ -11,13 +11,13 @@
             </a>
             <div class="border-t border-slate-100 pt-4">
                 <span class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Pengaturan</span>
-                <a href="#profile-info" class="flex items-center gap-3 text-sm font-semibold text-slate-700 bg-slate-50 px-3 py-2 rounded-xl transition">
+                <a href="#profile-info" class="flex items-center gap-3 text-sm font-semibold text-slate-700 bg-slate-50 px-3 py-2 rounded-lg transition">
                     Informasi Profil
                 </a>
-                <a href="#password-update" class="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-xl transition">
+                <a href="#password-update" class="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 px-3 py-2 rounded-lg transition">
                     Keamanan Sandi
                 </a>
-                <a href="#account-delete" class="flex items-center gap-3 text-sm font-semibold text-red-600 hover:bg-red-50 px-3 py-2 rounded-xl transition">
+                <a href="#account-delete" class="flex items-center gap-3 text-sm font-semibold text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition">
                     Hapus Akun
                 </a>
             </div>
@@ -53,7 +53,7 @@
                                     <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data" class="inline" x-data="{ submitting: false }" @submit="submitting = true">
                                         @csrf
                                         <input type="file" name="photo" id="photo" class="hidden" accept=".jpg,.jpeg,.png" onchange="this.form.submit()" :disabled="submitting">
-                                        <button type="button" onclick="document.getElementById('photo').click()" class="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition" x-bind:class="{ 'opacity-50 cursor-not-allowed': submitting }" :disabled="submitting">
+                                        <button type="button" onclick="document.getElementById('photo').click()" class="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg-lg border border-blue-200 transition" x-bind:class="{ 'opacity-50 cursor-not-allowed': submitting }" :disabled="submitting">
                                             <span x-show="!submitting">Ganti Foto</span>
                                             <span x-show="submitting">Menyimpan...</span>
                                         </button>
@@ -63,7 +63,7 @@
                                         <form action="{{ route('profile.photo.destroy') }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto profil?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 transition">
+                                            <button type="submit" class="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg-lg border border-red-200 transition">
                                                 Hapus Foto
                                             </button>
                                         </form>
@@ -77,7 +77,7 @@
                             <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-50 text-blue-600 border border-blue-200/60 mb-4">
                                 {{ $user->role->name ?? 'User' }}
                             </span>
-                            <div class="w-full flex items-center justify-center gap-2 text-slate-500 text-sm bg-slate-50 py-2 px-3 rounded-lg border border-slate-100">
+                            <div class="w-full flex items-center justify-center gap-2 text-slate-500 text-sm bg-slate-50 py-2 px-3 rounded-lg-lg border border-slate-100">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                                 </svg>

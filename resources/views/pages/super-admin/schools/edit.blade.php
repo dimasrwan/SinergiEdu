@@ -57,7 +57,7 @@
                                     <input x-ref="fileInput" id="logo" name="logo" type="file" accept="image/*" class="hidden" 
                                            @change="if($event.target.files.length) { fileName = $event.target.files[0].name; const reader = new FileReader(); reader.onload = (e) => { filePreview = e.target.result }; reader.readAsDataURL($event.target.files[0]); }" />
                                     
-                                    <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 group-hover:bg-blue-50/50 group-hover:border-primary/50 transition-colors">
+                                    <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50/50 group-hover:bg-blue-50/50 group-hover:border-primary/50 transition-colors">
                                         <template x-if="!filePreview">
                                             <div class="text-center">
                                                 <svg class="mx-auto h-8 w-8 text-slate-400 group-hover:text-primary transition-colors mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -134,11 +134,11 @@
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/30 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 rounded-b-2xl">
+                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/30 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 rounded-lg-b-2xl">
                     <x-button variant="secondary" href="{{ route('super_admin.schools.show', $school) }}" class="w-full sm:w-auto min-w-[120px] justify-center">Batal</x-button>
                     
                     <button type="submit" :disabled="isSubmitting" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-xl transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover active:bg-blue-900 rounded-lg transition-all shadow-sm shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
                         <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display: none;">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

@@ -13,10 +13,10 @@
         </div>
 
         {{-- Hero Card Profil Siswa --}}
-        <div class="bg-gradient-to-br from-primary to-cyan-500 rounded-3xl p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+        <div class="bg-gradient-to-br from-primary to-cyan-500 rounded-2xl p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
             <div class="absolute right-0 top-0 w-56 h-56 bg-white/5 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"></div>
             <div class="relative z-10 flex flex-col sm:flex-row sm:items-center gap-5">
-                <div class="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl font-black shrink-0">
+                <div class="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-black shrink-0">
                     {{ strtoupper(substr($student->user?->name ?? '?', 0, 2)) }}
                 </div>
                 <div class="flex-1 min-w-0">
@@ -52,7 +52,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Keseluruhan</p>
-                        <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['overall_avg'], 1) }}</p>
+                        <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['overall_avg'], 1) }}</p>
                         <p class="text-xs text-slate-500 mt-1">
                             Kelas: {{ number_format($classAverage, 1) }}
                             <span class="text-blue-600 font-semibold">
@@ -72,7 +72,7 @@
             <x-card padding="md" class="border-l-4 border-l-orange-500">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Tes Awal</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_pre_test'], 1) }}</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_pre_test'], 1) }}</p>
                 </div>
             </x-card>
 
@@ -80,7 +80,7 @@
             <x-card padding="md" class="border-l-4 border-l-emerald-500">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Tes Akhir</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_post_test'], 1) }}</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_post_test'], 1) }}</p>
                 </div>
             </x-card>
 
@@ -88,7 +88,7 @@
             <x-card padding="md" class="border-l-4 border-l-yellow-500">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Tugas</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_assignment'], 1) }}</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_assignment'], 1) }}</p>
                 </div>
             </x-card>
 
@@ -96,7 +96,7 @@
             <x-card padding="md" class="border-l-4 border-l-purple-500">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Karakter</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_character'], 1) }}</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_character'], 1) }}</p>
                 </div>
             </x-card>
 
@@ -104,7 +104,7 @@
             <x-card padding="md" class="border-l-4 border-l-pink-500">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Hafalan</p>
-                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_memorization'], 1) }}</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_memorization'], 1) }}</p>
                 </div>
             </x-card>
         </div>
@@ -114,7 +114,7 @@
             <div class="p-6 border-b border-slate-200 flex items-center justify-between">
                 <h2 class="text-lg font-bold text-slate-900">Nilai Per Mata Pelajaran</h2>
                 <a href="{{ route('pengawas.feedback.create', ['student_id' => $student->id]) }}"
-                   class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold">
+                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold">
                     Berikan Feedback
                 </a>
             </div>
@@ -123,28 +123,28 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50/50 border-b border-slate-200">
-                            <th class="px-6 py-3 text-left font-semibold text-slate-700">Mata Pelajaran</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Guru</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Tes Awal</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Tugas</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Tes Akhir</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Karakter</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Hafalan</th>
-                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Rata-rata</th>
+                            <th class="px-4 py-4 text-left font-semibold text-slate-700">Mata Pelajaran</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Guru</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Tes Awal</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Tugas</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Tes Akhir</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Karakter</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Hafalan</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Rata-rata</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse($grades as $grade)
                             <tr class="hover:bg-slate-50/50 transition">
-                                <td class="px-6 py-3 font-medium text-slate-900">{{ $grade->subject?->name }}</td>
-                                <td class="px-4 py-3 text-center text-xs text-slate-600">{{ $grade->teacher?->user?->name }}</td>
-                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->pre_test_score ? number_format($grade->pre_test_score, 1) : '-' }}</td>
-                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->assignment_score ? number_format($grade->assignment_score, 1) : '-' }}</td>
-                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->post_test_score ? number_format($grade->post_test_score, 1) : '-' }}</td>
-                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->character_score ? number_format($grade->character_score, 1) : '-' }}</td>
-                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->memorization_score ? number_format($grade->memorization_score, 1) : '-' }}</td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold
+                                <td class="px-4 py-4 font-medium text-slate-900">{{ $grade->subject?->name }}</td>
+                                <td class="px-4 py-4 text-center text-xs text-slate-600">{{ $grade->teacher?->user?->name }}</td>
+                                <td class="px-4 py-4 text-center text-slate-600">{{ $grade->pre_test_score ? number_format($grade->pre_test_score, 1) : '-' }}</td>
+                                <td class="px-4 py-4 text-center text-slate-600">{{ $grade->assignment_score ? number_format($grade->assignment_score, 1) : '-' }}</td>
+                                <td class="px-4 py-4 text-center text-slate-600">{{ $grade->post_test_score ? number_format($grade->post_test_score, 1) : '-' }}</td>
+                                <td class="px-4 py-4 text-center text-slate-600">{{ $grade->character_score ? number_format($grade->character_score, 1) : '-' }}</td>
+                                <td class="px-4 py-4 text-center text-slate-600">{{ $grade->memorization_score ? number_format($grade->memorization_score, 1) : '-' }}</td>
+                                <td class="px-4 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-xs font-semibold
                                         {{ $grade->average_score >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
                                         {{ number_format($grade->average_score, 1) }}
                                     </span>

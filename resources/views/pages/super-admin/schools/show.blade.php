@@ -26,11 +26,11 @@
                         <div class="flex items-center gap-3">
                             <h1 class="text-2xl font-bold text-slate-950">{{ $school->name }}</h1>
                             @if($school->is_active)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                 </span>
                             @endif
@@ -101,7 +101,7 @@
 
                 <div class="space-y-4">
                     <div class="flex items-center justify-between border-b pb-2">
-                        <h2 class="text-base font-bold text-slate-900">Admin Sekolah <span class="ml-2 inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">{{ count($admins) }}</span></h2>
+                        <h2 class="text-base font-bold text-slate-900">Admin Sekolah <span class="ml-2 inline-flex items-center rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">{{ count($admins) }}</span></h2>
                         <a href="{{ route('super_admin.schools.admins.create', $school) }}" class="text-sm font-semibold text-primary hover:text-blue-700 transition-colors">
                             + Tambah Admin
                         </a>
@@ -137,11 +137,11 @@
                                         </td>
                                         <td class="py-3 px-4">
                                             @if($admin->is_active)
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                                 </span>
                                             @endif

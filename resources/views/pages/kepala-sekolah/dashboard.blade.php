@@ -4,20 +4,20 @@
     <div class="w-full space-y-8">
 
         <!-- Banner Ikhtisar -->
-        <div class="bg-primary rounded-3xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+        <div class="bg-primary rounded-2xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
             <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight mb-2">Dashboard Kepala Sekolah</h1>
-                    <p class="text-indigo-200 text-sm max-w-xl">
+                    <h1 class="text-2xl font-bold tracking-tight mb-2">Dashboard Kepala Sekolah</h1>
+                    <p class="text-blue-200 text-sm max-w-xl">
                         Selamat datang, {{ Auth::user()->name }}. Pantau kinerja akademik dan tenaga pendidik di sekolah Anda.
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-4 shrink-0">
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 min-w-[140px]">
-                        <p class="text-xs text-indigo-200 font-semibold uppercase tracking-wider mb-1">Tahun Ajaran</p>
+                        <p class="text-xs text-blue-200 font-semibold uppercase tracking-wider mb-1">Tahun Ajaran</p>
                         <h3 class="text-xl font-bold">{{ $activeYear?->name ?? 'Belum Aktif' }}</h3>
-                        <p class="text-xs text-indigo-200 mt-1">{{ $activeSemester?->name ?? 'Belum ada semester aktif' }}</p>
+                        <p class="text-xs text-blue-200 mt-1">{{ $activeSemester?->name ?? 'Belum ada semester aktif' }}</p>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
 
             <x-card>
                 <div class="flex items-center gap-4">
-                    <div class="h-12 w-12 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0">
+                    <div class="h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg>
                     </div>
                     <div>
@@ -89,21 +89,21 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200">
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Peringkat</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tingkat</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Peringkat</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Tingkat</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     @forelse($classRankings as $ranking)
                                         <tr class="hover:bg-slate-50">
-                                            <td class="py-3 px-4">
-                                                <span class="inline-flex items-center justify-center h-6 w-6 rounded-full {{ $loop->iteration <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} text-xs font-bold">{{ $loop->iteration }}</span>
+                                            <td class="p-6">
+                                                <span class="inline-flex items-center justify-center h-6 w-6 rounded-lg {{ $loop->iteration <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} text-xs font-bold">{{ $loop->iteration }}</span>
                                             </td>
-                                            <td class="py-3 px-4 font-semibold text-slate-900 text-sm">{{ $ranking['name'] }}</td>
-                                            <td class="py-3 px-4 text-slate-600 text-sm">{{ $ranking['grade_level'] }}</td>
-                                            <td class="py-3 px-4 text-sm font-bold text-slate-900">{{ $ranking['avg'] }}</td>
+                                            <td class="p-6 font-semibold text-slate-900 text-sm">{{ $ranking['name'] }}</td>
+                                            <td class="p-6 text-slate-600 text-sm">{{ $ranking['grade_level'] }}</td>
+                                            <td class="p-6 text-sm font-bold text-slate-900">{{ $ranking['avg'] }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -127,24 +127,24 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200">
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
-                                        <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Ketuntasan</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
+                                        <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Ketuntasan</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     @forelse($subjectAnalysis as $subject)
                                         <tr class="hover:bg-slate-50">
-                                            <td class="py-3 px-4 font-semibold text-slate-900 text-sm">{{ $subject['name'] }}</td>
-                                            <td class="py-3 px-4 text-slate-600 text-sm">{{ $subject['avg'] }}</td>
-                                            <td class="py-3 px-4 text-slate-600 text-sm">{{ $subject['avg_character'] }}</td>
-                                            <td class="py-3 px-4 text-slate-600 text-sm">{{ $subject['avg_memorization'] }}</td>
-                                            <td class="py-3 px-4">
+                                            <td class="p-6 font-semibold text-slate-900 text-sm">{{ $subject['name'] }}</td>
+                                            <td class="p-6 text-slate-600 text-sm">{{ $subject['avg'] }}</td>
+                                            <td class="p-6 text-slate-600 text-sm">{{ $subject['avg_character'] }}</td>
+                                            <td class="p-6 text-slate-600 text-sm">{{ $subject['avg_memorization'] }}</td>
+                                            <td class="p-6">
                                                 <div class="flex items-center gap-2">
                                                     <div class="w-20 bg-slate-200 rounded-full h-1.5">
-                                                        <div class="{{ $subject['pass_rate'] >= 75 ? 'bg-emerald-500' : 'bg-orange-500' }} h-1.5 rounded-full" style="width: {{ min($subject['pass_rate'], 100) }}%"></div>
+                                                        <div class="{{ $subject['pass_rate'] >= 75 ? 'bg-emerald-500' : 'bg-amber-500' }} h-1.5 rounded-full" style="width: {{ min($subject['pass_rate'], 100) }}%"></div>
                                                     </div>
                                                     <span class="text-xs font-medium text-slate-600">{{ $subject['pass_rate'] }}%</span>
                                                 </div>
@@ -170,7 +170,7 @@
                 <section>
                     <h2 class="text-lg font-bold text-slate-900 mb-4">Intervensi Diperlukan</h2>
                     @forelse($belowTargetClasses as $class)
-                        <div class="bg-white border border-red-200 rounded-2xl p-5 shadow-sm shadow-red-100/50 mb-3">
+                        <div class="bg-white border border-red-200 rounded-2xl p-5 shadow-sm shadow-sm-100/50 mb-3">
                             <div class="flex items-center gap-2 text-red-600 mb-3">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                 <h3 class="font-bold text-sm">{{ $class['name'] }}</h3>
@@ -196,7 +196,7 @@
                                 <p class="text-2xl font-bold text-slate-900">{{ $completedGrading }} / {{ $totalAssignments }}</p>
                                 <p class="text-xs text-slate-500">tugas telah dinilai</p>
                             </div>
-                            <span class="text-xs font-bold px-2.5 py-1 rounded-full {{ $lateGrading > 0 ? 'bg-orange-100 text-orange-700' : 'bg-emerald-100 text-emerald-700' }}">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full {{ $lateGrading > 0 ? 'bg-orange-100 text-amber-700' : 'bg-emerald-100 text-emerald-700' }}">
                                 {{ $lateGrading }} belum dinilai
                             </span>
                         </div>
@@ -212,7 +212,7 @@
                     <h2 class="text-lg font-bold text-slate-900 mb-4">Guru Berkinerja Tinggi</h2>
                     <div class="space-y-3">
                         @forelse($topTeachers as $teacher)
-                            <a href="{{ route('kepala-sekolah.supervision.teacher-detail', $teacher->id) }}" class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                            <a href="{{ route('kepala-sekolah.supervision.teacher-detail', $teacher->id) }}" class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-lg hover:border-primary hover:shadow-sm transition group">
                                 <div class="flex items-center gap-3">
                                     <div class="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">{{ substr($teacher->name, 0, 1) }}</div>
                                     <div>
@@ -236,7 +236,7 @@
         <section>
             <h2 class="text-lg font-bold text-slate-900 mb-4">Menu Cepat</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <a href="{{ route('kepala-sekolah.academic.rekap') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                <a href="{{ route('kepala-sekolah.academic.rekap') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-sm transition group">
                     <div class="flex items-center gap-3">
                         <div class="bg-slate-100 text-slate-500 p-2 rounded-lg group-hover:bg-blue-50 group-hover:text-primary transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
@@ -244,7 +244,7 @@
                         <span class="text-sm font-semibold text-slate-700">Rekapitulasi Nilai</span>
                     </div>
                 </a>
-                <a href="{{ route('kepala-sekolah.supervision.teacher-report') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                <a href="{{ route('kepala-sekolah.supervision.teacher-report') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-sm transition group">
                     <div class="flex items-center gap-3">
                         <div class="bg-slate-100 text-slate-500 p-2 rounded-lg group-hover:bg-blue-50 group-hover:text-primary transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
@@ -252,7 +252,7 @@
                         <span class="text-sm font-semibold text-slate-700">Laporan Kinerja Guru</span>
                     </div>
                 </a>
-                <a href="{{ route('kepala-sekolah.feedback.create') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                <a href="{{ route('kepala-sekolah.feedback.create') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-sm transition group">
                     <div class="flex items-center gap-3">
                         <div class="bg-slate-100 text-slate-500 p-2 rounded-lg group-hover:bg-blue-50 group-hover:text-primary transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -260,7 +260,7 @@
                         <span class="text-sm font-semibold text-slate-700">Kirim Feedback</span>
                     </div>
                 </a>
-                <a href="{{ route('kepala-sekolah.evaluasi.index') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                <a href="{{ route('kepala-sekolah.evaluasi.index') }}" class="p-4 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-sm transition group">
                     <div class="flex items-center gap-3">
                         <div class="bg-slate-100 text-slate-500 p-2 rounded-lg group-hover:bg-blue-50 group-hover:text-primary transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>

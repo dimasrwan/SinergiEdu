@@ -8,9 +8,9 @@
                 Kembali ke Daftar Feedback
             </a>
             <div class="flex items-center gap-3 flex-wrap mb-4">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $feedback->priority_color }}">{{ $feedback->priority_label }}</span>
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">{{ $feedback->category_label }}</span>
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $feedback->status_color }}">{{ $feedback->status_label }}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $feedback->priority_color }}">{{ $feedback->priority_label }}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">{{ $feedback->category_label }}</span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $feedback->status_color }}">{{ $feedback->status_label }}</span>
             </div>
             <x-page-header :title="$feedback->title" :description="'Dikirim oleh ' . ($feedback->sender->name ?? 'Anda') . ' • ' . $feedback->created_at->format('d M Y H:i')" />
         </div>

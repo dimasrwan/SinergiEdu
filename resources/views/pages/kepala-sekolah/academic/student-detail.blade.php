@@ -15,25 +15,25 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pretest</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tugas</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Posttest</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
-                            <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rata-rata</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Pretest</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Tugas</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Posttest</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Karakter</th>
+                            <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Hafalan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($subjectRows as $row)
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-semibold text-slate-900 text-sm">{{ $row->subject_name }}</td>
-                                <td class="py-3 px-4 text-sm font-bold text-slate-900">{{ $row->avg }}</td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_pre_test }}</td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_assignment }}</td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_post_test }}</td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_character }}</td>
-                                <td class="py-3 px-4 text-slate-600 text-sm">{{ $row->avg_memorization }}</td>
+                                <td class="p-6 font-semibold text-slate-900 text-sm">{{ $row->subject_name }}</td>
+                                <td class="p-6 text-sm font-bold text-slate-900">{{ $row->avg }}</td>
+                                <td class="p-6 text-slate-600 text-sm">{{ $row->avg_pre_test }}</td>
+                                <td class="p-6 text-slate-600 text-sm">{{ $row->avg_assignment }}</td>
+                                <td class="p-6 text-slate-600 text-sm">{{ $row->avg_post_test }}</td>
+                                <td class="p-6 text-slate-600 text-sm">{{ $row->avg_character }}</td>
+                                <td class="p-6 text-slate-600 text-sm">{{ $row->avg_memorization }}</td>
                             </tr>
                         @empty
                             <tr>

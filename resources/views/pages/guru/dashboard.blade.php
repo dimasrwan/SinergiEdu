@@ -22,11 +22,11 @@
                     @endif
                 </div>
                 <div class="flex items-center gap-3 shrink-0">
-                    <a href="{{ route('guru.materials.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl text-sm font-semibold transition backdrop-blur-sm border border-white/10">
+                    <a href="{{ route('guru.materials.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-semibold transition backdrop-blur-sm border border-white/10">
                         <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         Tambah Materi
                     </a>
-                    <a href="{{ route('guru.assignments.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white text-primary hover:bg-slate-50 rounded-xl text-sm font-semibold transition shadow-sm">
+                    <a href="{{ route('guru.assignments.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white text-primary hover:bg-slate-50 rounded-lg text-sm font-semibold transition shadow-sm">
                         <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         Buat Tugas Baru
                     </a>
@@ -37,7 +37,7 @@
         @if($missingContext)
             <!-- Empty state untuk konteks akademik yang hilang -->
             <div class="bg-amber-50 border border-amber-200 rounded-2xl p-8 text-center max-w-2xl mx-auto">
-                <div class="inline-flex items-center justify-center p-3 bg-amber-100 text-amber-600 rounded-full mb-4">
+                <div class="inline-flex items-center justify-center p-3 bg-amber-100 text-amber-600 rounded-lg mb-4">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">Konteks Akademik Tidak Aktif</h3>
@@ -141,7 +141,7 @@
                                                 <p class="text-xs text-slate-500 mt-0.5">{{ $task->classroom->name }} • {{ $task->unscored_submissions_count }} Pengumpulan Baru</p>
                                             </div>
                                         </div>
-                                        <a href="{{ route('guru.assignments.show', $task->id) }}" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition shrink-0">
+                                        <a href="{{ route('guru.assignments.show', $task->id) }}" class="inline-flex items-center justify-center px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg-lg text-xs font-semibold transition shrink-0">
                                             Nilai Sekarang
                                         </a>
                                     </div>
@@ -157,7 +157,7 @@
                         <h2 class="text-base font-bold text-slate-900 mb-6">Aktivitas Mengajar</h2>
                         
                         <div class="text-center py-10">
-                            <div class="inline-flex items-center justify-center p-3 bg-slate-50 text-slate-400 rounded-full mb-3">
+                            <div class="inline-flex items-center justify-center p-3 bg-slate-50 text-slate-400 rounded-lg mb-3">
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                             </div>
                             <p class="text-sm text-slate-500">Belum ada aktivitas mengajar terbaru.</p>

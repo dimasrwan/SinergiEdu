@@ -15,7 +15,7 @@
         </div>
 
         <form action="{{ route('pengawas.reports.update', $report) }}" method="POST"
-            class="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm space-y-5">
+            class="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm space-y-5">
             @csrf
             @method('PUT')
 
@@ -33,7 +33,7 @@
                     <label for="teacher_id" class="block text-sm font-semibold text-slate-700 mb-2">Sasaran Guru
                         (Opsional)</label>
                     <select id="teacher_id" name="teacher_id"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-cyan-500 focus:bg-white transition">
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
                         <option value="">– Seluruh Sekolah / Bukan Guru Spesifik –</option>
                         @foreach($teachers as $teacher)
                             <option value="{{ $teacher->id }}" @selected(old('teacher_id', $report->teacher_id) == $teacher->id)>{{ $teacher->user?->name }}</option>
@@ -47,7 +47,7 @@
                     <label for="class_id" class="block text-sm font-semibold text-slate-700 mb-2">Sasaran Kelas
                         (Opsional)</label>
                     <select id="class_id" name="class_id"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-cyan-500 focus:bg-white transition">
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
                         <option value="">– Seluruh Sekolah / Bukan Kelas Spesifik –</option>
                         @foreach($classrooms as $cls)
                             <option value="{{ $cls->id }}" @selected(old('class_id', $report->class_id) == $cls->id)>
@@ -63,7 +63,7 @@
                 <label for="content" class="block text-sm font-semibold text-slate-700 mb-2">Isi Laporan / Hasil
                     Evaluasi Kinerja <span class="text-red-500">*</span></label>
                 <textarea id="content" name="content" rows="10" required
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-cyan-500 focus:bg-white transition duration-150 resize-none">{{ old('content', $report->content) }}</textarea>
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition duration-150 resize-none">{{ old('content', $report->content) }}</textarea>
                 @error('content')
                 <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
@@ -72,18 +72,18 @@
                 <label for="recommendations" class="block text-sm font-semibold text-slate-700 mb-2">Rekomendasi Tindak
                     Lanjut</label>
                 <textarea id="recommendations" name="recommendations" rows="5"
-                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-cyan-500 focus:bg-white transition duration-150 resize-none">{{ old('recommendations', $report->recommendations) }}</textarea>
+                    class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition duration-150 resize-none">{{ old('recommendations', $report->recommendations) }}</textarea>
                 @error('recommendations')
                 <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit"
-                    class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-blue-800 rounded-xl transition shadow-sm">
+                    class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-blue-800 rounded-lg transition shadow-sm">
                     Simpan Laporan
                 </button>
                 <a href="{{ route('pengawas.reports.index') }}"
-                    class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                    class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
                     Batal
                 </a>
             </div>

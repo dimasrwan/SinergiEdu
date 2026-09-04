@@ -103,7 +103,7 @@
                     <p class="text-xs text-slate-500 mb-6">Berdasarkan status operasional.</p>
                     
                     <div class="flex-1 flex flex-col justify-center gap-4">
-                        <div class="flex items-center justify-between p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <div class="flex items-center justify-between p-4 bg-emerald-50 rounded-lg border border-emerald-100">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
@@ -113,7 +113,7 @@
                             <span class="text-2xl font-bold text-emerald-700">{{ $activeSchools }}</span>
                         </div>
 
-                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -168,11 +168,11 @@
                                         <td class="px-6 py-4 text-sm text-slate-500">{{ \Carbon\Carbon::parse($school->created_at)->translatedFormat('d M Y') }}</td>
                                         <td class="px-6 py-4">
                                             @if($school->is_active)
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                                 </span>
                                             @endif

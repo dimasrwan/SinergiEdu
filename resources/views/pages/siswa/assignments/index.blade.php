@@ -54,10 +54,10 @@
                     <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md hover:border-primary/30 transition group">
                         
                         <div class="flex items-start justify-between mb-3 gap-2">
-                            <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg uppercase tracking-wider shrink-0">
+                            <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg-lg uppercase tracking-wider shrink-0">
                                 {{ $assignment->subject->name ?? '-' }}
                             </span>
-                            <span class="inline-flex text-[10px] font-bold px-2.5 py-1 rounded-lg uppercase tracking-wider text-right shrink-0 {{ $statusClass }}">
+                            <span class="inline-flex text-[10px] font-bold px-2.5 py-1 rounded-lg-lg uppercase tracking-wider text-right shrink-0 {{ $statusClass }}">
                                 {{ $statusText }}
                             </span>
                         </div>
@@ -72,13 +72,13 @@
                         
                         <div class="mt-auto space-y-3">
                             @if($hasScore)
-                                <div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-xl mb-3 border border-slate-100">
+                                <div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg mb-3 border border-slate-100">
                                     <span class="text-xs font-medium text-slate-500">Nilai Akhir:</span>
                                     <span class="text-sm font-bold text-primary">{{ $submission->score }}</span>
                                 </div>
                             @endif
                             
-                            <a href="{{ route('siswa.assignments.show', $assignment->id) }}" class="flex items-center justify-center w-full py-2.5 {{ $isSubmitted ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200' : 'bg-primary hover:bg-primary/90 text-white border border-transparent' }} text-sm font-semibold rounded-xl transition shadow-sm">
+                            <a href="{{ route('siswa.assignments.show', $assignment->id) }}" class="flex items-center justify-center w-full py-2.5 {{ $isSubmitted ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200' : 'bg-primary hover:bg-primary/90 text-white border border-transparent' }} text-sm font-semibold rounded-lg transition shadow-sm">
                                 {{ $isSubmitted ? 'Lihat Detail' : 'Kerjakan Tugas' }}
                             </a>
                         </div>

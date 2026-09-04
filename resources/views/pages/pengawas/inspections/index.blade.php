@@ -21,13 +21,13 @@
         <x-card padding="none">
             <div class="p-4 border-b border-slate-200 flex items-center gap-4">
                 <form method="GET" class="flex gap-3">
-                    <select name="status" class="px-4 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <select name="status" class="px-4 py-2 border border-slate-300 rounded-lg-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                         <option value="">Semua Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
                         <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Dijadwalkan</option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
                     </select>
-                    <button type="submit" class="px-4 py-2 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">Filter</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-slate-100 text-slate-700 rounded-lg-lg hover:bg-slate-200 transition">Filter</button>
                 </form>
             </div>
             <x-table>
@@ -77,7 +77,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-50 text-slate-300 mb-4">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-slate-50 text-slate-300 mb-4">
                                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg>
                                 </div>
                                 <h3 class="text-lg font-bold text-slate-800">Belum Ada Jadwal Inspeksi</h3>

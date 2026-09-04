@@ -11,7 +11,7 @@
                 Kembali ke Daftar
             </a>
             <button onclick="window.print()"
-                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-white bg-primary hover:bg-blue-800 rounded-xl transition shadow-sm">
+                class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-white bg-primary hover:bg-blue-800 rounded-lg transition shadow-sm">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M6.72 19.164h10.56M16.5 10.125V3h-9v7.125m9 0v8.623a.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V10.125m9 0h2.25a.75.75 0 0 1 .75.75v5.25a.75.75 0 0 1-.75.75M7.5 10.125H5.25a.75.75 0 0 0-.75.75v5.25a.75.75 0 0 0 .75.75" />
@@ -21,7 +21,7 @@
         </div>
 
         {{-- Kertas Laporan --}}
-        <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-4xl mx-auto shadow-sm print:shadow-none print:border-none print:p-0"
+        <div class="bg-white border border-slate-200 rounded-2xl p-8 max-w-4xl mx-auto shadow-sm print:shadow-none print:border-none print:p-0"
             id="report-paper">
             {{-- Header Surat/Laporan --}}
             <div class="text-center border-b-4 border-double border-slate-900 pb-5 mb-6">

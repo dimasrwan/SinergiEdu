@@ -77,7 +77,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="text-right">
-                                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg font-bold text-xs bg-blue-50 text-blue-700">
+                                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg-lg font-bold text-xs bg-blue-50 text-blue-700">
                                                         {{ $grade->average_score }}
                                                     </span>
                                                 </div>

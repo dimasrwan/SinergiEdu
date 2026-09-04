@@ -3,12 +3,12 @@
 
     <div class="space-y-8">
         <!-- School Health Index Banner -->
-        <div class="bg-primary rounded-3xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden mb-8">
+        <div class="bg-primary rounded-2xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden mb-8">
             <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
             
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight mb-2">Pengawasan Sekolah</h1>
+                    <h1 class="text-2xl font-bold tracking-tight mb-2">Pengawasan Sekolah</h1>
                     <p class="text-blue-200 text-sm max-w-xl">Pantau performa agregat sekolah, sebaran nilai akademik, serta kelola evaluasi sekolah dengan mudah.</p>
                 </div>
             </div>
@@ -16,11 +16,11 @@
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <x-card padding="sm" class="hover:shadow-md transition-shadow cursor-pointer">
+            <x-card padding="sm" class="hover:shadow-sm transition-shadow cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Rata-rata Nilai Sekolah</span>
-                        <h3 class="text-3xl font-bold tracking-tight text-slate-900 mt-1">{{ $schoolAvgGrade > 0 ? $schoolAvgGrade : '0.00' }}</h3>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $schoolAvgGrade > 0 ? $schoolAvgGrade : '0.00' }}</h3>
                     </div>
                     <div class="text-primary bg-blue-50/50 p-3 rounded-xl border border-blue-100">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -30,11 +30,11 @@
                 </div>
             </x-card>
 
-            <x-card padding="sm" class="hover:shadow-md transition-shadow cursor-pointer">
+            <x-card padding="sm" class="hover:shadow-sm transition-shadow cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Guru</span>
-                        <h3 class="text-3xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalTeachers }}</h3>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalTeachers }}</h3>
                     </div>
                     <div class="text-accent bg-sky-50/50 p-3 rounded-xl border border-sky-100">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -44,11 +44,11 @@
                 </div>
             </x-card>
 
-            <x-card padding="sm" class="hover:shadow-md transition-shadow cursor-pointer">
+            <x-card padding="sm" class="hover:shadow-sm transition-shadow cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Siswa</span>
-                        <h3 class="text-3xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalStudents }}</h3>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalStudents }}</h3>
                     </div>
                     <div class="text-primary bg-blue-50/50 p-3 rounded-xl border border-blue-100">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -58,11 +58,11 @@
                 </div>
             </x-card>
 
-            <x-card padding="sm" class="hover:shadow-md transition-shadow cursor-pointer">
+            <x-card padding="sm" class="hover:shadow-sm transition-shadow cursor-pointer">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Kelas</span>
-                        <h3 class="text-3xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalClasses }}</h3>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $totalClasses }}</h3>
                     </div>
                     <div class="text-accent bg-sky-50/50 p-3 rounded-xl border border-sky-100">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -83,9 +83,9 @@
                     <x-table :headers="['Peringkat', 'Kelas', 'Rata-rata']">
                         @forelse($classRankings as $index => $rank)
                             <tr>
-                                <td class="px-4 py-3 font-bold text-slate-900">#{{ $index + 1 }}</td>
-                                <td class="px-4 py-3 font-semibold text-slate-800">{{ $rank['name'] }}</td>
-                                <td class="px-4 py-3 font-bold text-primary text-right">{{ $rank['avg'] > 0 ? $rank['avg'] : '-' }}</td>
+                                <td class="px-4 py-4 font-bold text-slate-900">#{{ $index + 1 }}</td>
+                                <td class="px-4 py-4 font-semibold text-slate-800">{{ $rank['name'] }}</td>
+                                <td class="px-4 py-4 font-bold text-primary text-right">{{ $rank['avg'] > 0 ? $rank['avg'] : '-' }}</td>
                             </tr>
                         @empty
                             <tr>

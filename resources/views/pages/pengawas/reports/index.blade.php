@@ -50,14 +50,14 @@
                     </div>
                 </div>
             </x-card>
-            <x-card padding="md" class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100">
+            <x-card padding="md" class="bg-gradient-to-br from-violet-50 to-purple-50 border border-blue-100">
                 <div class="flex items-center gap-3">
-                    <div class="h-12 w-12 rounded-xl bg-violet-200 flex items-center justify-center">
-                        <svg class="h-6 w-6 text-violet-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 3.75l-.259 1.035a3.375 3.375 0 0 0-2.456 2.456L15.75 6l1.036.259a3.375 3.375 0 0 0 2.456 2.456L21 6.75l-1.036.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
+                    <div class="h-12 w-12 rounded-xl bg-blue-200 flex items-center justify-center">
+                        <svg class="h-6 w-6 text-blue-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 3.75l-.259 1.035a3.375 3.375 0 0 0-2.456 2.456L15.75 6l1.036.259a3.375 3.375 0 0 0 2.456 2.456L21 6.75l-1.036.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-violet-700 uppercase">Rata-rata Nilai</p>
-                        <p class="text-2xl font-bold text-violet-900">{{ $avgScore ? number_format($avgScore, 1) : '-' }}</p>
+                        <p class="text-xs font-semibold text-blue-700 uppercase">Rata-rata Nilai</p>
+                        <p class="text-2xl font-bold text-blue-900">{{ $avgScore ? number_format($avgScore, 1) : '-' }}</p>
                     </div>
                 </div>
             </x-card>
@@ -84,7 +84,7 @@
         <x-card padding="md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-slate-900">Evaluasi Terakhir</h3>
-                <a href="{{ route('pengawas.evaluations.index') }}" class="text-sm text-primary hover:text-primary-hover font-semibold transition">Lihat Semua</a>
+                <a href="{{ route('pengawas.evaluations.index') }}" class="text-sm text-primary hover:text-blue-700 font-semibold transition">Lihat Semua</a>
             </div>
             @if($evaluations->count())
                 <x-table>
@@ -114,7 +114,7 @@
         <x-card padding="md">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-slate-900">Jadwal Inspeksi Terakhir</h3>
-                <a href="{{ route('pengawas.inspections.index') }}" class="text-sm text-primary hover:text-primary-hover font-semibold transition">Lihat Semua</a>
+                <a href="{{ route('pengawas.inspections.index') }}" class="text-sm text-primary hover:text-blue-700 font-semibold transition">Lihat Semua</a>
             </div>
             @if($inspections->count())
                 <x-table>

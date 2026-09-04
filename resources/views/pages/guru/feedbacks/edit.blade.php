@@ -42,15 +42,15 @@
                 <div class="flex gap-4 mt-2">
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <x-radio name="type" value="positive" :checked="old('type', $feedback->type) === 'positive'" />
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 group-hover:bg-emerald-200 transition-colors">Positif</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 group-hover:bg-emerald-200 transition-colors">Positif</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <x-radio name="type" value="neutral" :checked="old('type', $feedback->type) === 'neutral'" />
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 group-hover:bg-slate-200 transition-colors">Netral</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-800 group-hover:bg-slate-200 transition-colors">Netral</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <x-radio name="type" value="negative" :checked="old('type', $feedback->type) === 'negative'" />
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 group-hover:bg-red-200 transition-colors">Negatif</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-bold bg-red-100 text-red-800 group-hover:bg-red-200 transition-colors">Negatif</span>
                     </label>
                 </div>
                 @error('type') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
@@ -65,7 +65,7 @@
             <div>
                 <x-input-label for="message" :value="__('Isi Feedback')" />
                 <textarea id="message" name="message" rows="5" required
-                    class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('message', $feedback->message) }}</textarea>
+                    class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('message', $feedback->message) }}</textarea>
                 @error('message') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
 

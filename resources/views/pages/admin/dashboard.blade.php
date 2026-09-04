@@ -198,11 +198,11 @@
                                         <td class="px-6 py-4 text-sm text-slate-500">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d M Y') }}</td>
                                         <td class="px-6 py-4">
                                             @if($user->is_active)
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                                 </span>
                                             @endif

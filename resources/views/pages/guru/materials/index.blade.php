@@ -29,7 +29,7 @@
                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                     </svg>
                 </div>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul materi..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent sm:text-sm transition">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul materi..." class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-accent focus:border-accent sm:text-sm transition">
             </form>
             @if(request('search'))
                 <a href="{{ route('guru.materials.index') }}" class="text-sm font-medium text-slate-500 hover:text-slate-700">Clear Search</a>
@@ -43,7 +43,7 @@
                         <x-badge variant="primary">{{ $material->subject->name ?? '-' }}</x-badge>
                         
                         <div x-data="{ open: false }" class="relative">
-                            <button @click="open = !open" @click.away="open = false" class="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition">
+                            <button @click="open = !open" @click.away="open = false" class="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg-lg transition">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                                 </svg>
@@ -75,7 +75,7 @@
                     
                     <div class="flex items-center gap-2">
                         @if($material->file_path)
-                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-danger hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition" title="Unduh PDF">
+                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-danger hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg-lg transition" title="Unduh PDF">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -83,7 +83,7 @@
                             </a>
                         @endif
                         @if($material->video_path)
-                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition" title="Unduh Video">
+                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg-lg transition" title="Unduh Video">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

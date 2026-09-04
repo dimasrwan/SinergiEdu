@@ -33,7 +33,7 @@
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
                     <div class="mb-5">
-                        <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg uppercase tracking-wider mb-3">
+                        <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg-lg uppercase tracking-wider mb-3">
                             {{ $assignment->subject->name ?? 'Umum' }}
                         </span>
                         <h1 class="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">{{ $assignment->title }}</h1>
@@ -78,7 +78,7 @@
                                         <p class="text-xs text-slate-500 mt-0.5">Unduh untuk membaca rincian soal selengkapnya.</p>
                                     </div>
                                 </div>
-                                <a href="{{ route('siswa.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg text-sm font-semibold transition w-full sm:w-auto shadow-sm">
+                                <a href="{{ route('siswa.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg-lg text-sm font-semibold transition w-full sm:w-auto shadow-sm">
                                     Unduh File
                                 </a>
                             </div>
@@ -107,7 +107,7 @@
                         <div class="space-y-4">
                             <div>
                                 <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">File Jawaban Anda:</span>
-                                <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 group">
+                                <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition text-slate-700 group">
                                     <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 group-hover:text-primary transition-colors">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
@@ -185,7 +185,7 @@
                                         @dragleave.prevent="dragover = false"
                                         @drop.prevent="drop($event)"
                                         :class="{'border-primary bg-blue-50/50': dragover, 'border-slate-200 bg-slate-50 hover:border-slate-300': !dragover}"
-                                        class="flex justify-center rounded-xl border-2 border-dashed px-4 py-5 transition-colors cursor-pointer"
+                                        class="flex justify-center rounded-lg border-2 border-dashed px-4 py-5 transition-colors cursor-pointer"
                                         @click="document.getElementById('file').click()"
                                     >
                                         <div class="space-y-1 text-center">
@@ -201,7 +201,7 @@
                                         </div>
                                     </div>
                                     
-                                    <div x-show="fileName" style="display: none;" class="mt-2 flex items-center p-2 bg-blue-50 border border-blue-100 rounded-lg">
+                                    <div x-show="fileName" style="display: none;" class="mt-2 flex items-center p-2 bg-blue-50 border border-blue-100 rounded-lg-lg">
                                         <svg class="h-5 w-5 text-blue-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm3.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75z" />
                                         </svg>
@@ -223,13 +223,13 @@
                                 <div>
                                     <label for="notes" class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Catatan Tambahan (Opsional)</label>
                                     <textarea id="notes" name="notes" rows="2" placeholder="Pesan singkat untuk guru..."
-                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-[13px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition duration-150">{{ old('notes') }}</textarea>
+                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-[13px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition duration-150">{{ old('notes') }}</textarea>
                                     @error('notes')
                                         <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-bold transition shadow-sm">
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-bold transition shadow-sm">
                                     <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                     </svg>

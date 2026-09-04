@@ -42,7 +42,7 @@
                     <div class="space-y-6">
                         <div>
                             <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                            <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                            <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                 <option value="" disabled>Pilih tahun ajaran...</option>
                                 @foreach($academicYears as $year)
                                     <option value="{{ $year->id }}" {{ old('academic_year_id', $semester->academic_year_id) == $year->id ? 'selected' : '' }}>
@@ -54,7 +54,7 @@
 
                         <div>
                             <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">Semester <span class="text-danger">*</span></label>
-                            <select id="name" name="name" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                            <select id="name" name="name" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
                                 <option value="" disabled>Pilih semester...</option>
                                 <option value="Ganjil" {{ old('name', $semester->name) == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
                                 <option value="Genap" {{ old('name', $semester->name) == 'Genap' ? 'selected' : '' }}>Genap</option>
@@ -64,7 +64,7 @@
                         <div class="p-4 {{ $semester->is_active ? 'bg-green-50/50 border border-green-100' : 'bg-blue-50/50 border border-blue-100' }} rounded-xl">
                             <label class="flex items-start gap-3 cursor-pointer group">
                                 <div class="flex items-center h-5 mt-0.5">
-                                    <input id="is_active" name="is_active" type="checkbox" value="1" class="w-4 h-4 text-primary bg-white border-slate-300 rounded focus:ring-accent focus:ring-2" {{ old('is_active', $semester->is_active) ? 'checked' : '' }}>
+                                    <input id="is_active" name="is_active" type="checkbox" value="1" class="w-4 h-4 text-primary bg-white border-slate-300 rounded-lg focus:ring-accent focus:ring-2" {{ old('is_active', $semester->is_active) ? 'checked' : '' }}>
                                 </div>
                                 <div class="flex-1">
                                     <span class="block text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">
