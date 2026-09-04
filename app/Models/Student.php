@@ -54,6 +54,14 @@ class Student extends Model
     }
 
     /**
+     * Alias untuk grades() - digunakan di controller feedback.
+     */
+    public function studentGrades(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->grades();
+    }
+
+    /**
      * Relasi ke Riwayat Kelas (via tabel pivot student_classes).
      */
     public function classes(): BelongsToMany
@@ -73,7 +81,7 @@ class Student extends Model
             return null;
         }
 
-        return $this->classes()->wherePivot('academic_year_id', $activeYear->id)->first();
+        return $this->classes()->where('student_classes.academic_year_id', $activeYear->id)->first();
     }
 
 

@@ -1,67 +1,51 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Models;
 
-use App\Traits\TenantScoped;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Inspection extends Model
 {
-    use HasFactory;
-    use TenantScoped;
-
     protected $fillable = [
-        'school_id',
-        'pengawas_user_id',
-        'teacher_id',
-        'class_id',
         'title',
-        'description',
+        'content',
         'inspection_date',
+        'location',
         'status',
-        'notes',
+        'school_id',
+        'created_by',
+        'is_archived',
     ];
 
     protected $casts = [
-        'inspection_date' => 'datetime',
+        'inspection_date' => 'date',
+        'is_archived' => 'boolean',
     ];
 
-    public function pengawas(): BelongsTo
+    /**
+     * Scope query untuk hanya menampilkan data yang diarsipkan.
+     */
+    public function scopeArchived($query)
     {
-        return $this->belongsTo(User::class, 'pengawas_user_id');
+        return $query->where('is_archived', true);
     }
 
-    public function teacher(): BelongsTo
+    /**
+     * Scope query untuk hanya menampilkan data yang belum diarsipkan.
+     */
+    public function scopeActive($query)
     {
-        return $this->belongsTo(Teacher::class);
+        return $query->where('is_archived', false);
     }
 
-    public function classroom(): BelongsTo
+    public function school(): BelongsTo
     {
-        return $this->belongsTo(Classroom::class, 'class_id');
+        return $this->belongsTo(School::class);
     }
 
-    public function getStatusLabelAttribute(): string
+    public function createdBy(): BelongsTo
     {
-        return match ($this->status) {
-            'in_progress' => 'Sedang Berlangsung',
-            'completed' => 'Selesai',
-            'cancelled' => 'Dibatalkan',
-            default => 'Terjadwal',
-        };
-    }
-
-    public function getStatusBadgeClassAttribute(): string
-    {
-        return match ($this->status) {
-            'in_progress' => 'bg-amber-100 text-amber-700 border border-amber-200',
-            'completed' => 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-            'cancelled' => 'bg-red-100 text-red-700 border border-red-200',
-            default => 'bg-blue-100 text-blue-700 border border-blue-200',
-        };
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

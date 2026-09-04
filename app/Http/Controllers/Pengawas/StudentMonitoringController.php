@@ -7,99 +7,176 @@ namespace App\Http\Controllers\Pengawas;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
-use App\Models\Feedback;
-use App\Models\PengawasFeedback;
 use App\Models\Semester;
 use App\Models\Student;
 use App\Models\StudentGrade;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentMonitoringController extends Controller
 {
     /**
-     * Daftar semua siswa di sekolah dengan filter kelas.
+     * Tampilkan daftar siswa dengan monitoring hasil belajar.
      */
-    public function index(Request $request): View
+    public function index(): View
     {
-        $classrooms = Classroom::orderBy('name')->get();
-        $activeYear  = AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
 
-        $query = Student::with(['user', 'parent.user', 'classes']);
-
-        if ($request->filled('class_id')) {
-            $classId = $request->class_id;
-            $query->whereHas('classes', fn($q) => $q->where('class_id', $classId));
+        if (!$activeYear || !$activeSemester) {
+            $students = collect();
+            $classes = Classroom::query()
+                ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+                ->get();
+            $selectedClassId = request('class_id');
+            return view('pages.pengawas.students.index', compact(
+                'students', 'classes', 'selectedClassId', 'activeYear', 'activeSemester'
+            ));
         }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('user', fn($q) => $q->where('name', 'like', "%{$search}%"))
-                  ->orWhere('nisn', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%");
-        }
+        // Dapatkan semua kelas di sekolah (hanya kelas dari sekolah user yang login)
+        $classes = Classroom::query()
+            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->get();
+        $selectedClassId = request('class_id', $classes->first()?->id);
 
-        $students = $query->orderBy('id')->paginate(20)->withQueryString();
+        // Dapatkan siswa dengan hasil belajar
+        $students = Student::query()
+            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
+                return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
+                    $q->where('classes.id', $selectedClassId)
+                      ->wherePivot('academic_year_id', $activeYear->id);
+                });
+            })
+            ->with(['user', 'parent.user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
+                $q->where('academic_year_id', $activeYear->id)
+                  ->where('semester_id', $activeSemester->id);
+            }])
+            ->paginate(15);
 
-        return view('pages.pengawas.students.index', compact('students', 'classrooms', 'activeYear'));
+        return view('pages.pengawas.students.index', compact(
+            'students', 'classes', 'selectedClassId', 'activeYear', 'activeSemester'
+        ));
     }
 
     /**
-     * Detail hasil belajar seorang siswa.
+     * Tampilkan detail siswa dengan riwayat hasil belajar.
      */
     public function show(Student $student): View
     {
-        $student->load(['user', 'parent.user', 'classes', 'grades.subject', 'grades.classroom', 'grades.semester', 'grades.academicYear']);
-
-        $activeYear     = AcademicYear::where('is_active', true)->first();
+        $activeYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
 
-        // Nilai per komponen semua semester
+        // Cek akses - hanya pengawas dari sekolah yang sama
+        if ($student->school_id !== auth()->user()->school_id) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Dapatkan kelas aktif siswa
+        $activeClassroom = null;
+        if ($activeYear) {
+            $activeClassroom = $student->classes()
+                ->wherePivot('academic_year_id', $activeYear->id)
+                ->first();
+        }
+
+        // Dapatkan hasil belajar
         $grades = StudentGrade::where('student_id', $student->id)
-            ->with(['subject', 'classroom', 'semester', 'academicYear', 'teacher.user'])
-            ->orderBy('academic_year_id')
-            ->orderBy('semester_id')
+            ->when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear->id))
+            ->when($activeSemester, fn ($q) => $q->where('semester_id', $activeSemester->id))
+            ->with('subject', 'teacher.user')
             ->get();
 
-        // Nilai semester aktif
-        $activeGrades = $grades->when(
-            $activeYear && $activeSemester,
-            fn($col) => $col->where('academic_year_id', $activeYear?->id)
-                             ->where('semester_id', $activeSemester?->id)
-        );
+        // Hitung statistik
+        $stats = [
+            'avg_pre_test' => $grades->avg('pre_test_score') ?? 0,
+            'avg_assignment' => $grades->avg('assignment_score') ?? 0,
+            'avg_post_test' => $grades->avg('post_test_score') ?? 0,
+            'avg_character' => $grades->avg('character_score') ?? 0,
+            'avg_memorization' => $grades->avg('memorization_score') ?? 0,
+            'overall_avg' => $grades->avg('average_score') ?? 0,
+        ];
 
-        // Data untuk grafik perkembangan (average per periode)
-        $chartData = $grades->groupBy(fn($g) => ($g->academicYear?->name ?? '-') . ' ' . ($g->semester?->name ?? ''))->map(function ($group) {
-            return [
-                'label'        => $group->first()->academicYear?->name . ' - Sem. ' . $group->first()->semester?->name,
-                'pre_test'     => round($group->whereNotNull('pre_test_score')->avg('pre_test_score') ?? 0, 1),
-                'post_test'    => round($group->whereNotNull('post_test_score')->avg('post_test_score') ?? 0, 1),
-                'assignment'   => round($group->whereNotNull('assignment_score')->avg('assignment_score') ?? 0, 1),
-                'character'    => round($group->whereNotNull('character_score')->avg('character_score') ?? 0, 1),
-                'memorization' => round($group->whereNotNull('memorization_score')->avg('memorization_score') ?? 0, 1),
-            ];
-        })->values();
-
-        // Feedback dari Guru
-        $teacherFeedbacks = Feedback::where('student_id', $student->id)
-            ->with('teacher.user', 'subject')
-            ->latest()
-            ->take(10)
-            ->get();
-
-        // Feedback dari Pengawas untuk siswa ini
-        $pengawasFeedbacks = PengawasFeedback::where('student_id', $student->id)
-            ->with('pengawas', 'classroom')
-            ->latest()
-            ->get();
-
-        // Kelas aktif siswa
-        $activeClassroom = $student->activeClassroom();
+        // Dapatkan rata-rata kelas untuk perbandingan
+        $classAverage = 0;
+        if ($activeYear && $activeSemester) {
+            $classAverage = StudentGrade::whereHas('student', function ($q) use ($activeClassroom) {
+                $q->whereHas('classes', function ($sq) use ($activeClassroom) {
+                    $sq->where('classes.id', $activeClassroom?->id);
+                });
+            })
+                ->where('academic_year_id', $activeYear->id)
+                ->where('semester_id', $activeSemester->id)
+                ->avg(DB::raw('(COALESCE(pre_test_score, 0) + COALESCE(assignment_score, 0) + COALESCE(post_test_score, 0) + COALESCE(character_score, 0) + COALESCE(memorization_score, 0)) / 5')) ?? 0;
+        }
 
         return view('pages.pengawas.students.show', compact(
-            'student', 'grades', 'activeGrades', 'chartData',
-            'teacherFeedbacks', 'pengawasFeedbacks', 'activeClassroom',
+            'student', 'grades', 'stats', 'classAverage', 'activeClassroom', 
             'activeYear', 'activeSemester'
         ));
+    }
+
+    /**
+     * Download hasil belajar dalam format Excel.
+     */
+    public function downloadReport(): StreamedResponse
+    {
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
+        $selectedClassId = request('class_id');
+
+        if (!$activeYear || !$activeSemester) {
+            abort(404, 'Tahun ajaran atau semester aktif tidak ditemukan.');
+        }
+
+        $students = Student::query()
+            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
+                return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
+                    $q->where('classes.id', $selectedClassId)
+                      ->wherePivot('academic_year_id', $activeYear->id);
+                });
+            })
+            ->with(['user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
+                $q->where('academic_year_id', $activeYear->id)
+                  ->where('semester_id', $activeSemester->id);
+            }])
+            ->get();
+
+        $filename = 'hasil_belajar_' . ($activeYear?->name ?? 'tahun') . '.csv';
+
+        $response = new StreamedResponse(function () use ($students) {
+            $handle = fopen('php://output', 'w');
+            
+            // Header
+            fputcsv($handle, ['NIS', 'NISN', 'Nama Siswa', 'Tes Awal', 'Tugas', 'Tes Akhir', 'Karakter', 'Hafalan', 'Rata-rata']);
+
+            // Data
+            foreach ($students as $student) {
+                foreach ($student->studentGrades as $grade) {
+                    fputcsv($handle, [
+                        $student->nis,
+                        $student->nisn,
+                        $student->user?->name,
+                        $grade->pre_test_score,
+                        $grade->assignment_score,
+                        $grade->post_test_score,
+                        $grade->character_score,
+                        $grade->memorization_score,
+                        $grade->average_score,
+                    ]);
+                }
+            }
+
+            fclose($handle);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
+        $response->headers->set('Content-Disposition', "attachment; filename=\"$filename\"");
+
+        return $response;
     }
 }

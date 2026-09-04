@@ -1,8 +1,7 @@
 <x-layouts.app>
-    <x-slot:title>Detail Siswa – {{ $student->user?->name }}</x-slot:title>
+    <x-slot:title>Detail Siswa - {{ $student->user?->name }}</x-slot:title>
 
     <div class="space-y-6">
-
         {{-- Breadcrumb --}}
         <div class="flex items-center gap-2 text-sm text-slate-500">
             <a href="{{ route('pengawas.students.index') }}" class="hover:text-slate-800 font-semibold transition flex items-center gap-1">
@@ -46,208 +45,148 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-sm text-emerald-800 flex items-center gap-3">
-                <svg class="h-5 w-5 text-emerald-600 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-            {{-- Kiri: Tabel Nilai + Grafik --}}
-            <div class="xl:col-span-2 space-y-6">
-
-                {{-- Tabel Nilai Komponen Semester Aktif --}}
-                <x-card padding="none">
-                    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                        <h2 class="text-base font-bold text-slate-900">Nilai Komponen Belajar</h2>
-                        @if($activeSemester)
-                            <span class="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">{{ $activeYear?->name }} – {{ $activeSemester?->name }}</span>
-                        @endif
+        {{-- Statistik Nilai --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {{-- Rata-rata Keseluruhan --}}
+            <x-card padding="md" class="border-l-4 border-l-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Keseluruhan</p>
+                        <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['overall_avg'], 1) }}</p>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Kelas: {{ number_format($classAverage, 1) }}
+                            <span class="text-blue-600 font-semibold">
+                                @if($stats['overall_avg'] >= $classAverage)
+                                    ↑ Lebih tinggi
+                                @else
+                                    ↓ Lebih rendah
+                                @endif
+                            </span>
+                        </p>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="bg-slate-50/50 border-b border-slate-100">
-                                    <th class="px-5 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wide">Mata Pelajaran</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wide">Tes Awal</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wide">Tugas</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wide">Tes Akhir</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wide">Karakter</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wide">Hafalan</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wide">Rata-rata</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                @forelse($grades as $grade)
-                                    <tr class="hover:bg-slate-50/50">
-                                        <td class="px-5 py-3.5">
-                                            <div class="font-semibold text-slate-800">{{ $grade->subject?->name ?? '-' }}</div>
-                                            <div class="text-xs text-slate-400">{{ $grade->teacher?->user?->name ?? '' }}</div>
-                                        </td>
-                                        @foreach(['pre_test_score','assignment_score','post_test_score','character_score','memorization_score'] as $col)
-                                            <td class="px-4 py-3.5 text-center">
-                                                @if(!is_null($grade->$col))
-                                                    <span class="font-bold {{ $grade->$col >= 75 ? 'text-emerald-600' : ($grade->$col >= 60 ? 'text-amber-600' : 'text-red-600') }}">
-                                                        {{ $grade->$col }}
-                                                    </span>
-                                                @else
-                                                    <span class="text-slate-300">–</span>
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                        <td class="px-4 py-3.5 text-center">
-                                            <span class="font-black text-slate-900 text-base">{{ $grade->average_score > 0 ? $grade->average_score : '–' }}</span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-5 py-10 text-center text-slate-400 text-sm">Belum ada data nilai untuk semester ini.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </x-card>
+                    <svg class="h-12 w-12 text-blue-500/20" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                </div>
+            </x-card>
 
-                {{-- Grafik Perkembangan --}}
-                @if($chartData->isNotEmpty())
-                <x-card padding="md">
-                    <h2 class="text-base font-bold text-slate-900 mb-4">Grafik Perkembangan Nilai</h2>
-                    <div class="relative w-full" style="height: 260px;">
-                        <canvas id="studentProgressChart"></canvas>
-                    </div>
-                </x-card>
-                @endif
+            {{-- Tes Awal --}}
+            <x-card padding="md" class="border-l-4 border-l-orange-500">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Tes Awal</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_pre_test'], 1) }}</p>
+                </div>
+            </x-card>
 
-                {{-- Feedback dari Guru --}}
-                <x-card padding="none">
-                    <div class="p-5 border-b border-slate-100">
-                        <h2 class="text-base font-bold text-slate-900">Umpan Balik dari Guru</h2>
-                    </div>
-                    <div class="divide-y divide-slate-100">
-                        @forelse($teacherFeedbacks as $fb)
-                            <div class="p-5">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="flex-1 min-w-0">
-                                        <div class="font-semibold text-slate-800 text-sm">{{ $fb->title }}</div>
-                                        <div class="text-xs text-slate-500 mt-0.5">{{ $fb->teacher?->user?->name ?? '-' }} · {{ $fb->subject?->name ?? '-' }}</div>
-                                        <p class="text-sm text-slate-600 mt-2 leading-relaxed">{{ $fb->message }}</p>
-                                    </div>
-                                    <span class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $fb->type_color }}">
-                                        {{ $fb->type_label }}
-                                    </span>
-                                </div>
-                                <div class="text-xs text-slate-400 mt-2">{{ $fb->created_at->format('d M Y, H:i') }}</div>
-                            </div>
-                        @empty
-                            <div class="p-10 text-center text-slate-400 text-sm">Belum ada umpan balik dari guru.</div>
-                        @endforelse
-                    </div>
-                </x-card>
-            </div>
+            {{-- Tes Akhir --}}
+            <x-card padding="md" class="border-l-4 border-l-emerald-500">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Tes Akhir</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_post_test'], 1) }}</p>
+                </div>
+            </x-card>
 
-            {{-- Kanan: Form Feedback Pengawas + Riwayat --}}
-            <div class="space-y-6">
-                {{-- Form Tulis Feedback --}}
-                <x-card padding="md">
-                    <h2 class="text-base font-bold text-slate-900 mb-4">Tulis Umpan Balik</h2>
-                    <form action="{{ route('pengawas.students.feedback.store', $student) }}" method="POST" class="space-y-4">
-                        @csrf
-                        <input type="hidden" name="academic_year_id" value="{{ $activeYear?->id }}">
-                        <input type="hidden" name="semester_id" value="{{ $activeSemester?->id }}">
-                        <input type="hidden" name="class_id" value="{{ $activeClassroom?->id }}">
+            {{-- Tugas --}}
+            <x-card padding="md" class="border-l-4 border-l-yellow-500">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Tugas</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_assignment'], 1) }}</p>
+                </div>
+            </x-card>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Jenis Umpan Balik</label>
-                            <div class="flex gap-2">
-                                @foreach(['positive' => ['label' => 'Positif', 'color' => 'text-emerald-700 border-emerald-200 bg-emerald-50'], 'neutral' => ['label' => 'Netral', 'color' => 'text-slate-600 border-slate-200 bg-slate-50'], 'negative' => ['label' => 'Negatif', 'color' => 'text-red-700 border-red-200 bg-red-50']] as $val => $meta)
-                                    <label class="flex-1 cursor-pointer">
-                                        <input type="radio" name="type" value="{{ $val }}" class="sr-only peer" {{ $val === 'neutral' ? 'checked' : '' }}>
-                                        <span class="block text-center text-xs font-semibold px-2 py-2 rounded-lg border peer-checked:ring-2 peer-checked:ring-offset-1 {{ $meta['color'] }} transition peer-checked:ring-current">
-                                            {{ $meta['label'] }}
-                                        </span>
-                                    </label>
-                                @endforeach
-                            </div>
-                            @error('type') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                        </div>
+            {{-- Karakter --}}
+            <x-card padding="md" class="border-l-4 border-l-purple-500">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Karakter</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_character'], 1) }}</p>
+                </div>
+            </x-card>
 
-                        <div>
-                            <label for="fb_content" class="block text-xs font-semibold text-slate-600 mb-1.5">Isi Umpan Balik</label>
-                            <textarea id="fb_content" name="content" rows="5" required
-                                placeholder="Tuliskan umpan balik, catatan pengawasan, atau rekomendasi untuk siswa ini..."
-                                class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-cyan-500 focus:bg-white transition resize-none">{{ old('content') }}</textarea>
-                            @error('content') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-                        </div>
-
-                        <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-cyan-600 hover:bg-cyan-700 rounded-xl transition shadow-sm">
-                            <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
-                            Kirim Umpan Balik
-                        </button>
-                    </form>
-                </x-card>
-
-                {{-- Riwayat Feedback Pengawas --}}
-                <x-card padding="none">
-                    <div class="p-5 border-b border-slate-100">
-                        <h2 class="text-base font-bold text-slate-900">Umpan Balik Saya</h2>
-                    </div>
-                    <div class="divide-y divide-slate-100 max-h-96 overflow-y-auto">
-                        @forelse($pengawasFeedbacks as $fb)
-                            <div class="p-4">
-                                <div class="flex items-start justify-between gap-2">
-                                    <p class="text-sm text-slate-700 leading-relaxed flex-1">{{ $fb->content }}</p>
-                                    <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold {{ $fb->type_badge_class }}">
-                                        {{ $fb->type_label }}
-                                    </span>
-                                </div>
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-xs text-slate-400">{{ $fb->created_at->format('d M Y') }}</span>
-                                    <form action="{{ route('pengawas.feedback.destroy', $fb) }}" method="POST" onsubmit="return confirm('Hapus umpan balik ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-xs text-red-400 hover:text-red-600 transition">Hapus</button>
-                                    </form>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="p-8 text-center text-slate-400 text-sm">Belum ada umpan balik.</div>
-                        @endforelse
-                    </div>
-                </x-card>
-            </div>
+            {{-- Hafalan --}}
+            <x-card padding="md" class="border-l-4 border-l-pink-500">
+                <div>
+                    <p class="text-xs text-slate-500 uppercase font-semibold">Rata-rata Hafalan</p>
+                    <p class="text-3xl font-bold text-slate-900 mt-2">{{ number_format($stats['avg_memorization'], 1) }}</p>
+                </div>
+            </x-card>
         </div>
+
+        {{-- Tabel Detail Nilai Per Mata Pelajaran --}}
+        <x-card padding="none">
+            <div class="p-6 border-b border-slate-200 flex items-center justify-between">
+                <h2 class="text-lg font-bold text-slate-900">Nilai Per Mata Pelajaran</h2>
+                <a href="{{ route('pengawas.feedback.create', ['student_id' => $student->id]) }}"
+                   class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm font-semibold">
+                    Berikan Feedback
+                </a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-50/50 border-b border-slate-200">
+                            <th class="px-6 py-3 text-left font-semibold text-slate-700">Mata Pelajaran</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Guru</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Tes Awal</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Tugas</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Tes Akhir</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Karakter</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Hafalan</th>
+                            <th class="px-4 py-3 text-center font-semibold text-slate-700">Rata-rata</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        @forelse($grades as $grade)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="px-6 py-3 font-medium text-slate-900">{{ $grade->subject?->name }}</td>
+                                <td class="px-4 py-3 text-center text-xs text-slate-600">{{ $grade->teacher?->user?->name }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->pre_test_score ? number_format($grade->pre_test_score, 1) : '-' }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->assignment_score ? number_format($grade->assignment_score, 1) : '-' }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->post_test_score ? number_format($grade->post_test_score, 1) : '-' }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->character_score ? number_format($grade->character_score, 1) : '-' }}</td>
+                                <td class="px-4 py-3 text-center text-slate-600">{{ $grade->memorization_score ? number_format($grade->memorization_score, 1) : '-' }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold
+                                        {{ $grade->average_score >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                        {{ number_format($grade->average_score, 1) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-6 py-8 text-center text-slate-500">
+                                    <p class="text-sm">Belum ada data nilai</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </x-card>
+
+        {{-- Feedback Pengawas --}}
+        @if($grades->where('supervisor_feedback')->isNotEmpty())
+            <x-card padding="md">
+                <h3 class="text-lg font-bold text-slate-900 mb-4">Feedback dari Pengawas</h3>
+                <div class="space-y-4">
+                    @foreach($grades->where('supervisor_feedback') as $grade)
+                        <div class="p-4 bg-blue-50 border-l-4 border-l-blue-500 rounded">
+                            <p class="text-sm font-semibold text-slate-700">{{ $grade->supervisor?->name ?? 'Pengawas' }}</p>
+                            <p class="text-sm text-slate-600 mt-2">{{ $grade->supervisor_feedback }}</p>
+                            @if($grade->supervisor_action_plan)
+                                <div class="mt-3 p-3 bg-white rounded border border-blue-200">
+                                    <p class="text-xs font-semibold text-slate-600 uppercase">Rencana Aksi:</p>
+                                    <p class="text-sm text-slate-700 mt-1">{{ $grade->supervisor_action_plan }}</p>
+                                    @if($grade->supervisor_priority)
+                                        <span class="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded
+                                            {{ $grade->supervisor_priority === 'high' ? 'bg-red-100 text-red-800' : ($grade->supervisor_priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800') }}">
+                                            Prioritas: {{ ucfirst($grade->supervisor_priority) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </x-card>
+        @endif
     </div>
-
-    @if($chartData->isNotEmpty())
-    @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const chartData = @json($chartData);
-            const labels = chartData.map(d => d.label);
-
-            new Chart(document.getElementById('studentProgressChart').getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Tes Awal',  data: chartData.map(d => d.pre_test),     borderColor: '#123B82', backgroundColor: 'rgba(18,59,130,0.1)',  tension: 0.4, fill: false },
-                        { label: 'Tes Akhir', data: chartData.map(d => d.post_test),    borderColor: '#119FEA', backgroundColor: 'rgba(17,159,234,0.1)', tension: 0.4, fill: false },
-                        { label: 'Tugas',     data: chartData.map(d => d.assignment),   borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.4, fill: false },
-                        { label: 'Karakter',  data: chartData.map(d => d.character),    borderColor: '#F59E0B', backgroundColor: 'rgba(245,158,11,0.1)',  tension: 0.4, fill: false },
-                        { label: 'Hafalan',   data: chartData.map(d => d.memorization), borderColor: '#8B5CF6', backgroundColor: 'rgba(139,92,246,0.1)',  tension: 0.4, fill: false },
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100 } },
-                    plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } } }
-                }
-            });
-        });
-    </script>
-    @endpush
-    @endif
 </x-layouts.app>

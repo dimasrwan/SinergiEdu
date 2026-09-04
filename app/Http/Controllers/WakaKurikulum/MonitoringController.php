@@ -23,7 +23,7 @@ class MonitoringController extends Controller
         
         $classes = Classroom::all()->map(function ($class) use ($activeYear) {
             $studentsCount = $activeYear 
-                ? $class->students()->wherePivot('academic_year_id', $activeYear->id)->count() 
+                ? $class->students()->where('student_classes.academic_year_id', $activeYear->id)->count() 
                 : 0;
 
             // Hitung rata-rata nilai kelas
