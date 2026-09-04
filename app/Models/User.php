@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active'])]
+use Illuminate\Support\Facades\Storage;
+
+#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active', 'profile_photo_path'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -40,6 +42,14 @@ class User extends Authenticatable
         ];
     }
 
+
+    public function profilePhotoUrl(): ?string
+    {
+        if ($this->profile_photo_path && Storage::disk('public')->exists($this->profile_photo_path)) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+        return null;
+    }
 
     public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

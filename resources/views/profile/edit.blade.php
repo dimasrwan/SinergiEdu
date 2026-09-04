@@ -46,8 +46,32 @@
                 <div class="lg:col-span-1">
                     <x-card class="h-full bg-white shadow-sm border border-slate-200/60 rounded-2xl p-6 md:p-8">
                         <div class="flex flex-col items-center text-center">
-                            <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl md:text-4xl font-bold text-blue-700 border-4 border-white shadow-sm mb-4">
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            <div class="mb-4 flex flex-col items-center">
+                                <x-avatar :user="$user" size="w-24 h-24" textSize="text-4xl" class="mb-4" />
+                                
+                                <div class="flex gap-2 justify-center">
+                                    <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data" class="inline" x-data="{ submitting: false }" @submit="submitting = true">
+                                        @csrf
+                                        <input type="file" name="photo" id="photo" class="hidden" accept=".jpg,.jpeg,.png" onchange="this.form.submit()" :disabled="submitting">
+                                        <button type="button" onclick="document.getElementById('photo').click()" class="text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition" x-bind:class="{ 'opacity-50 cursor-not-allowed': submitting }" :disabled="submitting">
+                                            <span x-show="!submitting">Ganti Foto</span>
+                                            <span x-show="submitting">Menyimpan...</span>
+                                        </button>
+                                    </form>
+
+                                    @if ($user->profilePhotoUrl())
+                                        <form action="{{ route('profile.photo.destroy') }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto profil?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 transition">
+                                                Hapus Foto
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                                @error('photo')
+                                    <p class="text-xs text-red-500 mt-2">{{ $message }}</p>
+                                @enderror
                             </div>
                             <h2 class="text-xl font-bold text-slate-900 mb-1">{{ $user->name }}</h2>
                             <span class="inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-blue-50 text-blue-600 border border-blue-200/60 mb-4">

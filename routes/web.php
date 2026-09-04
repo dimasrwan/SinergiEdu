@@ -21,6 +21,9 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Rute Foto Profil
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
     // Pengalihan dashboard umum jika user mengakses '/dashboard'
     Route::get('/dashboard', function () {
         $route = \App\Support\DashboardRouter::forUser(auth()->user());

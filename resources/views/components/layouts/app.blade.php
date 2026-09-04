@@ -105,9 +105,7 @@
                             <div class="relative" x-data="{ open: false }">
                                 <button type="button" @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100 rounded-xl p-2.5 flex items-center justify-between gap-x-3 transition-colors border border-slate-200/60">
                                     <div class="flex items-center gap-x-3 min-w-0">
-                                        <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0 text-xs">
-                                            {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
-                                        </div>
+                                        <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-xs" />
                                         <div class="flex-1 min-w-0 text-left">
                                             <p class="text-[13px] font-semibold text-slate-900 truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
                                             <p class="text-[10px] text-slate-500 truncate mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
@@ -216,9 +214,7 @@
                         <div class="relative" x-data="{ open: false }">
                             <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3" @click="open = !open">
                                 <span class="sr-only">Buka menu user</span>
-                                <div class="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-sm font-bold text-primary border border-blue-100">
-                                    {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
-                                </div>
+                                <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-sm" />
                                 <div class="hidden lg:flex lg:items-center">
                                     <span class="text-sm font-semibold leading-6 text-slate-900" aria-hidden="true">{{ Auth::user()->name ?? 'Guest' }}</span>
                                     <svg class="ml-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
