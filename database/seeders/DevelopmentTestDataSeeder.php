@@ -10,6 +10,9 @@ use App\Models\School;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\Waka;
+use App\Models\Pengawas;
+use App\Models\KepalaSekolah;
 use App\Models\AcademicYear;
 use App\Models\Semester;
 use App\Models\Classroom;
@@ -40,7 +43,7 @@ class DevelopmentTestDataSeeder extends Seeder
             return;
         }
 
-        $password = Hash::make('SinergiEdu@2026');
+        $password = Hash::make('123');
         $tenantService = app(TenantService::class);
 
         // Fetch roles
@@ -84,7 +87,7 @@ class DevelopmentTestDataSeeder extends Seeder
         ]);
 
         $schoolB = School::create([
-            'name' => 'SMA Negeri 1 Jeumpa Puteh Banda Aceh',
+            'name' => 'SMA Negeri 3 Banda Aceh',
             'npsn' => '20202020',
             'email' => 'sman1@sinergiedu.test',
             'address' => 'Jl. Pelajar No.1, Banda Aceh',
@@ -105,7 +108,7 @@ class DevelopmentTestDataSeeder extends Seeder
         // ==================================================
         // 5 & 6. ADMIN
         // ==================================================
-        $adminPrefix = strtolower($level) === 'smp' ? 'smp2' : 'sma1';
+        $adminPrefix = strtolower($level) === 'smp' ? 'smp2' : 'sma3';
         $admin = User::create([
             'name' => 'Admin ' . $school->name,
             'email' => "admin.{$adminPrefix}@sinergiedu.test",
@@ -115,8 +118,61 @@ class DevelopmentTestDataSeeder extends Seeder
             'is_active' => true,
         ]);
 
+        
+        // ==================================================
+        // NEW ROLES: Waka, Pengawas, Kepala Sekolah
+        // ==================================================
+        $wakaUser = User::create([
+            'name' => 'Waka ' . $school->name,
+            'email' => "waka.{$adminPrefix}@sinergiedu.test",
+            'password' => $password,
+            'role_id' => $roles['waka'],
+            'school_id' => $school->id,
+            'is_active' => true,
+        ]);
+        Waka::create([
+            'school_id' => $school->id,
+            'user_id' => $wakaUser->id,
+            'nip' => '1980' . $school->id . 'W',
+            'phone' => '0813' . rand(1000000, 9999999),
+            'address' => 'Jl. Waka',
+        ]);
+
+        $pengawasUser = User::create([
+            'name' => 'Pengawas ' . $school->name,
+            'email' => "pengawas.{$adminPrefix}@sinergiedu.test",
+            'password' => $password,
+            'role_id' => $roles['pengawas'],
+            'school_id' => $school->id,
+            'is_active' => true,
+        ]);
+        Pengawas::create([
+            'school_id' => $school->id,
+            'user_id' => $pengawasUser->id,
+            'nip' => '1980' . $school->id . 'P',
+            'phone' => '0814' . rand(1000000, 9999999),
+            'address' => 'Jl. Pengawas',
+        ]);
+
+        $kepsekUser = User::create([
+            'name' => 'Kepala Sekolah ' . $school->name,
+            'email' => "kepsek.{$adminPrefix}@sinergiedu.test",
+            'password' => $password,
+            'role_id' => $roles['kepala_sekolah'],
+            'school_id' => $school->id,
+            'is_active' => true,
+        ]);
+        KepalaSekolah::create([
+            'school_id' => $school->id,
+            'user_id' => $kepsekUser->id,
+            'nip' => '1980' . $school->id . 'K',
+            'phone' => '0815' . rand(1000000, 9999999),
+            'address' => 'Jl. Kepsek',
+        ]);
+
         // ==================================================
         // 7 & 8. GURU
+
         // ==================================================
         $teacherUsers = [];
         $teachers = [];

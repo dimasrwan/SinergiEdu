@@ -48,7 +48,7 @@ class StudentMonitoringController extends Controller
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
-                      ->wherePivot('academic_year_id', $activeYear->id);
+                      ->where('student_classes.academic_year_id', $activeYear->id);
                 });
             })
             ->with(['user', 'parent.user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
@@ -137,7 +137,7 @@ class StudentMonitoringController extends Controller
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
-                      ->wherePivot('academic_year_id', $activeYear->id);
+                      ->where('student_classes.academic_year_id', $activeYear->id);
                 });
             })
             ->with(['user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {

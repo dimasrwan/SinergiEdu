@@ -62,7 +62,7 @@
                     <tbody class="divide-y divide-slate-200">
 @php
     $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-    $feedbacks = $feedbacks->load('classes');
+    $feedbacks->load('classes');
 @endphp
 @forelse($feedbacks as $feedback)
     @php

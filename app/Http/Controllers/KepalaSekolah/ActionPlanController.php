@@ -6,7 +6,7 @@ namespace App\Http\Controllers\KepalaSekolah;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KepalaSekolah\ActionPlanRequest;
-use App\Models\ActionPlan;
+use App\Models\SchoolActionPlan;
 use App\Models\Pengawas;
 use App\Models\Teacher;
 use App\Models\Waka;
@@ -18,7 +18,7 @@ class ActionPlanController extends Controller
 {
     public function index(): View
     {
-        $actionPlans = ActionPlan::with(['creator', 'target'])->latest()->get();
+        $actionPlans = SchoolActionPlan::with(['creator', 'target'])->latest()->get();
 
         $draf = $actionPlans->where('status', 'draft');
         $inProgress = $actionPlans->where('status', 'in_progress');
@@ -43,7 +43,7 @@ class ActionPlanController extends Controller
 
     public function store(ActionPlanRequest $request): RedirectResponse
     {
-        ActionPlan::create([
+        SchoolActionPlan::create([
             'user_id' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description,
@@ -61,14 +61,14 @@ class ActionPlanController extends Controller
             ->with('success', 'Rencana aksi berhasil dibuat.');
     }
 
-    public function show(ActionPlan $rencana_aksi): View
+    public function show(SchoolActionPlan $rencana_aksi): View
     {
         $actionPlan = $rencana_aksi;
         $actionPlan->load(['creator', 'target']);
         return view('pages.kepala-sekolah.rencana-aksi.show', compact('actionPlan'));
     }
 
-    public function updateStatus(Request $request, ActionPlan $actionPlan): RedirectResponse
+    public function updateStatus(Request $request, SchoolActionPlan $actionPlan): RedirectResponse
     {
         $request->validate([
             'status' => 'required|in:draft,in_progress,completed,cancelled',
@@ -82,7 +82,7 @@ class ActionPlanController extends Controller
         return back()->with('success', 'Status rencana aksi diperbarui.');
     }
 
-    public function destroy(ActionPlan $rencana_aksi): RedirectResponse
+    public function destroy(SchoolActionPlan $rencana_aksi): RedirectResponse
     {
         $rencana_aksi->delete();
         return redirect()->route('kepala-sekolah.rencana-aksi.index')

@@ -65,5 +65,6 @@
         <div class="p-6 border-t border-slate-100">
             {{ $evaluations->links() }}
         </div>
+        </x-card>
     </div>
 </x-layouts.app>

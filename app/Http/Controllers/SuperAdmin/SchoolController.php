@@ -127,22 +127,29 @@ class SchoolController extends Controller
 
         $data = $request->only(['name', 'npsn', 'email', 'phone', 'address', 'is_active']);
 
+        $oldLogo = $school->logo;
         if ($request->hasFile('logo')) {
-            // Hapus logo lama jika ada, DENGAN CATATAN kita menyimpannya dulu setelah yang baru berhasil disalin
-            // Namun yang paling aman adalah menyimpan yang baru dulu, baru menghapus yang lama.
             $file = $request->file('logo');
             $filename = Str::random(40) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('schools/logos', $filename, 'public');
             
             if ($path) {
-                if ($school->logo) {
-                    Storage::disk('public')->delete($school->logo);
-                }
                 $data['logo'] = $path;
             }
         }
 
-        $school->update($data);
+        try {
+            $school->update($data);
+            
+            if ($request->hasFile('logo') && $oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+        } catch (\Exception $e) {
+            if (isset($data['logo']) && Storage::disk('public')->exists($data['logo'])) {
+                Storage::disk('public')->delete($data['logo']);
+            }
+            throw $e;
+        }
 
         return redirect()->route('super_admin.schools.index')
             ->with('success', 'Data Sekolah berhasil diperbarui.');

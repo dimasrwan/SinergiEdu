@@ -23,6 +23,20 @@ class MaterialController extends Controller
         return Teacher::where('user_id', auth()->id())->firstOrFail();
     }
 
+    private function ensureMeetingMatchesMaterial(array $data, Teacher $teacher): void
+    {
+        if (isset($data['learning_meeting_id']) && $data['learning_meeting_id']) {
+            $meeting = \App\Models\LearningMeeting::find($data['learning_meeting_id']);
+            if ($meeting) {
+                if ($meeting->teacher_id !== $teacher->id || $meeting->class_id != $data['class_id'] || $meeting->subject_id != $data['subject_id']) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'learning_meeting_id' => 'Pertemuan tidak valid untuk kelas dan mata pelajaran yang dipilih.',
+                    ]);
+                }
+            }
+        }
+    }
+
     public function index(Request $request): View
     {
         $teacher = $this->getTeacherProfile();

@@ -78,6 +78,7 @@ class AcademicController extends Controller
         }
 
         $allStudentGrades = StudentGrade::with('student.user')
+            ->whereHas('student')
             ->when($classId, fn ($q) => $q->where('class_id', $classId))
             ->get()
             ->groupBy('student_id')
@@ -85,7 +86,7 @@ class AcademicController extends Controller
                 $first = $grades->first();
                 return (object) [
                     'student_id' => $studentId,
-                    'name' => $first->student->user->name,
+                    'name' => $first->student?->user?->name ?? 'Siswa Tidak Diketahui',
                     'avg' => round($grades->avg(fn ($g) => $g->average_score) ?? 0, 2),
                     'avg_character' => round($grades->avg('character_score') ?? 0, 1),
                     'avg_memorization' => round($grades->avg('memorization_score') ?? 0, 1),

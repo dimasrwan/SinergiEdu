@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('action_plans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('school_id')->constrained()->cascadeOnDelete();
             $table->foreignId('pengawas_user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('class_id')->nullable()->constrained('classes')->nullOnDelete();
             $table->foreignId('academic_year_id')->nullable()->constrained()->nullOnDelete();
