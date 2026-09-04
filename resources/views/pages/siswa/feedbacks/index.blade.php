@@ -22,49 +22,51 @@
                     $isNegative = $feedback->type === 'negative';
                     
                     if ($isPositive) {
-                        $borderColor = 'border-l-4 border-l-emerald-400 border-y-slate-200 border-r-slate-200';
-                        $badgeColor = 'bg-emerald-50 text-emerald-700';
+                        $borderColor = 'border-emerald-100/60 bg-emerald-50/40 hover:border-emerald-200';
+                        $badgeColor = 'bg-emerald-100 text-emerald-700';
                     } elseif ($isNegative) {
-                        $borderColor = 'border-l-4 border-l-rose-400 border-y-slate-200 border-r-slate-200';
-                        $badgeColor = 'bg-rose-50 text-rose-700';
+                        $borderColor = 'border-amber-100/60 bg-amber-50/40 hover:border-amber-200';
+                        $badgeColor = 'bg-amber-100 text-amber-700';
                     } else {
-                        $borderColor = 'border border-slate-200';
-                        $badgeColor = 'bg-slate-100 text-slate-700';
+                        $borderColor = 'border-slate-200/75 bg-slate-50/40 hover:border-slate-300';
+                        $badgeColor = 'bg-slate-200 text-slate-700';
                     }
                 @endphp
-                <a href="{{ route('siswa.feedbacks.show', $feedback) }}" class="block bg-white {{ $borderColor }} rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md transition group">
+                <a href="{{ route('siswa.feedbacks.show', $feedback) }}" class="block border {{ $borderColor }} rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md transition group">
                     <div class="flex items-start justify-between mb-4 gap-3">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="h-10 w-10 shrink-0 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm">
+                            <div class="h-10 w-10 shrink-0 rounded-full bg-white border border-slate-200/50 text-primary flex items-center justify-center font-bold text-sm shadow-sm">
                                 {{ strtoupper(substr($feedback->teacher->user->name ?? 'G', 0, 2)) }}
                             </div>
                             <div class="min-w-0">
                                 <h3 class="font-bold text-slate-900 text-sm truncate group-hover:text-primary transition-colors">
                                     {{ $feedback->teacher->user->name ?? '-' }}
                                 </h3>
-                                <p class="text-[11px] text-slate-500 truncate">{{ $feedback->created_at->diffForHumans() }}</p>
+                                <p class="text-[11px] text-slate-500 truncate font-medium">{{ $feedback->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
-                        <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider {{ $badgeColor }}">
+                        <span class="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $badgeColor }}">
                             {{ $feedback->type_label ?? $feedback->type }}
                         </span>
                     </div>
                     
                     @if($feedback->subject)
-                        <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2 py-0.5 rounded-lg uppercase tracking-wider mb-2 w-fit">
+                        <span class="inline-flex text-[10px] font-bold text-primary uppercase tracking-wider mb-2 w-fit">
                             {{ $feedback->subject->name }}
                         </span>
                     @endif
                     
                     <h4 class="text-[15px] font-bold text-slate-800 mb-1.5">{{ $feedback->title }}</h4>
-                    <p class="text-[13px] text-slate-600 line-clamp-3 flex-grow leading-relaxed">
-                        "{{ $feedback->message }}"
-                    </p>
+                    <div class="flex-grow pl-3 border-l-2 border-slate-300/50 mt-1">
+                        <p class="text-[13px] text-slate-700 line-clamp-3 leading-relaxed font-medium italic">
+                            "{{ $feedback->message }}"
+                        </p>
+                    </div>
                 </a>
             @empty
                 <div class="col-span-full">
                     <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto">
-                        <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                        <div class="h-16 w-16 bg-blue-50 text-blue-400 rounded-full flex items-center justify-center mb-4">
                             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                             </svg>

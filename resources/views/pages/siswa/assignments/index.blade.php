@@ -19,7 +19,7 @@
 
         @if(!$classroom)
             <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto">
-                <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                <div class="h-16 w-16 bg-blue-50 text-blue-400 rounded-full flex items-center justify-center mb-4">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
@@ -39,54 +39,54 @@
                         // Status Logic
                         if ($hasScore) {
                             $statusText = 'Dinilai';
-                            $statusClass = 'bg-blue-50 text-blue-700 border border-blue-200/50';
+                            $statusClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200/50';
                         } elseif ($isSubmitted) {
                             $statusText = 'Sudah Dikumpulkan';
-                            $statusClass = 'bg-emerald-50 text-emerald-700 border border-emerald-200/50';
+                            $statusClass = 'bg-blue-50 text-blue-700 border border-blue-200/50';
                         } elseif ($isOverdue) {
                             $statusText = 'Terlambat';
                             $statusClass = 'bg-red-50 text-red-700 border border-red-200/50';
                         } else {
                             $statusText = 'Belum Dikerjakan';
-                            $statusClass = 'bg-slate-100 text-slate-700 border border-slate-200';
+                            $statusClass = 'bg-slate-100 text-slate-700 border border-slate-200/50';
                         }
                     @endphp
-                    <div class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md hover:border-primary/30 transition group">
+                    <div class="bg-white border border-slate-200/75 rounded-2xl p-5 flex flex-col h-full shadow-sm hover:shadow-md hover:border-primary/40 transition group">
                         
-                        <div class="flex items-start justify-between mb-3 gap-2">
-                            <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg-lg uppercase tracking-wider shrink-0">
+                        <div class="flex items-start justify-between mb-4 gap-2">
+                            <span class="inline-flex text-[11px] font-bold text-primary uppercase tracking-wider shrink-0">
                                 {{ $assignment->subject->name ?? '-' }}
                             </span>
-                            <span class="inline-flex text-[10px] font-bold px-2.5 py-1 rounded-lg-lg uppercase tracking-wider text-right shrink-0 {{ $statusClass }}">
+                            <span class="inline-flex text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider text-right shrink-0 {{ $statusClass }}">
                                 {{ $statusText }}
                             </span>
                         </div>
                         
-                        <h3 class="text-base font-bold text-slate-900 mb-1 line-clamp-2 leading-snug group-hover:text-primary transition-colors">{{ $assignment->title }}</h3>
-                        <p class="text-xs text-slate-500 mb-2 line-clamp-2">{{ $assignment->description }}</p>
+                        <h3 class="text-[17px] font-bold text-slate-900 mb-1.5 line-clamp-2 leading-snug group-hover:text-primary transition-colors">{{ $assignment->title }}</h3>
+                        <p class="text-[13px] text-slate-500 mb-3 line-clamp-2">{{ $assignment->description }}</p>
                         
-                        <div class="flex items-center gap-1.5 text-xs text-slate-500 mb-4 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-2 text-[13px] text-slate-500 font-medium mb-5 pb-5 border-b border-slate-100">
                             <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                            <span class="truncate">Deadline: <span class="{{ $isOverdue && !$isSubmitted ? 'text-red-600 font-semibold' : 'text-slate-700' }}">{{ $assignment->deadline->format('d M Y, H:i') }}</span></span>
+                            <span class="truncate">Deadline: <span class="{{ $isOverdue && !$isSubmitted ? 'text-red-600 font-bold' : 'text-slate-700' }}">{{ $assignment->deadline->format('d M Y, H:i') }}</span></span>
                         </div>
                         
-                        <div class="mt-auto space-y-3">
+                        <div class="mt-auto space-y-4">
                             @if($hasScore)
-                                <div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg mb-3 border border-slate-100">
-                                    <span class="text-xs font-medium text-slate-500">Nilai Akhir:</span>
-                                    <span class="text-sm font-bold text-primary">{{ $submission->score }}</span>
+                                <div class="flex items-center justify-between px-3 py-2 bg-emerald-50/50 rounded-xl mb-3 border border-emerald-100/50">
+                                    <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Nilai Akhir:</span>
+                                    <span class="text-[15px] font-bold text-emerald-700">{{ $submission->score }}</span>
                                 </div>
                             @endif
                             
-                            <a href="{{ route('siswa.assignments.show', $assignment->id) }}" class="flex items-center justify-center w-full py-2.5 {{ $isSubmitted ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200' : 'bg-primary hover:bg-primary/90 text-white border border-transparent' }} text-sm font-semibold rounded-lg transition shadow-sm">
-                                {{ $isSubmitted ? 'Lihat Detail' : 'Kerjakan Tugas' }}
+                            <a href="{{ route('siswa.assignments.show', $assignment->id) }}" class="flex items-center justify-center w-full py-2.5 {{ $isSubmitted ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200' : 'bg-primary hover:bg-primary/90 text-white border border-transparent' }} text-[13px] font-bold rounded-xl transition shadow-sm">
+                                {!! $isSubmitted ? 'Lihat Hasil &rarr;' : 'Kerjakan Tugas &rarr;' !!}
                             </a>
                         </div>
                     </div>
                 @empty
                     <div class="col-span-full">
                         <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto">
-                            <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                            <div class="h-16 w-16 bg-blue-50 text-blue-400 rounded-full flex items-center justify-center mb-4">
                                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 019 9v.375M10.125 2.25A3.375 3.375 0 0113.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 013.375 3.375M9 15l2.25 2.25L15 12" />
                                 </svg>
