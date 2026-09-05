@@ -57,7 +57,7 @@ class MonitoringController extends Controller
         $applyFilters($materialsQuery);
 
         $assignmentsQuery = Assignment::query()
-            ->with(['teacher.user', 'classroom', 'subject'])
+            ->with(['teacher.user', 'classroom', 'subject', 'learningMeeting', 'material'])
             ->withCount('submissions')
             ->latest();
         $applyFilters($assignmentsQuery);
@@ -79,7 +79,7 @@ class MonitoringController extends Controller
 
     public function assignment(Assignment $assignment): View
     {
-        $assignment->load(['teacher.user', 'classroom', 'subject', 'submissions.student.user']);
+        $assignment->load(['teacher.user', 'classroom', 'subject', 'learningMeeting', 'material', 'submissions.student.user']);
 
         $activeYear = AcademicYear::where('is_active', true)->first();
         $enrolledStudents = $activeYear

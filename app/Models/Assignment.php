@@ -17,6 +17,8 @@ class Assignment extends Model
         'teacher_id',
         'class_id',
         'subject_id',
+        'learning_meeting_id',
+        'material_id',
         'title',
         'description',
         'deadline',
@@ -49,6 +51,22 @@ class Assignment extends Model
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    /**
+     * Relasi ke Pertemuan Pembelajaran (Opsional)
+     */
+    public function learningMeeting(): BelongsTo
+    {
+        return $this->belongsTo(LearningMeeting::class);
+    }
+
+    /**
+     * Relasi ke Materi Pembelajaran Terkait (Opsional)
+     */
+    public function material(): BelongsTo
+    {
+        return $this->belongsTo(Material::class);
     }
 
     /**

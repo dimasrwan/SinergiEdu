@@ -174,4 +174,70 @@ class ParentProgressTest extends TestCase
         $response->assertSee('1 / 2 Selesai');
         $response->assertSee('88.5');
     }
+
+    public function test_parent_can_see_meeting_and_material_context_on_assignments()
+    {
+        $classroom = Classroom::create([
+            'school_id' => $this->school->id,
+            'name' => 'Kelas 8A',
+            'grade_level' => 8,
+            'education_level' => 'SMP',
+        ]);
+
+        $siswaRole = Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
+        $childUser = User::create([
+            'school_id' => $this->school->id,
+            'name' => 'Anak Test 2',
+            'email' => 'anak2@test.com',
+            'password' => bcrypt('password'),
+            'role_id' => $siswaRole->id,
+        ]);
+
+        $child = Student::create([
+            'school_id' => $this->school->id,
+            'user_id' => $childUser->id,
+            'parent_id' => $this->parentProfile->id,
+            'nisn' => '1234567891',
+        ]);
+        $child->classes()->attach($classroom->id, [
+            'school_id' => $this->school->id,
+            'academic_year_id' => $this->academicYear->id,
+        ]);
+
+        $meeting = \App\Models\LearningMeeting::create([
+            'teacher_id' => $this->teacher->id,
+            'class_id' => $classroom->id,
+            'subject_id' => $this->subject->id,
+            'academic_year_id' => $this->academicYear->id,
+            'semester_id' => $this->semester->id,
+            'meeting_number' => 4,
+            'meeting_date' => now()->toDateString(),
+            'topic' => 'Aljabar',
+        ]);
+
+        $material = \App\Models\Material::create([
+            'teacher_id' => $this->teacher->id,
+            'class_id' => $classroom->id,
+            'subject_id' => $this->subject->id,
+            'learning_meeting_id' => $meeting->id,
+            'title' => 'Materi Aljabar Dasar',
+            'description' => 'Penjelasan',
+        ]);
+
+        $assignment = Assignment::create([
+            'teacher_id' => $this->teacher->id,
+            'class_id' => $classroom->id,
+            'subject_id' => $this->subject->id,
+            'title' => 'Tugas Aljabar 1',
+            'description' => 'Kerjakan Latihan 1',
+            'deadline' => now()->addDays(3),
+            'learning_meeting_id' => $meeting->id,
+            'material_id' => $material->id,
+        ]);
+
+        $response = $this->actingAs($this->parentUser)->get(route('orangtua.assignments.index', ['student_id' => $child->id]));
+        $response->assertStatus(200);
+        $response->assertSee('Pertemuan 4');
+        $response->assertSee('Materi Aljabar Dasar');
+    }
 }

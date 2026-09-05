@@ -67,10 +67,20 @@
                         <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-sm relative group hover:shadow-md transition">
                             <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
                                 <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-3">
+                                    <div class="flex items-center gap-2 mb-3 flex-wrap">
                                         <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-slate-50 border border-slate-100 text-slate-600 uppercase tracking-wider">
                                             {{ $assignment->subject->name }}
                                         </span>
+                                        @if($assignment->learningMeeting)
+                                            <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 border border-blue-100 text-blue-700 uppercase tracking-wider">
+                                                Pertemuan {{ $assignment->learningMeeting->meeting_number }}
+                                            </span>
+                                        @endif
+                                        @if($assignment->material)
+                                            <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-50 border border-emerald-100 text-emerald-700 uppercase tracking-wider">
+                                                Materi: {{ $assignment->material->title }}
+                                            </span>
+                                        @endif
                                         {!! $statusBadge !!}
                                     </div>
                                     <h3 class="font-bold text-slate-900 text-[15px] mb-2 leading-snug">{{ $assignment->title }}</h3>

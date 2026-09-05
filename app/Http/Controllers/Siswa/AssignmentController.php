@@ -27,7 +27,7 @@ class AssignmentController extends Controller
         $assignments = collect();
         if ($classroom) {
             $assignments = Assignment::where('class_id', $classroom->id)
-                ->with(['teacher.user', 'subject', 'submissions' => function ($q) use ($student) {
+                ->with(['teacher.user', 'subject', 'learningMeeting', 'material', 'submissions' => function ($q) use ($student) {
                     $q->where('student_id', $student->id);
                 }])
                 ->latest()
@@ -44,7 +44,7 @@ class AssignmentController extends Controller
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
 
-        $assignment->load(['teacher.user', 'subject']);
+        $assignment->load(['teacher.user', 'subject', 'learningMeeting', 'material']);
         
         $submission = AssignmentSubmission::where('assignment_id', $assignment->id)
             ->where('student_id', $student->id)

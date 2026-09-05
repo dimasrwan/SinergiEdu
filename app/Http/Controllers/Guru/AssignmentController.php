@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Guru\AssignmentRequest;
 use App\Models\AcademicYear;
 use App\Models\Assignment;
+use App\Models\LearningMeeting;
+use App\Models\Material;
 use App\Models\Semester;
 use App\Models\Teacher;
 use App\Models\TeacherSubject;
@@ -15,12 +17,71 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Validation\ValidationException;
 
 class AssignmentController extends Controller
 {
     private function getTeacherProfile(): Teacher
     {
         return Teacher::where('user_id', auth()->id())->firstOrFail();
+    }
+
+    private function validateMeetingAndMaterialContext(array $data, Teacher $teacher): void
+    {
+        $schoolId = auth()->user()->school_id;
+
+        if (!empty($data['learning_meeting_id'])) {
+            $meeting = LearningMeeting::find($data['learning_meeting_id']);
+            if (!$meeting) {
+                throw ValidationException::withMessages([
+                    'learning_meeting_id' => 'Pertemuan tidak ditemukan.',
+                ]);
+            }
+            if ($meeting->teacher_id !== $teacher->id) {
+                throw ValidationException::withMessages([
+                    'learning_meeting_id' => 'Anda tidak memiliki akses ke pertemuan ini.',
+                ]);
+            }
+            if ($schoolId && $meeting->classroom?->school_id && $meeting->classroom->school_id !== $schoolId) {
+                throw ValidationException::withMessages([
+                    'learning_meeting_id' => 'Pertemuan berasal dari sekolah lain.',
+                ]);
+            }
+            if ((int)$meeting->class_id !== (int)$data['class_id'] || (int)$meeting->subject_id !== (int)$data['subject_id']) {
+                throw ValidationException::withMessages([
+                    'learning_meeting_id' => 'Pertemuan tidak sesuai dengan kelas dan mata pelajaran yang dipilih.',
+                ]);
+            }
+        }
+
+        if (!empty($data['material_id'])) {
+            $material = Material::find($data['material_id']);
+            if (!$material) {
+                throw ValidationException::withMessages([
+                    'material_id' => 'Materi tidak ditemukan.',
+                ]);
+            }
+            if ($material->teacher_id !== $teacher->id) {
+                throw ValidationException::withMessages([
+                    'material_id' => 'Anda tidak memiliki akses ke materi ini.',
+                ]);
+            }
+            if ($schoolId && $material->classroom?->school_id && $material->classroom->school_id !== $schoolId) {
+                throw ValidationException::withMessages([
+                    'material_id' => 'Materi berasal dari sekolah lain.',
+                ]);
+            }
+            if ((int)$material->class_id !== (int)$data['class_id'] || (int)$material->subject_id !== (int)$data['subject_id']) {
+                throw ValidationException::withMessages([
+                    'material_id' => 'Materi tidak sesuai dengan kelas dan mata pelajaran yang dipilih.',
+                ]);
+            }
+            if (!empty($data['learning_meeting_id']) && $material->learning_meeting_id && (int)$material->learning_meeting_id !== (int)$data['learning_meeting_id']) {
+                throw ValidationException::withMessages([
+                    'material_id' => 'Materi tidak terikat pada pertemuan yang dipilih.',
+                ]);
+            }
+        }
     }
 
     public function index(Request $request): View
@@ -44,7 +105,7 @@ class AssignmentController extends Controller
         }
 
         $query = Assignment::where('teacher_id', $teacher->id)
-            ->with(['classroom', 'subject'])
+            ->with(['classroom', 'subject', 'learningMeeting', 'material'])
             ->withCount('submissions');
             
         if (!empty($activeClassIds) && !empty($activeSubjectIds)) {
@@ -72,19 +133,45 @@ class AssignmentController extends Controller
         
         $classes = collect();
         $subjects = collect();
+        $meetings = collect();
+        $materials = collect();
         
-        if ($activeAcademicYear && $activeSemester) {
+        if ($activeAcademicYear) {
             $teacherSubjects = TeacherSubject::with(['classroom', 'subject'])
                 ->where('teacher_id', $teacher->id)
                 ->where('academic_year_id', $activeAcademicYear->id)
-                ->where('semester_id', $activeSemester->id)
+                ->when($activeSemester, function($q) use ($activeSemester) {
+                    $q->where(function($q2) use ($activeSemester) {
+                        $q2->where('semester_id', $activeSemester->id)
+                           ->orWhereNull('semester_id');
+                    });
+                })
                 ->get();
+
+            // If empty with strict semester filter, fallback to active academic year teacher subjects
+            if ($teacherSubjects->isEmpty()) {
+                $teacherSubjects = TeacherSubject::with(['classroom', 'subject'])
+                    ->where('teacher_id', $teacher->id)
+                    ->where('academic_year_id', $activeAcademicYear->id)
+                    ->get();
+            }
                 
-            $classes = $teacherSubjects->pluck('classroom')->unique('id')->values();
-            $subjects = $teacherSubjects->pluck('subject')->unique('id')->values();
+            $classes = $teacherSubjects->pluck('classroom')->filter()->unique('id')->values();
+            $subjects = $teacherSubjects->pluck('subject')->filter()->unique('id')->values();
+
+            $meetings = LearningMeeting::where('teacher_id', $teacher->id)
+                ->where('academic_year_id', $activeAcademicYear->id)
+                ->with(['classroom', 'subject'])
+                ->orderBy('meeting_number', 'desc')
+                ->get();
+
+            $materials = Material::where('teacher_id', $teacher->id)
+                ->with(['classroom', 'subject', 'learningMeeting'])
+                ->latest()
+                ->get();
         }
 
-        return view('pages.guru.assignments.create', compact('classes', 'subjects'));
+        return view('pages.guru.assignments.create', compact('classes', 'subjects', 'meetings', 'materials'));
     }
 
     public function store(AssignmentRequest $request): RedirectResponse
@@ -96,12 +183,11 @@ class AssignmentController extends Controller
         $activeAcademicYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
         
-        if ($activeAcademicYear && $activeSemester) {
+        if ($activeAcademicYear) {
             $isValidContext = TeacherSubject::where('teacher_id', $teacher->id)
                 ->where('class_id', $data['class_id'])
                 ->where('subject_id', $data['subject_id'])
                 ->where('academic_year_id', $activeAcademicYear->id)
-                ->where('semester_id', $activeSemester->id)
                 ->exists();
                 
             if (!$isValidContext) {
@@ -109,6 +195,8 @@ class AssignmentController extends Controller
             }
         }
         
+        $this->validateMeetingAndMaterialContext($data, $teacher);
+
         $data['teacher_id'] = $teacher->id;
 
         if ($request->hasFile('attachment')) {
@@ -125,7 +213,7 @@ class AssignmentController extends Controller
         $teacher = $this->getTeacherProfile();
         abort_if($assignment->teacher_id !== $teacher->id, 403, 'Akses ditolak.');
 
-        $assignment->load(['classroom', 'subject']);
+        $assignment->load(['classroom', 'subject', 'learningMeeting', 'material']);
         
         $activeAcademicYear = AcademicYear::where('is_active', true)->first();
         
@@ -203,16 +291,41 @@ class AssignmentController extends Controller
         
         $classes = collect();
         $subjects = collect();
+        $meetings = collect();
+        $materials = collect();
         
-        if ($activeAcademicYear && $activeSemester) {
+        if ($activeAcademicYear) {
             $teacherSubjects = TeacherSubject::with(['classroom', 'subject'])
                 ->where('teacher_id', $teacher->id)
                 ->where('academic_year_id', $activeAcademicYear->id)
-                ->where('semester_id', $activeSemester->id)
+                ->when($activeSemester, function($q) use ($activeSemester) {
+                    $q->where(function($q2) use ($activeSemester) {
+                        $q2->where('semester_id', $activeSemester->id)
+                           ->orWhereNull('semester_id');
+                    });
+                })
                 ->get();
+
+            if ($teacherSubjects->isEmpty()) {
+                $teacherSubjects = TeacherSubject::with(['classroom', 'subject'])
+                    ->where('teacher_id', $teacher->id)
+                    ->where('academic_year_id', $activeAcademicYear->id)
+                    ->get();
+            }
                 
-            $classes = $teacherSubjects->pluck('classroom')->unique('id')->values();
-            $subjects = $teacherSubjects->pluck('subject')->unique('id')->values();
+            $classes = $teacherSubjects->pluck('classroom')->filter()->unique('id')->values();
+            $subjects = $teacherSubjects->pluck('subject')->filter()->unique('id')->values();
+
+            $meetings = LearningMeeting::where('teacher_id', $teacher->id)
+                ->where('academic_year_id', $activeAcademicYear->id)
+                ->with(['classroom', 'subject'])
+                ->orderBy('meeting_number', 'desc')
+                ->get();
+
+            $materials = Material::where('teacher_id', $teacher->id)
+                ->with(['classroom', 'subject', 'learningMeeting'])
+                ->latest()
+                ->get();
         }
 
         if (!$classes->contains('id', $assignment->class_id)) {
@@ -221,8 +334,14 @@ class AssignmentController extends Controller
         if (!$subjects->contains('id', $assignment->subject_id)) {
             $subjects->push($assignment->subject);
         }
+        if ($assignment->learning_meeting_id && !$meetings->contains('id', $assignment->learning_meeting_id)) {
+            $meetings->push($assignment->learningMeeting);
+        }
+        if ($assignment->material_id && !$materials->contains('id', $assignment->material_id)) {
+            $materials->push($assignment->material);
+        }
 
-        return view('pages.guru.assignments.edit', compact('assignment', 'classes', 'subjects'));
+        return view('pages.guru.assignments.edit', compact('assignment', 'classes', 'subjects', 'meetings', 'materials'));
     }
 
     public function update(AssignmentRequest $request, Assignment $assignment): RedirectResponse
@@ -249,6 +368,8 @@ class AssignmentController extends Controller
                 return back()->withInput()->withErrors(['class_id' => 'Kombinasi kelas dan mata pelajaran tidak sah untuk penugasan Anda.']);
             }
         }
+
+        $this->validateMeetingAndMaterialContext($data, $teacher);
 
         unset($data['teacher_id']); // Prevent modification
 

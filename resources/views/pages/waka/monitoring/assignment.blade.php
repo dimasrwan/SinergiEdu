@@ -16,6 +16,12 @@
                         <div><dt class="text-slate-400">Guru</dt><dd class="font-semibold text-slate-800">{{ $assignment->teacher->user->name ?? '-' }}</dd></div>
                         <div><dt class="text-slate-400">Kelas</dt><dd class="font-semibold text-slate-800">{{ $assignment->classroom->name ?? '-' }}</dd></div>
                         <div><dt class="text-slate-400">Mata pelajaran</dt><dd class="font-semibold text-slate-800">{{ $assignment->subject->name ?? '-' }}</dd></div>
+                        @if($assignment->learningMeeting)
+                            <div><dt class="text-slate-400">Pertemuan</dt><dd class="font-semibold text-slate-800">Pertemuan {{ $assignment->learningMeeting->meeting_number }} ({{ $assignment->learningMeeting->topic }})</dd></div>
+                        @endif
+                        @if($assignment->material)
+                            <div><dt class="text-slate-400">Materi Terkait</dt><dd class="font-semibold text-slate-800">{{ $assignment->material->title }}</dd></div>
+                        @endif
                         <div><dt class="text-slate-400">Tenggat</dt><dd class="font-semibold {{ now()->isAfter($assignment->deadline) ? 'text-red-600' : 'text-slate-800' }}">{{ $assignment->deadline->format('d M Y, H:i') }}</dd></div>
                     </dl>
                     <div class="mt-5 border-t border-slate-100 pt-5 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{{ $assignment->description }}</div>

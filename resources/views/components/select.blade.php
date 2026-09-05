@@ -59,6 +59,16 @@
         options: @js($formattedOptions),
         placeholder: '{{ addslashes($placeholder) }}',
         init() {
+            this.syncOptions();
+            this.$watch('selectedVal', () => this.syncLabel());
+        },
+        syncOptions() {
+            let selectEl = this.$refs.hiddenInput ? this.$refs.hiddenInput.previousElementSibling : null;
+            // Get current options dynamically if updated in DOM
+            let found = this.options.find(o => String(o.value) === String(this.selectedVal));
+            this.selectedLabel = found ? found.label : (this.placeholder || '-- Pilih --');
+        },
+        syncLabel() {
             let found = this.options.find(o => String(o.value) === String(this.selectedVal));
             this.selectedLabel = found ? found.label : (this.placeholder || '-- Pilih --');
         },

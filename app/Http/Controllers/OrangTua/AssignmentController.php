@@ -57,7 +57,7 @@ class AssignmentController extends Controller
 
                 // Paginate for list
                 $assignments = (clone $baseQuery)
-                    ->with(['subject', 'teacher.user', 'submissions' => function ($query) use ($selectedStudentId) {
+                    ->with(['subject', 'teacher.user', 'learningMeeting', 'material', 'submissions' => function ($query) use ($selectedStudentId) {
                         $query->where('student_id', $selectedStudentId);
                     }])
                     ->latest()

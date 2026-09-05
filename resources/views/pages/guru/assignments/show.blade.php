@@ -12,8 +12,14 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-950">{{ $assignment->title }}</h1>
-                    <div class="flex items-center gap-3 mt-2 text-sm">
+                    <div class="flex items-center gap-3 mt-2 text-sm flex-wrap">
                         <x-badge variant="primary">{{ $assignment->classroom->name ?? '-' }}</x-badge>
+                        @if($assignment->learningMeeting)
+                            <x-badge variant="info">Pertemuan {{ $assignment->learningMeeting->meeting_number }}</x-badge>
+                        @endif
+                        @if($assignment->material)
+                            <x-badge variant="neutral">Materi: {{ $assignment->material->title }}</x-badge>
+                        @endif
                         <span class="text-slate-500">Tenggat Waktu: <strong class="{{ now()->isAfter($assignment->deadline) ? 'text-red-600' : 'text-slate-800' }}">{{ $assignment->deadline->format('d M Y, H:i') }}</strong></span>
                     </div>
                 </div>
@@ -65,16 +71,16 @@
                         <h3 class="text-lg font-bold text-slate-900">Daftar Pengumpulan Siswa</h3>
                         
                         <!-- Search & Filter -->
-                        <form action="{{ route('guru.assignments.show', $assignment) }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <form action="{{ route('guru.assignments.show', $assignment) }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row gap-2.5 items-center">
+                            <div class="relative w-full sm:w-48 md:w-56">
+                                <div class="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none z-10">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama/NIS..." class="block w-full pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg-lg text-sm bg-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama/NIS..." class="w-full bg-white border border-slate-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl pl-9 pr-4 py-2.5 text-[14px] font-medium text-slate-800 shadow-2xs transition-all placeholder:text-slate-400">
                             </div>
-                            <div class="w-full sm:w-44">
+                            <div class="w-full sm:w-48 md:w-56">
                                 <x-select name="status" 
                                           onchange="this.form.submit()" 
                                           placeholder="Semua Status" 

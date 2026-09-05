@@ -33,9 +33,21 @@
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
                     <div class="mb-5">
-                        <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg-lg uppercase tracking-wider mb-3">
-                            {{ $assignment->subject->name ?? 'Umum' }}
-                        </span>
+                        <div class="flex items-center gap-2 flex-wrap mb-3">
+                            <span class="inline-flex text-[10px] font-bold text-primary bg-blue-50 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                {{ $assignment->subject->name ?? 'Umum' }}
+                            </span>
+                            @if($assignment->learningMeeting)
+                                <span class="inline-flex text-[10px] font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                    Pertemuan {{ $assignment->learningMeeting->meeting_number }}
+                                </span>
+                            @endif
+                            @if($assignment->material)
+                                <span class="inline-flex text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                    Materi: {{ $assignment->material->title }}
+                                </span>
+                            @endif
+                        </div>
                         <h1 class="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">{{ $assignment->title }}</h1>
                     </div>
 
