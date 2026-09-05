@@ -49,11 +49,10 @@
                 <form action="{{ route('admin.academic-years.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
                     <div class="flex-1 flex gap-3 flex-col sm:flex-row">
                         <div class="w-full sm:w-48">
-                            <select name="status" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="">Semua Status</option>
-                                <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Tidak Aktif</option>
-                            </select>
+                            <x-select name="status" placeholder="Semua Status" :selected="request('status')" :options="[
+                                ['value' => 'aktif', 'label' => 'Aktif'],
+                                ['value' => 'selesai', 'label' => 'Tidak Aktif']
+                            ]" />
                         </div>
                     </div>
                     

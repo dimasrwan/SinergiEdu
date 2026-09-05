@@ -21,12 +21,13 @@
         <x-card padding="none">
             <div class="p-4 border-b border-slate-200 flex items-center gap-4">
                 <form method="GET" class="flex gap-3">
-                    <select name="status" class="px-4 py-2 border border-slate-300 rounded-lg-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option value="">Semua Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
-                        <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>Dijadwalkan</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
-                    </select>
+                    <div class="w-48">
+                        <x-select name="status" placeholder="Semua Status" :selected="request('status')" :options="[
+                            ['value' => 'pending', 'label' => 'Menunggu'],
+                            ['value' => 'scheduled', 'label' => 'Dijadwalkan'],
+                            ['value' => 'completed', 'label' => 'Selesai']
+                        ]" />
+                    </div>
                     <button type="submit" class="px-4 py-2 text-sm bg-slate-100 text-slate-700 rounded-lg-lg hover:bg-slate-200 transition">Filter</button>
                 </form>
             </div>

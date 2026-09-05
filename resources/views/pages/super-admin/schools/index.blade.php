@@ -49,15 +49,11 @@
                 </div>
                 
                 <!-- Filter Status (Compact) -->
-                <div class="relative w-full sm:w-56 shrink-0">
-                    <select name="status" onchange="this.form.submit()" class="block w-full pl-3 pr-10 py-2.5 text-sm border border-slate-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent appearance-none cursor-pointer font-medium">
-                        <option value="">Semua Status</option>
-                        <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
-                        <option value="nonaktif" {{ request('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
+                <div class="w-full sm:w-56 shrink-0">
+                    <x-select name="status" onchange="this.form.submit()" placeholder="Semua Status" :selected="request('status')" :options="[
+                        ['value' => 'aktif', 'label' => 'Aktif'],
+                        ['value' => 'nonaktif', 'label' => 'Nonaktif']
+                    ]" />
                 </div>
             </form>
         </div>

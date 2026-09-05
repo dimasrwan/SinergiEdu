@@ -105,16 +105,7 @@
                                     </div>
                                 </div>
                             @else
-                                <div class="relative">
-                                    <select id="class_id" name="class_id" class="block w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs" required>
-                                        <option value="" disabled selected>-- Pilih Kelas Tujuan --</option>
-                                        @foreach($classrooms as $class)
-                                            <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
-                                                {{ $class->name }} (Tingkat {{ $class->level }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <x-select id="class_id" name="class_id" placeholder="-- Pilih Kelas Tujuan --" required :options="$classrooms->map(fn($c) => ['value' => $c->id, 'label' => $c->name . ' (Tingkat ' . $c->level . ')'])->toArray()" />
                             @endif
                         </div>
 

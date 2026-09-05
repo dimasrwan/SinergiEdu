@@ -11,18 +11,7 @@
         <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-sm">
             <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Anak yang Dipantau</h2>
             <form action="{{ route('orangtua.progress.index') }}" method="GET" class="w-full md:max-w-md">
-                <div class="relative">
-                    <select name="student_id" onchange="this.form.submit()" class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-[15px] font-bold rounded-xl focus:ring-primary focus:border-primary block p-3 pr-10 appearance-none cursor-pointer hover:bg-slate-100 transition">
-                        @foreach($children as $child)
-                            <option value="{{ $child->id }}" {{ (int)$selectedStudentId === $child->id ? 'selected' : '' }}>
-                                {{ $child->user->name ?? 'Anak' }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </div>
-                </div>
+                <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name ?? 'Anak'])->toArray()" />
                 <p class="text-[13px] text-slate-500 font-medium mt-2.5 ml-1">
                     {{ $activeYear ? $activeYear->year : 'Tahun Ajaran' }} &bull; {{ $activeSemester ? $activeSemester->name : 'Semester' }}
                 </p>

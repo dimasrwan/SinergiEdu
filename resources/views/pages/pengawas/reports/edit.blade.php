@@ -30,13 +30,7 @@
                 <div>
                     <label for="teacher_id" class="block text-sm font-semibold text-slate-700 mb-2">Sasaran Guru
                         (Opsional)</label>
-                    <select id="teacher_id" name="teacher_id"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
-                        <option value="">– Seluruh Sekolah / Bukan Guru Spesifik –</option>
-                        @foreach($teachers as $teacher)
-                            <option value="{{ $teacher->id }}" @selected(old('teacher_id', $report->teacher_id) == $teacher->id)>{{ $teacher->user?->name }}</option>
-                        @endforeach
-                    </select>
+                    <x-searchable-select id="teacher_id" name="teacher_id" placeholder="– Seluruh Sekolah / Bukan Guru Spesifik –" :selected="old('teacher_id', $report->teacher_id)" :options="$teachers->map(fn($t) => ['value' => $t->id, 'label' => $t->user?->name])->toArray()" />
                     @error('teacher_id')
                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -44,14 +38,7 @@
                 <div>
                     <label for="class_id" class="block text-sm font-semibold text-slate-700 mb-2">Sasaran Kelas
                         (Opsional)</label>
-                    <select id="class_id" name="class_id"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
-                        <option value="">– Seluruh Sekolah / Bukan Kelas Spesifik –</option>
-                        @foreach($classrooms as $cls)
-                            <option value="{{ $cls->id }}" @selected(old('class_id', $report->class_id) == $cls->id)>
-                                {{ $cls->name }}</option>
-                        @endforeach
-                    </select>
+                    <x-select id="class_id" name="class_id" placeholder="– Seluruh Sekolah / Bukan Kelas Spesifik –" :selected="old('class_id', $report->class_id)" :options="$classrooms->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                     @error('class_id')
                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>

@@ -29,52 +29,31 @@
 
                 <div>
                     <label for="class_id" class="block text-sm font-semibold text-slate-700 mb-2">Sasaran Kelas</label>
-                    <select id="class_id" name="class_id"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
-                        <option value="">Seluruh Sekolah</option>
-                        @foreach($classrooms as $cls)
-                            <option value="{{ $cls->id }}" @selected(old('class_id', $actionPlan->class_id) == $cls->id)>
-                                {{ $cls->name }}</option>
-                        @endforeach
-                    </select>
+                    <x-select id="class_id" name="class_id" placeholder="Seluruh Sekolah" :selected="old('class_id', $actionPlan->class_id)" :options="$classrooms->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                 </div>
 
                 <div>
-                    <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-2">Tahun
-                        Ajaran</label>
-                    <select id="academic_year_id" name="academic_year_id"
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
-                        <option value="">– Pilih Tahun Ajaran –</option>
-                        @foreach($academicYears as $year)
-                            <option value="{{ $year->id }}" @selected(old('academic_year_id', $actionPlan->academic_year_id) == $year->id)>{{ $year->name }}</option>
-                        @endforeach
-                    </select>
+                    <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-2">Tahun Ajaran</label>
+                    <x-select id="academic_year_id" name="academic_year_id" placeholder="– Pilih Tahun Ajaran –" :selected="old('academic_year_id', $actionPlan->academic_year_id)" :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => $y->name])->toArray()" />
                 </div>
 
                 <div>
-                    <label for="priority" class="block text-sm font-semibold text-slate-700 mb-2">Prioritas <span
-                            class="text-red-500">*</span></label>
-                    <select id="priority" name="priority" required
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
-                        <option value="high" @selected(old('priority', $actionPlan->priority) === 'high')>🔴 Tinggi
-                        </option>
-                        <option value="medium" @selected(old('priority', $actionPlan->priority) === 'medium')>🟡 Sedang
-                        </option>
-                        <option value="low" @selected(old('priority', $actionPlan->priority) === 'low')>⚪ Rendah</option>
-                    </select>
+                    <label for="priority" class="block text-sm font-semibold text-slate-700 mb-2">Prioritas <span class="text-red-500">*</span></label>
+                    <x-select id="priority" name="priority" required :selected="old('priority', $actionPlan->priority)" :options="[
+                        ['value' => 'high', 'label' => '🔴 Tinggi'],
+                        ['value' => 'medium', 'label' => '🟡 Sedang'],
+                        ['value' => 'low', 'label' => '⚪ Rendah']
+                    ]" />
                     @error('priority')
                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
-                    <label for="status" class="block text-sm font-semibold text-slate-700 mb-2">Status <span
-                            class="text-red-500">*</span></label>
-                    <select id="status" name="status" required
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:border-blue-500 focus:bg-white transition">
-                        <option value="draft" @selected(old('status', $actionPlan->status) === 'draft')>Draft</option>
-                        <option value="published" @selected(old('status', $actionPlan->status) === 'published')>
-                            Diterbitkan</option>
-                    </select>
+                    <label for="status" class="block text-sm font-semibold text-slate-700 mb-2">Status <span class="text-red-500">*</span></label>
+                    <x-select id="status" name="status" required :selected="old('status', $actionPlan->status)" :options="[
+                        ['value' => 'draft', 'label' => 'Draft'],
+                        ['value' => 'published', 'label' => 'Diterbitkan']
+                    ]" />
                     @error('status')
                     <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>

@@ -73,27 +73,13 @@
                         <!-- Kelas Target -->
                         <div class="space-y-2">
                             <label for="class_id" class="block text-sm font-semibold text-slate-800">Pindahkan ke Kelas <span class="text-red-500">*</span></label>
-                            <select id="class_id" name="class_id" class="block w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs" required>
-                                <option value="" disabled>Pilih kelas...</option>
-                                @foreach($classrooms as $class)
-                                    <option value="{{ $class->id }}" {{ old('class_id', $studentPlacement->class_id) == $class->id ? 'selected' : '' }}>
-                                        {{ $class->name }} (Tingkat {{ $class->level }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-select id="class_id" name="class_id" placeholder="Pilih kelas..." required :selected="old('class_id', $studentPlacement->class_id)" :options="$classrooms->map(fn($c) => ['value' => $c->id, 'label' => $c->name . ' (Tingkat ' . $c->level . ')'])->toArray()" />
                         </div>
 
                         <!-- Tahun Ajaran -->
                         <div class="space-y-2">
                             <label for="academic_year_id" class="block text-sm font-semibold text-slate-800">Tahun Ajaran <span class="text-red-500">*</span></label>
-                            <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs" required>
-                                <option value="" disabled>Pilih tahun ajaran...</option>
-                                @foreach($academicYears as $year)
-                                    <option value="{{ $year->id }}" {{ old('academic_year_id', $studentPlacement->academic_year_id) == $year->id ? 'selected' : '' }}>
-                                        {{ $year->year }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-select id="academic_year_id" name="academic_year_id" placeholder="Pilih tahun ajaran..." required :selected="old('academic_year_id', $studentPlacement->academic_year_id)" :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => $y->year])->toArray()" />
                             <p class="text-xs text-slate-500">Peringatan: Mengubah tahun ajaran dapat berkonflik jika riwayat tahun tersebut sudah ada.</p>
                         </div>
                     </div>

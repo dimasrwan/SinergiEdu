@@ -38,18 +38,7 @@
             <div class="flex flex-col md:items-end gap-3 w-full md:w-auto border-t md:border-t-0 border-slate-100 pt-4 md:pt-0">
                 @if($children->count() > 1)
                 <form action="{{ route('orangtua.dashboard') }}" method="GET" class="w-full md:w-56">
-                    <div class="relative">
-                        <select name="student_id" onchange="this.form.submit()" class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-[13px] font-semibold rounded-lg focus:ring-primary focus:border-primary block py-2 pl-3 pr-8 appearance-none cursor-pointer hover:bg-slate-100 transition shadow-sm">
-                            @foreach($children as $child)
-                                <option value="{{ $child->id }}" {{ (int)$selectedStudentId === $child->id ? 'selected' : '' }}>
-                                    {{ $child->user->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-slate-400">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>
-                        </div>
-                    </div>
+                    <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name])->toArray()" />
                 </form>
                 @endif
                 

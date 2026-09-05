@@ -14,14 +14,7 @@
         <x-card padding="md">
             <form method="GET" class="flex flex-col sm:flex-row gap-4">
                 <div class="flex-1">
-                    <select name="class_id" onchange="this.form.submit()" class="w-full px-4 py-2 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option value="">Pilih Kelas</option>
-                        @foreach($classes as $class)
-                            <option value="{{ $class->id }}" {{ $selectedClassId == $class->id ? 'selected' : '' }}>
-                                {{ $class->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <x-select name="class_id" onchange="this.form.submit()" placeholder="Pilih Kelas" :selected="$selectedClassId" :options="$classes->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                 </div>
                 <a href="{{ route('pengawas.students.downloadReport', ['class_id' => $selectedClassId]) }}" 
                    class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition inline-flex items-center gap-2 justify-center">

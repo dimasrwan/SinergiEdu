@@ -69,29 +69,45 @@
                         </div>
                     </div>
                     
-                    <div class="flex flex-col sm:flex-row gap-3 md:w-auto w-full shrink-0">
-                        <select name="education_level" x-model="jenjang" @change="onJenjangChange" class="block w-full sm:w-40 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
-                            <option value="">Semua Jenjang</option>
-                            <option value="SD">SD / MI</option>
-                            <option value="SMP">SMP / MTs</option>
-                            <option value="SMA">SMA / MA / SMK</option>
-                        </select>
+                        <div class="w-full sm:w-44">
+                            <x-select name="education_level" 
+                                      placeholder="Semua Jenjang" 
+                                      :selected="request('education_level')" 
+                                      :options="[
+                                          ['value' => 'SD', 'label' => 'SD / MI'],
+                                          ['value' => 'SMP', 'label' => 'SMP / MTs'],
+                                          ['value' => 'SMA', 'label' => 'SMA / MA / SMK']
+                                      ]" 
+                                      x-model="jenjang" 
+                                      @change="onJenjangChange" />
+                        </div>
 
-                        <select name="grade_level" x-model="tingkat" :disabled="!jenjang" class="block w-full sm:w-40 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm disabled:opacity-50 disabled:bg-slate-50">
-                            <option value="">Semua Tingkat</option>
-                            <template x-for="val in getTingkatOptions()" :key="val">
-                                <option :value="val" x-text="val" :selected="val == tingkat"></option>
-                            </template>
-                        </select>
+                        <div class="w-full sm:w-44">
+                            <x-select name="grade_level" 
+                                      placeholder="Semua Tingkat" 
+                                      :selected="request('grade_level')" 
+                                      :options="[
+                                          ['value' => '1', 'label' => '1'],
+                                          ['value' => '2', 'label' => '2'],
+                                          ['value' => '3', 'label' => '3'],
+                                          ['value' => '4', 'label' => '4'],
+                                          ['value' => '5', 'label' => '5'],
+                                          ['value' => '6', 'label' => '6'],
+                                          ['value' => '7', 'label' => '7'],
+                                          ['value' => '8', 'label' => '8'],
+                                          ['value' => '9', 'label' => '9'],
+                                          ['value' => '10', 'label' => '10'],
+                                          ['value' => '11', 'label' => '11'],
+                                          ['value' => '12', 'label' => '12']
+                                      ]" />
+                        </div>
                         
-                        <select name="academic_year_id" class="block w-full sm:w-48 py-2 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm">
-                            <option value="">Semua Tahun Ajaran</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->id }}" {{ request('academic_year_id') == $year->id ? 'selected' : '' }}>
-                                    {{ $year->year }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="w-full sm:w-52">
+                            <x-select name="academic_year_id" 
+                                      placeholder="Semua Tahun Ajaran" 
+                                      :selected="request('academic_year_id')" 
+                                      :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => $y->year])->toArray()" />
+                        </div>
                         
                         <button type="submit" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg border border-slate-200 transition-colors">
                             Filter

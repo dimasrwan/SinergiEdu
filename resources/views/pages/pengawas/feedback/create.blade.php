@@ -78,11 +78,11 @@
                     <label class="block text-sm font-semibold text-slate-900 mb-2">
                         Prioritas Rencana Aksi (Opsional)
                     </label>
-                    <select name="priority" class="w-full px-4 py-2 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option value="medium" selected>Prioritas Sedang (Default)</option>
-                        <option value="low">Prioritas Rendah</option>
-                        <option value="high">Prioritas Tinggi</option>
-                    </select>
+                    <x-select name="priority" :selected="old('priority', 'medium')" :options="[
+                        ['value' => 'medium', 'label' => 'Prioritas Sedang (Default)'],
+                        ['value' => 'low', 'label' => 'Prioritas Rendah'],
+                        ['value' => 'high', 'label' => 'Prioritas Tinggi']
+                    ]" />
                 </div>
 
                 {{-- Tabel Nilai Referensi --}}

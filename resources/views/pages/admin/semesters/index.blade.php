@@ -49,14 +49,10 @@
                 <form action="{{ route('admin.semesters.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
                     <div class="flex-1 flex gap-3 flex-col sm:flex-row">
                         <div class="w-full sm:w-64">
-                            <select name="academic_year_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="">Semua Tahun Ajaran</option>
-                                @foreach($academicYears as $year)
-                                    <option value="{{ $year->id }}" {{ request('academic_year_id') == $year->id ? 'selected' : '' }}>
-                                        Tahun Ajaran {{ $year->year }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-select name="academic_year_id" 
+                                      placeholder="Semua Tahun Ajaran" 
+                                      :selected="request('academic_year_id')" 
+                                      :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => 'Tahun Ajaran ' . $y->year])->toArray()" />
                         </div>
                     </div>
                     

@@ -77,11 +77,11 @@
                     <label class="block text-sm font-semibold text-slate-900 mb-2">
                         Prioritas Rencana Aksi (Opsional)
                     </label>
-                    <select name="priority" class="w-full px-4 py-2 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                        <option value="medium" {{ old('priority', $lastFeedback?->supervisor_priority ?? 'medium') === 'medium' ? 'selected' : '' }}>Prioritas Sedang</option>
-                        <option value="low" {{ old('priority', $lastFeedback?->supervisor_priority) === 'low' ? 'selected' : '' }}>Prioritas Rendah</option>
-                        <option value="high" {{ old('priority', $lastFeedback?->supervisor_priority) === 'high' ? 'selected' : '' }}>Prioritas Tinggi</option>
-                    </select>
+                    <x-select name="priority" :selected="old('priority', $lastFeedback?->supervisor_priority ?? 'medium')" :options="[
+                        ['value' => 'medium', 'label' => 'Prioritas Sedang'],
+                        ['value' => 'low', 'label' => 'Prioritas Rendah'],
+                        ['value' => 'high', 'label' => 'Prioritas Tinggi']
+                    ]" />
                 </div>
 
                 {{-- Informasi Update --}}

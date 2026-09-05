@@ -55,27 +55,13 @@
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari guru, mata pelajaran, atau kelas..." class="block w-full pl-10 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
                         </div>
                         <div class="w-full md:w-1/6">
-                            <select name="academic_year_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="">Tahun Ajaran</option>
-                                @foreach($academicYears as $year)
-                                    <option value="{{ $year->id }}" {{ request('academic_year_id') == $year->id ? 'selected' : '' }}>
-                                        {{ $year->year }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-select name="academic_year_id" placeholder="Tahun Ajaran" :selected="request('academic_year_id')" :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => $y->year])->toArray()" />
                         </div>
                         <div class="w-full md:w-1/6">
-                            <x-semester-select name="semester_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent" :selected="request('semester_id')" empty-label="Semester" />
+                            <x-semester-select name="semester_id" :selected="request('semester_id')" empty-label="Semester" />
                         </div>
                         <div class="w-full md:w-1/6">
-                            <select name="class_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="">Kelas</option>
-                                @foreach($classrooms as $class)
-                                    <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
-                                        {{ $class->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-select name="class_id" placeholder="Kelas" :selected="request('class_id')" :options="$classrooms->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                         </div>
                         <div class="flex gap-2 shrink-0 md:ml-auto">
                             <button type="submit" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg border border-slate-200 transition-colors w-full sm:w-auto text-center">

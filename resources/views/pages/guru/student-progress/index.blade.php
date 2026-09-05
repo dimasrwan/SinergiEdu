@@ -85,22 +85,12 @@
                     
                     <div class="sm:w-48">
                         <label for="class_id" class="sr-only">Kelas</label>
-                        <select id="class_id" name="class_id" class="block w-full rounded-lg border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
-                            <option value="">Semua Kelas</option>
-                            @foreach($classes as $c)
-                                <option value="{{ $c->id }}" {{ request('class_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
-                            @endforeach
-                        </select>
+                        <x-select id="class_id" name="class_id" placeholder="Semua Kelas" :selected="request('class_id')" :options="$classes->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                     </div>
                     
                     <div class="sm:w-48">
                         <label for="subject_id" class="sr-only">Mata Pelajaran</label>
-                        <select id="subject_id" name="subject_id" class="block w-full rounded-lg border-0 py-2 pl-3 pr-10 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-blue-600 sm:text-sm sm:leading-6">
-                            <option value="">Semua Mapel</option>
-                            @foreach($subjects as $s)
-                                <option value="{{ $s->id }}" {{ request('subject_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
-                            @endforeach
-                        </select>
+                        <x-select id="subject_id" name="subject_id" placeholder="Semua Mapel" :selected="request('subject_id')" :options="$subjects->map(fn($s) => ['value' => $s->id, 'label' => $s->name])->toArray()" />
                     </div>
                     
                     <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors">

@@ -10,16 +10,7 @@
             <form action="{{ route('orangtua.feedbacks.index') }}" method="GET" class="w-full">
                 <div class="flex flex-col md:flex-row md:items-center gap-4">
                     <div class="relative w-full md:max-w-md">
-                        <select name="student_id" onchange="this.form.submit()" class="w-full bg-slate-50 border border-slate-200 text-slate-900 text-[15px] font-bold rounded-xl focus:ring-primary focus:border-primary block p-3 pr-10 appearance-none cursor-pointer hover:bg-slate-100 transition">
-                            @foreach($children as $child)
-                                <option value="{{ $child->id }}" {{ (int)$selectedStudentId === $child->id ? 'selected' : '' }}>
-                                    {{ $child->user->name ?? 'Anak' }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                        </div>
+                        <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name ?? 'Anak'])->toArray()" />
                     </div>
                     <!-- Search bar if any -->
                     <div class="flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">

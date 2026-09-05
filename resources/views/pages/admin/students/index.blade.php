@@ -67,18 +67,8 @@
                 </div>
                 
                 <!-- Filter Kelas -->
-                <div class="relative w-full sm:w-56">
-                    <select name="class_id" onchange="this.form.submit()" class="block w-full pl-3 pr-10 py-2.5 text-sm border border-slate-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent appearance-none cursor-pointer">
-                        <option value="">Semua Kelas</option>
-                        @forelse($classes as $class)
-                            <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
-                        @empty
-                            <option value="" disabled>Belum ada kelas tersedia.</option>
-                        @endforelse
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
+                <div class="w-full sm:w-56">
+                    <x-select name="class_id" onchange="this.form.submit()" placeholder="Semua Kelas" :selected="request('class_id')" :options="$classes->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                 </div>
             </form>
         </div>
