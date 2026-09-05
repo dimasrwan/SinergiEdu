@@ -14,6 +14,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        (function() {
+            try {
+                var theme = '{{ auth()->check() && auth()->user()->preferences ? auth()->user()->preferences->theme : 'system' }}';
+                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
 </head>
 <body class="h-full font-sans text-slate-800 antialiased tracking-tight" x-data="{ sidebarOpen: false }">
     <div>
@@ -99,43 +111,7 @@
                                 @endif
                             </ul>
                         </li>
-                        @if(!in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
-                        <li class="mt-auto px-2 pb-4">
-                            <!-- Compact Profile Dropdown -->
-                            <div class="relative" x-data="{ open: false }">
-                                <button type="button" @click="open = !open" class="w-full bg-slate-50 hover:bg-slate-100 rounded-lg p-2.5 flex items-center justify-between gap-x-3 transition-colors border border-slate-200/60">
-                                    <div class="flex items-center gap-x-3 min-w-0">
-                                        <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-xs" />
-                                        <div class="flex-1 min-w-0 text-left">
-                                            <p class="text-[13px] font-semibold text-slate-900 truncate leading-tight">{{ Auth::user()->name ?? 'Guest' }}</p>
-                                            <p class="text-[10px] text-slate-500 truncate mt-0.5">{{ Auth::user()->role->name ?? '' }}</p>
-                                        </div>
-                                    </div>
-                                    <svg class="h-4 w-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                                    </svg>
-                                </button>
-                                
-                                <!-- Dropdown Menu -->
-                                <div x-show="open" 
-                                     @click.away="open = false"
-                                     x-transition:enter="transition ease-out duration-100"
-                                     x-transition:enter-start="transform opacity-0 scale-95"
-                                     x-transition:enter-end="transform opacity-100 scale-100"
-                                     x-transition:leave="transition ease-in duration-75"
-                                     x-transition:leave-start="transform opacity-100 scale-100"
-                                     x-transition:leave-end="transform opacity-0 scale-95"
-                                     class="absolute bottom-full left-0 mb-2 w-full rounded-xl bg-white shadow-lg ring-1 ring-slate-900/5 py-1 z-50"
-                                     style="display: none;">
-                                    <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-primary transition-colors">Profil</a>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Logout</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </li>
-                        @else
+                        @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
                         <li class="mt-auto pt-4 pb-0">
                             <!-- Admin Subtle Footer -->
                             <div class="border-t border-slate-200/60 pt-3">
@@ -240,6 +216,8 @@
                                 </div>
                                 @endif
                                 <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">Profil</a>
+                                <a href="{{ route('settings.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">Pengaturan</a>
+                                <div class="border-t border-slate-100 my-1"></div>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Keluar</button>

@@ -24,6 +24,10 @@ Route::middleware(['auth'])->group(function () {
     // Rute Foto Profil
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
     Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
+    
+    // Rute Global Settings
+    Route::get('/settings', [\App\Http\Controllers\UserSettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings/preferences', [\App\Http\Controllers\UserSettingController::class, 'updatePreferences'])->name('settings.preferences.update');
     // Pengalihan dashboard umum jika user mengakses '/dashboard'
     Route::get('/dashboard', function () {
         $route = \App\Support\DashboardRouter::forUser(auth()->user());

@@ -30,6 +30,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke Preferences.
+     */
+    public function preferences(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
