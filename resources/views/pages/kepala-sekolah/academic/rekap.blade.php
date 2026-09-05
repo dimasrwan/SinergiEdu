@@ -37,10 +37,10 @@
                     </x-select>
                 </div>
                 <div class="flex items-end">
-                    <x-button variant="primary" type="submit" class="w-full">
-                        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
-                        Terapkan Filter
-                    </x-button>
+                    <button type="submit" class="w-full flex items-center justify-center bg-primary hover:bg-primary-hover active:scale-[0.98] text-white border border-transparent rounded-xl px-4 py-2.5 h-[42px] text-[14px] font-medium shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <svg class="h-4 w-4 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+                        <span>Terapkan Filter</span>
+                    </button>
                 </div>
             </form>
         </x-card>

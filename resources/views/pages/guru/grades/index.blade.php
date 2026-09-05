@@ -54,12 +54,12 @@
                     </x-select>
                 </div>
                 <div class="flex items-end">
-                    <x-button variant="secondary" type="submit" class="w-full justify-center">
-                        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <button type="submit" class="w-full flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 active:scale-[0.98] text-slate-700 rounded-xl px-4 py-2.5 h-[42px] text-[14px] font-medium shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-slate-200">
+                        <svg class="h-4 w-4 mr-2 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                         </svg>
-                        Segarkan Data
-                    </x-button>
+                        <span>Segarkan Data</span>
+                    </button>
                 </div>
             </form>
         </x-card>

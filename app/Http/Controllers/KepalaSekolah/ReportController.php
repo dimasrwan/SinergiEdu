@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Semester;
 use App\Services\KepalaSekolah\AcademicAggregatorService;
 use Illuminate\View\View;
+use OpenSpout\Writer\XLSX\Writer;
+use OpenSpout\Common\Entity\Row;
 
 class ReportController extends Controller
 {
@@ -49,7 +51,7 @@ class ReportController extends Controller
         ));
     }
 
-    public function approve(Request $request)
+    public function approve(\Illuminate\Http\Request $request)
     {
         return back()->with('success', 'Laporan telah disetujui dan ditandatangani.');
     }
@@ -71,20 +73,43 @@ class ReportController extends Controller
     {
         $rows = $aggregator->getRekapList(auth()->user()->school_id);
 
-        $csv = "Nama,NISN,NIS,Kelas,Rata-rata,Pretest,Tugas,Posttest,Karakter,Hafalan\n";
+        $filePath = tempnam(sys_get_temp_dir(), 'excel_') . '.xlsx';
+
+        $writer = new Writer();
+        $writer->openToFile($filePath);
+
+        // Header Row
+        $writer->addRow(Row::fromValues([
+            'Nama Siswa',
+            'NISN',
+            'NIS',
+            'Kelas',
+            'Rata-rata',
+            'Pretest',
+            'Tugas',
+            'Posttest',
+            'Karakter',
+            'Hafalan',
+        ]));
+
+        // Data Rows
         foreach ($rows as $row) {
-            $csv .= '"' . $row['name'] . '","' . $row['nisn'] . '","' . $row['nis'] . '","' . $row['class_name'] . '",'
-                . $row['avg'] . ','
-                . $row['avg_pre_test'] . ','
-                . $row['avg_assignment'] . ','
-                . $row['avg_post_test'] . ','
-                . $row['avg_character'] . ','
-                . $row['avg_memorization'] . "\n";
+            $writer->addRow(Row::fromValues([
+                (string) ($row['name'] ?? ''),
+                (string) ($row['nisn'] ?? ''),
+                (string) ($row['nis'] ?? ''),
+                (string) ($row['class_name'] ?? ''),
+                is_numeric($row['avg'] ?? null) ? (float) $row['avg'] : 0,
+                is_numeric($row['avg_pre_test'] ?? null) ? (float) $row['avg_pre_test'] : 0,
+                is_numeric($row['avg_assignment'] ?? null) ? (float) $row['avg_assignment'] : 0,
+                is_numeric($row['avg_post_test'] ?? null) ? (float) $row['avg_post_test'] : 0,
+                is_numeric($row['avg_character'] ?? null) ? (float) $row['avg_character'] : 0,
+                is_numeric($row['avg_memorization'] ?? null) ? (float) $row['avg_memorization'] : 0,
+            ]));
         }
 
-        return response($csv, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="rekap-nilai.csv"',
-        ]);
+        $writer->close();
+
+        return response()->download($filePath, 'rekap-nilai-siswa.xlsx')->deleteFileAfterSend(true);
     }
 }

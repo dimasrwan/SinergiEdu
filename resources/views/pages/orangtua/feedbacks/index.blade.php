@@ -13,9 +13,9 @@
                         <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name ?? 'Anak'])->toArray()" />
                     </div>
                     <!-- Search bar if any -->
-                    <div class="flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
-                        <x-text-input name="search" value="{{ request('search') }}" placeholder="Cari catatan..." class="w-full md:w-48 text-sm" />
-                        <x-primary-button type="submit" class="py-2.5">Cari</x-primary-button>
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <x-text-input name="search" value="{{ request('search') }}" placeholder="Cari catatan..." class="w-full md:w-56 h-[42px] px-4 py-2.5 rounded-xl text-[14px]" />
+                        <x-primary-button type="submit" class="h-[42px] px-5 rounded-xl text-[14px] font-medium shrink-0 flex items-center justify-center">Cari</x-primary-button>
                     </div>
                 </div>
             </form>
