@@ -197,11 +197,11 @@ class DevelopmentTestDataSeeder extends Seeder
         }
 
         // ==================================================
-        // 11 & 12. ORANG TUA
+        // 11 & 12. ORANG TUA (Expanded to 3 parents per school)
         // ==================================================
         $parentUsers = [];
         $parents = [];
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $user = User::create([
                 'name' => "Orang Tua {$level} 0{$i}",
                 'email' => "ortu.{$adminPrefix}.{$i}@sinergiedu.test",
@@ -221,11 +221,11 @@ class DevelopmentTestDataSeeder extends Seeder
         }
 
         // ==================================================
-        // 9 & 10. SISWA
+        // 9 & 10. SISWA (Expanded to 5 students per school)
         // ==================================================
         $studentUsers = [];
         $students = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $user = User::create([
                 'name' => "Siswa {$level} 0{$i}",
                 'email' => "siswa.{$adminPrefix}.{$i}@sinergiedu.test",
@@ -236,10 +236,11 @@ class DevelopmentTestDataSeeder extends Seeder
             ]);
             $studentUsers[] = $user;
 
-            // Relationships
+            // Relationships mapping:
             // Parent 1 -> Siswa 1 & 2
-            // Parent 2 -> Siswa 3
-            $parentId = ($i <= 2) ? $parents[0]->id : $parents[1]->id;
+            // Parent 2 -> Siswa 3 & 4
+            // Parent 3 -> Siswa 5
+            $parentId = ($i <= 2) ? $parents[0]->id : (($i <= 4) ? $parents[1]->id : $parents[2]->id);
 
             $students[] = Student::create([
                 'school_id' => $school->id,
@@ -247,7 +248,7 @@ class DevelopmentTestDataSeeder extends Seeder
                 'parent_id' => $parentId,
                 'nis' => '1010' . $school->id . $i,
                 'nisn' => '001234567' . $school->id . $i,
-                'gender' => 'L',
+                'gender' => $i % 2 === 0 ? 'P' : 'L',
             ]);
         }
 
@@ -327,12 +328,16 @@ class DevelopmentTestDataSeeder extends Seeder
                 0 => 'VII A',
                 1 => 'VIII A',
                 2 => 'IX A',
+                3 => 'VII B',
+                4 => 'VIII B',
             ];
         } else {
             $placements = [
                 0 => 'X IPA 1',
                 1 => 'XI IPA 1',
                 2 => 'XII IPA 1',
+                3 => 'X IPS 1',
+                4 => 'XI IPS 1',
             ];
         }
 

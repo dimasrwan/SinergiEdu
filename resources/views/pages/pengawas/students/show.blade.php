@@ -13,32 +13,58 @@
         </div>
 
         {{-- Hero Card Profil Siswa --}}
-        <div class="bg-gradient-to-br from-primary to-cyan-500 rounded-2xl p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
-            <div class="absolute right-0 top-0 w-56 h-56 bg-white/5 rounded-full blur-3xl -translate-y-1/3 translate-x-1/4"></div>
-            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center gap-5">
-                <div class="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-black shrink-0">
-                    {{ strtoupper(substr($student->user?->name ?? '?', 0, 2)) }}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h1 class="text-2xl font-bold">{{ $student->user?->name }}</h1>
-                    <div class="flex flex-wrap gap-x-6 gap-y-1 mt-2 text-blue-100 text-sm">
-                        <span>NIS: <strong class="text-white">{{ $student->nis ?? '-' }}</strong></span>
-                        <span>NISN: <strong class="text-white">{{ $student->nisn ?? '-' }}</strong></span>
-                        <span>{{ $student->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
+        <div class="bg-primary rounded-2xl p-6 md:p-7 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                {{-- Avatar + Identity Group --}}
+                <div class="flex flex-col sm:flex-row sm:items-center gap-6 flex-1 min-w-0">
+                    {{-- Avatar --}}
+                    <div class="h-20 w-20 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center text-2xl font-black text-white shrink-0 shadow-inner">
+                        {{ strtoupper(substr($student->user?->name ?? '?', 0, 2)) }}
                     </div>
-                    <div class="flex flex-wrap gap-x-6 gap-y-1 mt-1 text-blue-100 text-sm">
-                        <span>Orang Tua: <strong class="text-white">{{ $student->parent?->user?->name ?? '-' }}</strong></span>
-                        @if($activeClassroom)
-                            <span>Kelas: <strong class="text-white">{{ $activeClassroom->name }}</strong></span>
-                        @endif
+
+                    {{-- Student Info --}}
+                    <div class="flex-1 min-w-0 space-y-3">
+                        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white leading-tight">{{ $student->user?->name }}</h1>
+                        
+                        <div class="space-y-1.5 text-sm">
+                            {{-- Baris 1: NIS & Jenis Kelamin --}}
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-blue-100/80 font-medium">NIS:</span>
+                                    <span class="font-semibold text-white">{{ $student->nis ?? '-' }}</span>
+                                </div>
+                                <span class="text-blue-100/40 font-bold text-xs select-none">·</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-blue-100/80 font-medium">Jenis Kelamin:</span>
+                                    <span class="font-semibold text-white">{{ $student->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Baris 2: Orang Tua & Kelas --}}
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-blue-100/80 font-medium">Orang Tua:</span>
+                                    <span class="font-semibold text-white">{{ $student->parent?->user?->name ?? '-' }}</span>
+                                </div>
+                                @if($activeClassroom)
+                                    <span class="text-blue-100/40 font-bold text-xs select-none">·</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-blue-100/80 font-medium">Kelas:</span>
+                                        <span class="font-semibold text-white">{{ $activeClassroom->name }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                {{-- Academic Context (Right Side Balance) --}}
                 @if($activeYear)
-                    <div class="text-right shrink-0">
-                        <div class="text-xs text-blue-200">Tahun Ajaran Aktif</div>
-                        <div class="text-sm font-bold">{{ $activeYear->name }}</div>
+                    <div class="text-left sm:text-right shrink-0 border-t sm:border-t-0 sm:border-l border-white/15 pt-4 sm:pt-0 sm:pl-6 space-y-1.5 self-start sm:self-center">
+                        <div class="text-[11px] font-semibold uppercase tracking-wider text-blue-100/75">Tahun Ajaran Aktif</div>
+                        <div class="text-base font-bold text-white leading-snug">{{ $activeYear->name }}</div>
                         @if($activeSemester)
-                            <div class="text-xs text-blue-200 mt-0.5">{{ $activeSemester->name }}</div>
+                            <div class="text-xs font-semibold text-blue-100/90">{{ $activeSemester->name }}</div>
                         @endif
                     </div>
                 @endif
