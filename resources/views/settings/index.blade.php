@@ -75,32 +75,26 @@
                                 </label>
 
                                 <!-- Dark -->
-                                <label class="relative flex cursor-pointer rounded-2xl border p-5 focus:outline-none transition-colors"
-                                       :class="{'border-blue-500 ring-1 ring-blue-500 bg-blue-50/50': '{{ old('theme', $preferences->theme) }}' === 'dark', 'border-slate-200 bg-white hover:bg-slate-50': '{{ old('theme', $preferences->theme) }}' !== 'dark'}">
-                                    <input type="radio" name="theme" value="dark" class="sr-only"
-                                           {{ old('theme', $preferences->theme) === 'dark' ? 'checked' : '' }}
-                                           onchange="this.closest('.grid').querySelectorAll('label').forEach(l => { l.classList.remove('border-blue-500', 'ring-1', 'ring-blue-500', 'bg-blue-50/50'); l.classList.add('border-slate-200', 'bg-white', 'hover:bg-slate-50'); }); this.closest('label').classList.remove('border-slate-200', 'bg-white', 'hover:bg-slate-50'); this.closest('label').classList.add('border-blue-500', 'ring-1', 'ring-blue-500', 'bg-blue-50/50');">
+                                <label class="relative flex rounded-2xl border p-5 focus:outline-none transition-colors border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed">
+                                    <input type="radio" name="theme" value="dark" class="sr-only" disabled>
                                     <span class="flex flex-1 flex-col items-start">
-                                        <svg class="h-6 w-6 mb-3 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                        <svg class="h-6 w-6 mb-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
                                         </svg>
-                                        <span class="block text-sm font-semibold text-slate-900">Gelap</span>
-                                        <span class="mt-1 block text-sm text-slate-500">Gunakan tampilan gelap.</span>
+                                        <span class="block text-sm font-semibold text-slate-400">Gelap</span>
+                                        <span class="mt-1 block text-sm text-slate-400">Segera tersedia.</span>
                                     </span>
                                 </label>
 
                                 <!-- System -->
-                                <label class="relative flex cursor-pointer rounded-2xl border p-5 focus:outline-none transition-colors"
-                                       :class="{'border-blue-500 ring-1 ring-blue-500 bg-blue-50/50': '{{ old('theme', $preferences->theme) }}' === 'system', 'border-slate-200 bg-white hover:bg-slate-50': '{{ old('theme', $preferences->theme) }}' !== 'system'}">
-                                    <input type="radio" name="theme" value="system" class="sr-only"
-                                           {{ old('theme', $preferences->theme) === 'system' ? 'checked' : '' }}
-                                           onchange="this.closest('.grid').querySelectorAll('label').forEach(l => { l.classList.remove('border-blue-500', 'ring-1', 'ring-blue-500', 'bg-blue-50/50'); l.classList.add('border-slate-200', 'bg-white', 'hover:bg-slate-50'); }); this.closest('label').classList.remove('border-slate-200', 'bg-white', 'hover:bg-slate-50'); this.closest('label').classList.add('border-blue-500', 'ring-1', 'ring-blue-500', 'bg-blue-50/50');">
+                                <label class="relative flex rounded-2xl border p-5 focus:outline-none transition-colors border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed">
+                                    <input type="radio" name="theme" value="system" class="sr-only" disabled>
                                     <span class="flex flex-1 flex-col items-start">
-                                        <svg class="h-6 w-6 mb-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                        <svg class="h-6 w-6 mb-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
                                         </svg>
-                                        <span class="block text-sm font-semibold text-slate-900">Sistem</span>
-                                        <span class="mt-1 block text-sm text-slate-500">Mengikuti pengaturan perangkat.</span>
+                                        <span class="block text-sm font-semibold text-slate-400">Sistem</span>
+                                        <span class="mt-1 block text-sm text-slate-400">Segera tersedia.</span>
                                     </span>
                                 </label>
                             </div>
