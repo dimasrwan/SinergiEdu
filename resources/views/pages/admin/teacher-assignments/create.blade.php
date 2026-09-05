@@ -153,21 +153,19 @@
                                 <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 p-4 bg-white border border-slate-200 rounded-2xl shadow-2xs hover:border-slate-300 transition-all">
                                     <div class="flex-1">
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Kelas <span class="text-red-500">*</span></label>
-                                        <select x-model="assignment.class_id" :name="`assignments[${index}][class_id]`" class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl px-4 py-2.5 text-[14px] font-medium text-slate-800 shadow-2xs transition-all cursor-pointer" required>
-                                            <option value="" disabled selected>-- Pilih Kelas --</option>
-                                            @foreach($classrooms as $class)
-                                                <option value="{{ $class->id }}">{{ $class->name }} (Tingkat {{ $class->level }})</option>
-                                            @endforeach
-                                        </select>
+                                        <x-select :name="`assignments[\${index}][class_id]`" 
+                                                  placeholder="-- Pilih Kelas --" 
+                                                  required 
+                                                  x-model="assignment.class_id" 
+                                                  :options="$classrooms->map(fn($c) => ['value' => $c->id, 'label' => $c->name . ' (Tingkat ' . $c->level . ')'])->toArray()" />
                                     </div>
                                     <div class="flex-1">
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mata Pelajaran <span class="text-red-500">*</span></label>
-                                        <select x-model="assignment.subject_id" :name="`assignments[${index}][subject_id]`" class="w-full flex items-center justify-between bg-white border border-slate-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl px-4 py-2.5 text-[14px] font-medium text-slate-800 shadow-2xs transition-all cursor-pointer" required>
-                                            <option value="" disabled selected>-- Pilih Mata Pelajaran --</option>
-                                            @foreach($subjects as $subject)
-                                                <option value="{{ $subject->id }}">{{ $subject->name }} (Kode: {{ $subject->code ?? '-' }})</option>
-                                            @endforeach
-                                        </select>
+                                        <x-select :name="`assignments[\${index}][subject_id]`" 
+                                                  placeholder="-- Pilih Mata Pelajaran --" 
+                                                  required 
+                                                  x-model="assignment.subject_id" 
+                                                  :options="$subjects->map(fn($s) => ['value' => $s->id, 'label' => $s->name . ' (Kode: ' . ($s->code ?? '-') . ')'])->toArray()" />
                                     </div>
                                     <div class="flex items-center justify-end md:self-end pt-2 md:pt-0">
                                         <button type="button" @click="removeAssignment(assignment.id)" x-show="assignments.length > 1" class="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors" title="Hapus baris ini">

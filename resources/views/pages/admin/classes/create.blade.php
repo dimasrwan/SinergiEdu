@@ -65,23 +65,42 @@
 
                             <div>
                                 <label for="education_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Jenjang Pendidikan <span class="text-danger">*</span></label>
-                                <select id="education_level" name="education_level" x-model="jenjang" @change="onJenjangChange" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
-                                    <option value="" disabled>Pilih jenjang...</option>
-                                    <option value="SD">SD / MI</option>
-                                    <option value="SMP">SMP / MTs</option>
-                                    <option value="SMA">SMA / MA / SMK</option>
-                                </select>
+                                <x-select id="education_level" 
+                                          name="education_level" 
+                                          placeholder="Pilih jenjang..." 
+                                          required 
+                                          :selected="old('education_level')" 
+                                          :options="[
+                                              ['value' => 'SD', 'label' => 'SD / MI'],
+                                              ['value' => 'SMP', 'label' => 'SMP / MTs'],
+                                              ['value' => 'SMA', 'label' => 'SMA / MA / SMK']
+                                          ]" 
+                                          x-model="jenjang" 
+                                          @change="onJenjangChange" />
                                 <x-input-error :messages="$errors->get('education_level')" class="mt-2" />
                             </div>
 
                             <div>
                                 <label for="grade_level" class="block text-sm font-semibold text-slate-700 mb-1.5">Tingkat Kelas <span class="text-danger">*</span></label>
-                                <select id="grade_level" name="grade_level" x-model="tingkat" :disabled="!jenjang" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700 disabled:opacity-50 disabled:bg-slate-50">
-                                    <option value="" disabled>Pilih tingkat...</option>
-                                    <template x-for="val in getTingkatOptions()" :key="val">
-                                        <option :value="val" x-text="val" :selected="val == tingkat"></option>
-                                    </template>
-                                </select>
+                                <x-select id="grade_level" 
+                                          name="grade_level" 
+                                          placeholder="Pilih tingkat..." 
+                                          required 
+                                          :selected="old('grade_level')" 
+                                          :options="[
+                                              ['value' => '1', 'label' => '1'],
+                                              ['value' => '2', 'label' => '2'],
+                                              ['value' => '3', 'label' => '3'],
+                                              ['value' => '4', 'label' => '4'],
+                                              ['value' => '5', 'label' => '5'],
+                                              ['value' => '6', 'label' => '6'],
+                                              ['value' => '7', 'label' => '7'],
+                                              ['value' => '8', 'label' => '8'],
+                                              ['value' => '9', 'label' => '9'],
+                                              ['value' => '10', 'label' => '10'],
+                                              ['value' => '11', 'label' => '11'],
+                                              ['value' => '12', 'label' => '12']
+                                          ]" />
                                 <x-input-error :messages="$errors->get('grade_level')" class="mt-2" />
                             </div>
 
@@ -101,26 +120,21 @@
 
                             <div>
                                 <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                <select id="academic_year_id" name="academic_year_id" required class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
-                                    <option value="" disabled {{ old('academic_year_id') ? '' : 'selected' }}>Pilih tahun ajaran...</option>
-                                    @foreach($academicYears as $year)
-                                        <option value="{{ $year->id }}" {{ old('academic_year_id') == $year->id ? 'selected' : '' }}>
-                                            {{ $year->year }} {{ $year->is_active ? '(Aktif)' : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <x-select id="academic_year_id" 
+                                          name="academic_year_id" 
+                                          placeholder="Pilih tahun ajaran..." 
+                                          required 
+                                          :selected="old('academic_year_id')" 
+                                          :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => $y->year . ($y->is_active ? ' (Aktif)' : '')])->toArray()" />
                             </div>
 
                             <div>
                                 <label for="homeroom_teacher_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Wali Kelas</label>
-                                <select id="homeroom_teacher_id" name="homeroom_teacher_id" class="block w-full py-2.5 pl-3 pr-8 border border-slate-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm text-slate-700">
-                                    <option value="">-- Belum Ditentukan --</option>
-                                    @foreach($teachers as $teacher)
-                                        <option value="{{ $teacher->id }}" {{ old('homeroom_teacher_id') == $teacher->id ? 'selected' : '' }}>
-                                            {{ $teacher->user->name ?? 'Tanpa Nama' }} {{ $teacher->nip ? '('.$teacher->nip.')' : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <x-select id="homeroom_teacher_id" 
+                                          name="homeroom_teacher_id" 
+                                          placeholder="-- Belum Ditentukan --" 
+                                          :selected="old('homeroom_teacher_id')" 
+                                          :options="$teachers->map(fn($t) => ['value' => $t->id, 'label' => ($t->user->name ?? 'Tanpa Nama') . ($t->nip ? ' ('.$t->nip.')' : '')])->toArray()" />
                                 <p class="text-[11px] text-slate-500 mt-1.5">Opsional. Sistem akan menolak jika guru sudah ditugaskan sebagai wali kelas di kelas lain pada tahun ajaran yang sama.</p>
                             </div>
                         </div>

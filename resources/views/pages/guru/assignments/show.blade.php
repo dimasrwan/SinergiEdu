@@ -74,14 +74,19 @@
                                 </div>
                                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama/NIS..." class="block w-full pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg-lg text-sm bg-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
                             </div>
-                            <select name="status" onchange="this.form.submit()" class="block w-full sm:w-auto py-1.5 pl-3 pr-8 border border-slate-300 rounded-lg-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                                <option value="">Semua Status</option>
-                                <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Mengumpulkan</option>
-                                <option value="not_submitted" {{ request('status') == 'not_submitted' ? 'selected' : '' }}>Belum Mengumpulkan</option>
-                                <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Terlambat</option>
-                                <option value="graded" {{ request('status') == 'graded' ? 'selected' : '' }}>Sudah Dinilai</option>
-                                <option value="not_graded" {{ request('status') == 'not_graded' ? 'selected' : '' }}>Belum Dinilai</option>
-                            </select>
+                            <div class="w-full sm:w-44">
+                                <x-select name="status" 
+                                          onchange="this.form.submit()" 
+                                          placeholder="Semua Status" 
+                                          :selected="request('status')" 
+                                          :options="[
+                                              ['value' => 'submitted', 'label' => 'Sudah Mengumpulkan'],
+                                              ['value' => 'not_submitted', 'label' => 'Belum Mengumpulkan'],
+                                              ['value' => 'late', 'label' => 'Terlambat'],
+                                              ['value' => 'graded', 'label' => 'Sudah Dinilai'],
+                                              ['value' => 'not_graded', 'label' => 'Belum Dinilai']
+                                          ]" />
+                            </div>
                             @if(request('search') || request('status'))
                                 <a href="{{ route('guru.assignments.show', $assignment) }}" class="inline-flex items-center justify-center p-1.5 text-slate-400 hover:text-slate-600 border border-transparent rounded-lg-lg" title="Clear Filters">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

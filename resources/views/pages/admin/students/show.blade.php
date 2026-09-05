@@ -180,24 +180,14 @@
                                                                             <div class="text-xs text-slate-500 font-mono">NIS: {{ $student->nis ?? '-' }}</div>
                                                                         </div>
                                                                         
-                                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                                             <div>
                                                                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
-                                                                                <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
-                                                                                    <option value="" disabled>-- Pilih Kelas --</option>
-                                                                                    @foreach($classes as $cls)
-                                                                                        <option value="{{ $cls->id }}" @selected(old('class_id', $placement->class_id) == $cls->id)>{{ $cls->name }}</option>
-                                                                                    @endforeach
-                                                                                </select>
+                                                                                <x-select name="class_id" required placeholder="-- Pilih Kelas --" :selected="old('class_id', $placement->class_id)" :options="$classes->map(fn($cls) => ['value' => $cls->id, 'label' => $cls->name])->toArray()" />
                                                                             </div>
                                                                             <div>
                                                                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                                                                <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
-                                                                                    <option value="" disabled>-- Pilih Tahun Ajaran --</option>
-                                                                                    @foreach($academicYears as $ay)
-                                                                                        <option value="{{ $ay->id }}" @selected(old('academic_year_id', $placement->academic_year_id) == $ay->id)>{{ $ay->year }}</option>
-                                                                                    @endforeach
-                                                                                </select>
+                                                                                <x-select name="academic_year_id" required placeholder="-- Pilih Tahun Ajaran --" :selected="old('academic_year_id', $placement->academic_year_id)" :options="$academicYears->map(fn($ay) => ['value' => $ay->id, 'label' => $ay->year])->toArray()" />
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -272,21 +262,11 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
-                                        <select name="class_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
-                                            <option value="" disabled selected>-- Pilih Kelas --</option>
-                                            @foreach($classes as $cls)
-                                                <option value="{{ $cls->id }}" @selected(old('class_id') == $cls->id)>{{ $cls->name }}</option>
-                                            @endforeach
-                                        </select>
+                                        <x-select name="class_id" required placeholder="-- Pilih Kelas --" :selected="old('class_id')" :options="$classes->map(fn($cls) => ['value' => $cls->id, 'label' => $cls->name])->toArray()" />
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                        <select name="academic_year_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
-                                            <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
-                                            @foreach($academicYears as $ay)
-                                                <option value="{{ $ay->id }}" @selected(old('academic_year_id', $academicYears->first()->id ?? null) == $ay->id)>{{ $ay->year }}</option>
-                                            @endforeach
-                                        </select>
+                                        <x-select name="academic_year_id" required placeholder="-- Pilih Tahun Ajaran --" :selected="old('academic_year_id', $academicYears->first()->id ?? null)" :options="$academicYears->map(fn($ay) => ['value' => $ay->id, 'label' => $ay->year])->toArray()" />
                                     </div>
                                 </div>
                             </div>

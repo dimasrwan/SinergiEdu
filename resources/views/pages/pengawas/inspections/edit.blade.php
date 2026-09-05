@@ -37,12 +37,7 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Sekolah</label>
-                        <select name="school_id" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                            <option value="">Pilih Sekolah</option>
-                            @foreach($schools as $school)
-                                <option value="{{ $school->id }}" {{ old('school_id', $inspection->school_id) == $school->id ? 'selected' : '' }}>{{ $school->name }}</option>
-                            @endforeach
-                        </select>
+                        <x-select name="school_id" placeholder="Pilih Sekolah" :selected="old('school_id', $inspection->school_id)" :options="$schools->map(fn($s) => ['value' => $s->id, 'label' => $s->name])->toArray()" />
                         @error('school_id')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror

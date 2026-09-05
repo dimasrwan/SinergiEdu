@@ -38,11 +38,13 @@
                 <section>
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-bold text-slate-900">Perbandingan Performa Kelas (Paralel XI)</h2>
-                        <select class="text-sm border-slate-200 rounded-lg-lg text-slate-600 focus:ring-accent focus:border-accent py-1.5 pl-3 pr-8">
-                            <option>Tingkat 10</option>
-                            <option selected>Tingkat 11</option>
-                            <option>Tingkat 12</option>
-                        </select>
+                        <div class="w-36">
+                            <x-select :options="[
+                                ['value' => '10', 'label' => 'Tingkat 10'],
+                                ['value' => '11', 'label' => 'Tingkat 11'],
+                                ['value' => '12', 'label' => 'Tingkat 12']
+                            ]" selected="11" />
+                        </div>
                     </div>
                     
                     <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">

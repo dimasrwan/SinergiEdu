@@ -128,25 +128,21 @@
                                         <!-- Dropdown Kelas -->
                                         <div class="md:col-span-5 relative">
                                             <label class="block text-xs font-semibold text-slate-500 mb-1 md:hidden">Pilih Kelas</label>
-                                            <select x-model="assignment.class_id" :name="`assignments[${index}][class_id]`" required
-                                                class="block w-full py-2.5 text-sm border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
-                                                <option value="" disabled>-- Pilih Kelas --</option>
-                                                <template x-for="cls in classes" :key="cls.id">
-                                                    <option :value="cls.id" x-text="`${cls.name} (Tingkat ${cls.grade_level})`"></option>
-                                                </template>
-                                            </select>
+                                            <x-select :name="`assignments[\${index}][class_id]`"
+                                                      placeholder="-- Pilih Kelas --"
+                                                      required
+                                                      x-model="assignment.class_id"
+                                                      :options="$classes->map(fn($cls) => ['value' => $cls->id, 'label' => $cls->name . ' (Tingkat ' . $cls->grade_level . ')'])->toArray()" />
                                         </div>
 
                                         <!-- Dropdown Mapel -->
                                         <div class="md:col-span-5 relative">
                                             <label class="block text-xs font-semibold text-slate-500 mb-1 md:hidden">Pilih Mata Pelajaran</label>
-                                            <select x-model="assignment.subject_id" :name="`assignments[${index}][subject_id]`" required
-                                                class="block w-full py-2.5 text-sm border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg-lg bg-white shadow-sm cursor-pointer">
-                                                <option value="" disabled>-- Pilih Mata Pelajaran --</option>
-                                                <template x-for="sub in subjects" :key="sub.id">
-                                                    <option :value="sub.id" x-text="`${sub.name}`"></option>
-                                                </template>
-                                            </select>
+                                            <x-select :name="`assignments[\${index}][subject_id]`"
+                                                      placeholder="-- Pilih Mata Pelajaran --"
+                                                      required
+                                                      x-model="assignment.subject_id"
+                                                      :options="$subjects->map(fn($sub) => ['value' => $sub->id, 'label' => $sub->name])->toArray()" />
                                             
                                             <!-- Duplicate Error -->
                                             <template x-if="isDuplicate(index)">
