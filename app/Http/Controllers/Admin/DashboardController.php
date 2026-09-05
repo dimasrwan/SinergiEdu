@@ -30,6 +30,24 @@ class DashboardController extends Controller
             ? Semester::where('academic_year_id', $activeAcademicYear->id)->where('is_active', true)->first()
             : null;
 
+        $missingContext = !$activeAcademicYear || !$activeSemester;
+
+        $unplacedStudents = 0;
+        $unassignedTeachers = 0;
+
+        if (!$missingContext) {
+            $unplacedStudents = Student::whereDoesntHave('classes', function ($q) use ($activeAcademicYear) {
+                $q->where('student_classes.academic_year_id', $activeAcademicYear->id);
+            })->count();
+
+            $unassignedTeachers = Teacher::whereNotIn('id', function($q) use ($activeAcademicYear, $activeSemester) {
+                $q->select('teacher_id')
+                  ->from('teacher_subjects')
+                  ->where('academic_year_id', $activeAcademicYear->id)
+                  ->where('semester_id', $activeSemester->id);
+            })->count();
+        }
+
         // 2. KPI Metrics
         $totalTeachers = Teacher::count();
         $totalStudents = Student::count();
@@ -124,7 +142,10 @@ class DashboardController extends Controller
             'growthLabels',
             'growthValues',
             'distributionData',
-            'recentUsers'
+            'recentUsers',
+            'missingContext',
+            'unplacedStudents',
+            'unassignedTeachers'
         ));
     }
 }

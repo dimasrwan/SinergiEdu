@@ -1,31 +1,31 @@
 <x-layouts.app>
     <x-slot:title>Edit Penempatan / Pindah Kelas</x-slot:title>
 
-    <div class="w-full max-w-2xl">
+    <div class="w-full space-y-6">
         <!-- Header -->
-        <div class="mb-6 flex flex-col items-start gap-4">
-            @if(request('redirect_to') === 'student')
-                <a href="{{ route('admin.students.show', $studentPlacement->student_id) }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                    </svg>
-                    Kembali ke Detail Siswa
-                </a>
-            @else
-                <a href="{{ route('admin.student-placements.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                    </svg>
-                    Kembali ke Daftar
-                </a>
-            @endif
-            <div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="space-y-1">
+                @if(request('redirect_to') === 'student')
+                    <a href="{{ route('admin.students.show', $studentPlacement->student_id) }}" class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition mb-1">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                        Kembali ke Detail Siswa
+                    </a>
+                @else
+                    <a href="{{ route('admin.student-placements.index') }}" class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition mb-1">
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                        </svg>
+                        Kembali ke Daftar Penempatan
+                    </a>
+                @endif
                 <h1 class="text-2xl font-bold tracking-tight text-slate-900">Edit / Pindah Kelas</h1>
-                <p class="mt-1 text-sm text-slate-500">Perbarui kelas aktif siswa pada tahun ajaran ini tanpa membuat rekaman ganda.</p>
+                <p class="text-sm text-slate-500">Perbarui kelas aktif siswa pada tahun ajaran ini tanpa membuat rekaman ganda.</p>
             </div>
         </div>
 
-        <x-card padding="none" class="overflow-hidden">
+        <x-card padding="none" class="overflow-hidden shadow-xs border border-slate-200">
             <form action="{{ route('admin.student-placements.update', $studentPlacement) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -39,37 +39,41 @@
                 <div class="p-6 md:p-8 space-y-6">
                     <!-- Validation Errors -->
                     @if($errors->any())
-                        <div class="p-4 bg-red-50 border border-red-100 rounded-xl">
-                            <div class="flex items-start gap-3">
-                                <svg class="h-5 w-5 text-danger mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                <div>
-                                    <h3 class="text-sm font-bold text-red-800">Terdapat Kesalahan</h3>
-                                    <ul class="mt-1 text-sm text-red-700 list-disc list-inside">
-                                        @foreach($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
+                        <div class="p-4 bg-red-50/80 border border-red-200/80 rounded-xl text-sm text-red-700 flex items-start gap-3">
+                            <svg class="h-5 w-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div>
+                                <h4 class="font-semibold text-red-900 mb-1">Terjadi kesalahan pada input:</h4>
+                                <ul class="list-disc list-inside space-y-0.5 text-xs">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
                         </div>
                     @endif
 
-                    <div class="space-y-6">
-                        <!-- Siswa -->
-                        <div>
-                            <label for="student_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Siswa <span class="text-danger">*</span></label>
-                            <select id="student_id" name="student_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
-                                <option value="{{ $studentPlacement->student_id }}" selected>
-                                    {{ $studentPlacement->student->user->name }} (NIS: {{ $studentPlacement->student->nis ?? '-' }})
-                                </option>
-                            </select>
-                            <p class="mt-1 text-xs text-slate-500">Siswa tidak dapat diubah saat mengedit penempatan.</p>
+                    <div class="space-y-6 max-w-2xl">
+                        <!-- Info Siswa -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-semibold text-slate-800">Siswa</label>
+                            <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm">
+                                <div class="h-9 w-9 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-xs font-bold text-blue-700 shrink-0">
+                                    {{ strtoupper(substr($studentPlacement->student->user->name ?? 'S', 0, 2)) }}
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-slate-900">{{ $studentPlacement->student->user->name }}</div>
+                                    <div class="text-xs text-slate-500 font-mono">NIS: {{ $studentPlacement->student->nis ?? '-' }}</div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="student_id" value="{{ $studentPlacement->student_id }}">
                         </div>
 
-                        <!-- Kelas -->
-                        <div>
-                            <label for="class_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Pindahkan ke Kelas <span class="text-danger">*</span></label>
-                            <select id="class_id" name="class_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                        <!-- Kelas Target -->
+                        <div class="space-y-2">
+                            <label for="class_id" class="block text-sm font-semibold text-slate-800">Pindahkan ke Kelas <span class="text-red-500">*</span></label>
+                            <select id="class_id" name="class_id" class="block w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs" required>
                                 <option value="" disabled>Pilih kelas...</option>
                                 @foreach($classrooms as $class)
                                     <option value="{{ $class->id }}" {{ old('class_id', $studentPlacement->class_id) == $class->id ? 'selected' : '' }}>
@@ -80,9 +84,9 @@
                         </div>
 
                         <!-- Tahun Ajaran -->
-                        <div>
-                            <label for="academic_year_id" class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                            <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm" required>
+                        <div class="space-y-2">
+                            <label for="academic_year_id" class="block text-sm font-semibold text-slate-800">Tahun Ajaran <span class="text-red-500">*</span></label>
+                            <select id="academic_year_id" name="academic_year_id" class="block w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-900 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-2xs" required>
                                 <option value="" disabled>Pilih tahun ajaran...</option>
                                 @foreach($academicYears as $year)
                                     <option value="{{ $year->id }}" {{ old('academic_year_id', $studentPlacement->academic_year_id) == $year->id ? 'selected' : '' }}>
@@ -90,14 +94,13 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <p class="mt-1 text-xs text-slate-500">Peringatan: Mengubah tahun ajaran dapat berkonflik jika riwayat tahun tersebut sudah ada.</p>
+                            <p class="text-xs text-slate-500">Peringatan: Mengubah tahun ajaran dapat berkonflik jika riwayat tahun tersebut sudah ada.</p>
                         </div>
-
                     </div>
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="px-6 py-5 border-t border-slate-100 bg-slate-50/50 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4">
+                <div class="px-6 py-4 border-t border-slate-200 bg-slate-50/60 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
                     @if(request('redirect_to') === 'student')
                         <x-button variant="secondary" href="{{ route('admin.students.show', $studentPlacement->student_id) }}" class="w-full sm:w-auto">Batal</x-button>
                     @else

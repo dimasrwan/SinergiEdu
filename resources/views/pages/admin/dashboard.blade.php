@@ -37,7 +37,60 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
+
+        <!-- Guidance Alerts -->
+        @if($missingContext || $unplacedStudents > 0 || $unassignedTeachers > 0)
+            <div class="space-y-4">
+                @if($missingContext)
+                    <div class="flex items-start gap-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
+                        <div class="mt-0.5 text-amber-600">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-amber-800 mb-1">Konteks Akademik Belum Diatur</h3>
+                            <p class="text-sm text-amber-700">Tahun ajaran atau semester aktif belum diatur. Harap atur terlebih dahulu untuk dapat mengelola penempatan siswa dan penugasan guru.</p>
+                        </div>
+                        <div class="ml-auto pl-4">
+                            <a href="{{ route('admin.academic-years.index') }}" class="inline-flex items-center text-sm font-semibold text-amber-700 hover:text-amber-800">Atur Sekarang &rarr;</a>
+                        </div>
+                    </div>
+                @else
+                    @if($unplacedStudents > 0)
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-blue-50 border border-blue-200">
+                            <div class="mt-0.5 text-blue-600">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-blue-800 mb-1">Siswa Belum Ditempatkan ({{ $unplacedStudents }})</h3>
+                                <p class="text-sm text-blue-700">Terdapat {{ $unplacedStudents }} siswa yang belum ditempatkan di kelas untuk tahun ajaran {{ $activeAcademicYear->year }}.</p>
+                            </div>
+                            <div class="ml-auto pl-4">
+                                <a href="{{ route('admin.student-placements.create') }}" class="inline-flex items-center text-sm font-semibold text-blue-700 hover:text-blue-800">Tempatkan &rarr;</a>
+                            </div>
+                        </div>
+                    @endif
+                    
+                    @if($unassignedTeachers > 0)
+                        <div class="flex items-start gap-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                            <div class="mt-0.5 text-emerald-600">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-emerald-800 mb-1">Guru Belum Ditugaskan ({{ $unassignedTeachers }})</h3>
+                                <p class="text-sm text-emerald-700">Terdapat {{ $unassignedTeachers }} guru yang belum mendapat tugas mengajar pada semester {{ $activeSemester->name }}.</p>
+                            </div>
+                            <div class="ml-auto pl-4">
+                                <a href="{{ route('admin.teacher-assignments.create') }}" class="inline-flex items-center text-sm font-semibold text-emerald-700 hover:text-emerald-800">Tugaskan &rarr;</a>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+            </div>
+        @endif
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

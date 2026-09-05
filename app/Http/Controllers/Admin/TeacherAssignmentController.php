@@ -81,20 +81,35 @@ class TeacherAssignmentController extends Controller
     public function create()
     {
         Gate::authorize('create', \App\Models\TeacherSubject::class);
-        $teachers = Teacher::with('user')->get()->sortBy('user.name');
+        $teachers = Teacher::with('user')->get()->sortBy(fn($t) => $t->user->name ?? '');
         $subjects = Subject::orderBy('name')->get();
-        $classrooms = Classroom::orderBy('name')->get();
-        $academicYears = AcademicYear::orderByDesc('year')->get();
-        $semesters = Semester::with('academicYear')
-            ->get()
-            ->sortByDesc(fn($s) => $s->academicYear->year . ' ' . $s->name);
+        
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        if (!$activeAcademicYear) {
+            return redirect()->route('admin.teacher-assignments.index')->with('error', 'Tidak ada Tahun Ajaran Aktif. Silakan atur Tahun Ajaran terlebih dahulu.');
+        }
+
+        $activeSemester = Semester::where('academic_year_id', $activeAcademicYear->id)
+                                  ->where('is_active', true)
+                                  ->first();
+                                  
+        if (!$activeSemester) {
+            return redirect()->route('admin.teacher-assignments.index')->with('error', 'Tidak ada Semester Aktif. Silakan atur Semester terlebih dahulu.');
+        }
+
+        $classrooms = Classroom::where('academic_year_id', $activeAcademicYear->id)->orderBy('name')->get();
+        
+        $academicYears = collect([$activeAcademicYear]);
+        $semesters = collect([$activeSemester]);
 
         return view('pages.admin.teacher-assignments.create', compact(
             'teachers',
             'subjects',
             'classrooms',
             'academicYears',
-            'semesters'
+            'semesters',
+            'activeAcademicYear',
+            'activeSemester'
         ));
     }
 
@@ -103,46 +118,80 @@ class TeacherAssignmentController extends Controller
         Gate::authorize('create', \App\Models\TeacherSubject::class);
         $validated = $request->validate([
             'teacher_id' => 'required|exists:teachers,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'class_id' => 'required|exists:classes,id',
             'academic_year_id' => 'required|exists:academic_years,id',
             'semester_id' => 'required|exists:semesters,id',
+            'assignments' => 'required|array|min:1',
+            'assignments.*.class_id' => 'required|numeric',
+            'assignments.*.subject_id' => 'required|numeric',
         ], [
             'teacher_id.required' => 'Guru wajib dipilih.',
-            'subject_id.required' => 'Mata pelajaran wajib dipilih.',
-            'class_id.required' => 'Kelas wajib dipilih.',
-            'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
-            'semester_id.required' => 'Semester wajib dipilih.',
+            'assignments.required' => 'Minimal satu penugasan wajib ditambahkan.',
+            'assignments.*.class_id.required' => 'Kelas wajib dipilih.',
+            'assignments.*.subject_id.required' => 'Mata pelajaran wajib dipilih.',
         ]);
 
-        // Duplicate assignment validation
-        $exists = TeacherSubject::where('teacher_id', $validated['teacher_id'])
-            ->where('subject_id', $validated['subject_id'])
-            ->where('class_id', $validated['class_id'])
-            ->where('academic_year_id', $validated['academic_year_id'])
-            ->where('semester_id', $validated['semester_id'])
-            ->exists();
+        $successCount = 0;
+        $failedAssignments = [];
 
-        if ($exists) {
-            return back()->withInput()->withErrors([
-                'duplicate' => 'Penugasan guru dengan kombinasi tersebut sudah tersedia.'
-            ]);
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            $teacherId = $validated['teacher_id'];
+            $academicYearId = $validated['academic_year_id'];
+            $semesterId = $validated['semester_id'];
+
+            foreach ($validated['assignments'] as $index => $assignment) {
+                $classId = $assignment['class_id'];
+                $subjectId = $assignment['subject_id'];
+                
+                $classroom = Classroom::find($classId);
+                $subject = Subject::find($subjectId);
+                
+                if (!$classroom || !$subject) {
+                    $failedAssignments[] = "Baris " . ($index + 1) . ": Kelas atau Mapel tidak ditemukan di database.";
+                    continue;
+                }
+
+                $exists = TeacherSubject::where('teacher_id', $teacherId)
+                    ->where('subject_id', $subjectId)
+                    ->where('class_id', $classId)
+                    ->where('academic_year_id', $academicYearId)
+                    ->where('semester_id', $semesterId)
+                    ->exists();
+
+                if ($exists) {
+                    $failedAssignments[] = "Baris " . ($index + 1) . ": Penugasan {$subject->name} untuk {$classroom->name} sudah ada.";
+                    continue;
+                }
+
+                TeacherSubject::create([
+                    'teacher_id' => $teacherId,
+                    'subject_id' => $subjectId,
+                    'class_id' => $classId,
+                    'academic_year_id' => $academicYearId,
+                    'semester_id' => $semesterId,
+                ]);
+                
+                $successCount++;
+            }
+            \Illuminate\Support\Facades\DB::commit();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return back()->withInput()->with('error', 'Terjadi kesalahan sistem saat menyimpan data: ' . $e->getMessage());
         }
 
-        TeacherSubject::create($validated);
+        $message = "Berhasil menambahkan {$successCount} penugasan.";
+        if (count($failedAssignments) > 0) {
+            $message .= " Gagal menambahkan " . count($failedAssignments) . " penugasan: " . implode(', ', $failedAssignments);
+            return redirect()->route('admin.teacher-assignments.index')->with('warning', $message);
+        }
 
         if ($request->input('redirect_to') === 'teacher') {
-            return redirect()->route('admin.teachers.show', $validated['teacher_id'])
-                ->with('success', 'Penugasan guru berhasil ditambahkan.');
-        }
-
-        if ($request->input('redirect_to') === 'teachers_index') {
-            return redirect()->route('admin.teachers.index')
-                ->with('success', 'Penugasan guru berhasil ditambahkan.');
+            return redirect()->route('admin.teachers.show', $teacherId)
+                ->with('success', $message);
         }
 
         return redirect()->route('admin.teacher-assignments.index')
-            ->with('success', 'Penugasan guru berhasil ditambahkan.');
+            ->with('success', $message);
     }
 
     public function edit(TeacherSubject $teacherAssignment)

@@ -37,15 +37,20 @@
                                 <x-input-error :messages="$errors->get('email')" class="mt-2 text-xs" />
                             </div>
 
-                            <div>
-                                <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password <span class="text-danger">*</span></label>
-                                <x-password-input id="password" name="password" required placeholder="Minimal 8 karakter" />
-                                <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs" />
-                            </div>
-
-                            <div>
-                                <label for="password_confirmation" class="block text-sm font-semibold text-slate-700 mb-1.5">Konfirmasi Password <span class="text-danger">*</span></label>
-                                <x-password-input id="password_confirmation" name="password_confirmation" required placeholder="Ulangi password" />
+                            @php $tempPassword = \Illuminate\Support\Str::random(8); @endphp
+                            <div x-data="{ pwd: '{{ old('password', $tempPassword) }}' }" class="grid grid-cols-1 gap-6">
+                                <div>
+                                    <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Password Sementara <span class="text-danger">*</span></label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" id="password" name="password" x-model="pwd" required class="block w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm font-mono">
+                                        <button type="button" @click="navigator.clipboard.writeText(pwd); alert('Password disalin!')" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
+                                            Salin
+                                        </button>
+                                    </div>
+                                    <x-input-error :messages="$errors->get('password')" class="mt-2 text-xs" />
+                                    <p class="mt-1.5 text-xs text-slate-500">Dibuat otomatis. Admin dapat mengubahnya jika perlu.</p>
+                                </div>
+                                <input type="hidden" name="password_confirmation" :value="pwd">
                             </div>
                         </div>
 
