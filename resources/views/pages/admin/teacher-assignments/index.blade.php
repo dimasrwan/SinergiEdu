@@ -43,7 +43,7 @@
             </div>
         @endif
 
-        <x-card padding="none" class="overflow-hidden">
+        <x-card padding="none">
             <!-- Filter Bar -->
             <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50/50">
                 <form action="{{ route('admin.teacher-assignments.index') }}" method="GET" class="flex flex-col gap-3">

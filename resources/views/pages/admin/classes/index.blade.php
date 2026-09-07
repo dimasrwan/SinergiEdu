@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Manajemen Kelas</x-slot:title>
 
-    <div class="w-full">
+    <div class="space-y-6">
         <!-- Header -->
         <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <div>
@@ -43,7 +43,7 @@
             </div>
         @endif
 
-        <x-card padding="none" class="overflow-hidden">
+        <x-card padding="none">
             <!-- Filter Bar -->
             <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50/50" x-data="{
                 jenjang: '{{ request('education_level') }}',
@@ -119,7 +119,6 @@
                         @endif
                     </div>
                 </form>
-            </div>
 
             <!-- Table -->
             <div class="overflow-x-auto">

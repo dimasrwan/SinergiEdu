@@ -3,8 +3,10 @@
 
     <div class="space-y-10 lg:space-y-12">
         <!-- System Management Banner -->
-        <div class="bg-primary rounded-2xl p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
-            <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div class="bg-primary rounded-2xl p-6 text-white shadow-xl shadow-primary/20 relative">
+            <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+            </div>
             
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

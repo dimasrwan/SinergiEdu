@@ -128,7 +128,7 @@
         </div>
 
         <!-- Main column -->
-        <div class="lg:pl-[230px] flex flex-col min-h-screen">
+        <div class="lg:pl-[230px] flex flex-col min-h-screen min-w-0 w-full overflow-x-hidden">
             <!-- Navbar -->
             <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
                 <button type="button" class="-m-2.5 p-2.5 text-slate-700 lg:hidden" @click="sidebarOpen = true">
@@ -228,16 +228,16 @@
                 </div>
             </div>
 
-            <main class="py-10 flex-1">
+            <main class="py-10 flex-1 min-w-0">
                 <div class="px-4 sm:px-6 lg:px-8">
                     {{ $slot }}
                 </div>
             </main>
 
             <!-- Footer -->
-            <footer class="bg-white border-t border-slate-200/50 py-6 mt-auto">
-                <div class="px-4 sm:px-6 lg:px-8 flex items-center justify-between text-sm text-slate-500">
-                    <p>&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</p>
+            <footer class="bg-white border-t border-slate-200/50 py-4 sm:py-6 mt-auto shrink-0">
+                <div class="px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-500 gap-2">
+                    <p class="whitespace-nowrap font-medium text-slate-500">&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</p>
                 </div>
             </footer>
         </div>
