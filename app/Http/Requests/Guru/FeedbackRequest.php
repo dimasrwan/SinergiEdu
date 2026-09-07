@@ -20,7 +20,7 @@ class FeedbackRequest extends FormRequest
             'subject_id' => 'nullable|exists:subjects,id',
             'title' => 'required|string|max:150',
             'message' => 'required|string',
-            'type' => 'required|in:positive,neutral,negative',
+            'type' => 'nullable|in:positive,neutral,negative',
         ];
     }
 
@@ -30,7 +30,6 @@ class FeedbackRequest extends FormRequest
             'student_id.required' => 'Siswa wajib dipilih.',
             'title.required' => 'Judul feedback wajib diisi.',
             'message.required' => 'Isi feedback wajib diisi.',
-            'type.required' => 'Tipe feedback wajib dipilih.',
             'type.in' => 'Tipe feedback tidak valid.',
         ];
     }

@@ -50,6 +50,10 @@
             }
         }
     }
+
+    if (!empty($placeholder) && !collect($formattedOptions)->contains('value', '')) {
+        array_unshift($formattedOptions, ['value' => '', 'label' => (string)$placeholder]);
+    }
 @endphp
 
 <div x-data="{
@@ -110,11 +114,11 @@
             :aria-expanded="open"
             {{ $disabled ? 'disabled' : '' }}
             {!! $attributes->except(['class', 'onchange', 'name', 'id', 'required', 'disabled'])->merge([
-                'class' => 'w-full flex items-center justify-between bg-white border border-slate-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl px-4 py-2.5 text-[14px] font-medium text-slate-800 shadow-2xs transition-all disabled:bg-slate-100 disabled:opacity-75 disabled:cursor-not-allowed'
+                'class' => 'w-full h-10 flex items-center justify-between bg-white border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-lg px-3.5 text-sm font-medium text-slate-800 shadow-2xs transition-all disabled:bg-slate-100 disabled:opacity-75 disabled:cursor-not-allowed'
             ]) !!}
     >
-        <span x-text="selectedLabel" :class="{'text-slate-400': !selectedVal && selectedVal !== 0}" class="truncate"></span>
-        <svg class="h-4 w-4 text-slate-400 transition-transform duration-200 shrink-0 ml-2" 
+        <span x-text="selectedLabel" :class="{'text-slate-400': !selectedVal && selectedVal !== 0}" class="truncate pr-2"></span>
+        <svg class="h-4 w-4 text-slate-400 transition-transform duration-200 shrink-0 ml-1" 
              :class="{'rotate-180': open}" 
              fill="none" 
              viewBox="0 0 24 24" 
@@ -131,13 +135,13 @@
         x-transition:leave="transition ease-in duration-75" 
         x-transition:leave-start="transform opacity-100 scale-100" 
         x-transition:leave-end="transform opacity-0 scale-95" 
-        class="absolute z-50 mt-1.5 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto py-1 focus:outline-none" 
+        class="absolute z-50 mt-1 w-full min-w-[140px] bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto py-1 focus:outline-none" 
         role="listbox" 
         style="display: none;"
     >
         <template x-for="opt in options" :key="opt.value">
             <li @click="selectOption(opt.value, opt.label)" 
-                class="cursor-pointer select-none px-4 py-2.5 text-[14px] transition-colors flex items-center justify-between"
+                class="cursor-pointer select-none px-3.5 py-2 text-sm transition-colors flex items-center justify-between"
                 :class="String(selectedVal) === String(opt.value) ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-700 hover:bg-slate-50 font-medium'"
                 role="option"
                 :aria-selected="String(selectedVal) === String(opt.value)">

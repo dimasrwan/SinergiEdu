@@ -69,35 +69,35 @@
         </div>
 
         <x-card padding="none">
-            <div class="border-b border-slate-200 p-4 sm:p-6">
-                <form action="{{ route('guru.student-progress.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
+            <div class="border-b border-slate-200 p-4 sm:p-5 bg-slate-50/50">
+                <form action="{{ route('guru.student-progress.index') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <div class="flex-1">
                         <label for="search" class="sr-only">Cari Siswa</label>
                         <div class="relative">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <input type="text" name="search" id="search" value="{{ request('search') }}" class="block w-full rounded-lg border-0 py-2 pl-10 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6" placeholder="Cari nama atau NIS...">
+                            <input type="text" name="search" id="search" value="{{ request('search') }}" class="block w-full h-10 rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm" placeholder="Cari nama atau NIS...">
                         </div>
                     </div>
                     
-                    <div class="sm:w-48">
+                    <div class="w-full sm:w-44">
                         <label for="class_id" class="sr-only">Kelas</label>
                         <x-select id="class_id" name="class_id" placeholder="Semua Kelas" :selected="request('class_id')" :options="$classes->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                     </div>
                     
-                    <div class="sm:w-48">
+                    <div class="w-full sm:w-44">
                         <label for="subject_id" class="sr-only">Mata Pelajaran</label>
                         <x-select id="subject_id" name="subject_id" placeholder="Semua Mapel" :selected="request('subject_id')" :options="$subjects->map(fn($s) => ['value' => $s->id, 'label' => $s->name])->toArray()" />
                     </div>
                     
-                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors">
+                    <button type="submit" class="h-10 inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-2xs hover:bg-blue-700 transition-colors shrink-0">
                         Filter
                     </button>
                     @if(request()->hasAny(['search', 'class_id', 'subject_id']))
-                        <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
+                        <a href="{{ route('guru.student-progress.index') }}" class="h-10 inline-flex items-center justify-center rounded-lg bg-white px-4 text-sm font-semibold text-slate-600 border border-slate-300 hover:bg-slate-50 transition-colors shrink-0">
                             Reset
                         </a>
                     @endif
