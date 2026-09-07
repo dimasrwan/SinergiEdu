@@ -54,12 +54,12 @@
                         </div>
                         <p class="text-xs sm:text-sm text-blue-100 mt-2">telah mengumpulkan tugas.</p>
                     </div>
-                    <div class="bg-emerald-600 rounded-3xl p-5 sm:p-6 text-white shadow-sm bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-blend-overlay">
-                        <h3 class="text-xs sm:text-sm font-bold text-emerald-100 mb-1">Status Penilaian</h3>
+                    <div class="bg-[#119FEA] rounded-3xl p-5 sm:p-6 text-white shadow-sm bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-blend-overlay" style="background-color: #119FEA;">
+                        <h3 class="text-xs sm:text-sm font-bold text-sky-100 mb-1">Status Penilaian</h3>
                         <div class="text-3xl sm:text-4xl font-bold mt-1">
-                            {{ $gradedCount ?? 0 }} <span class="text-xl sm:text-2xl font-medium text-emerald-200">/ {{ $submittedCount }}</span> <span class="text-sm sm:text-lg font-medium text-emerald-200">Siswa</span>
+                            {{ $gradedCount ?? 0 }} <span class="text-xl sm:text-2xl font-medium text-sky-200">/ {{ $submittedCount }}</span> <span class="text-sm sm:text-lg font-medium text-sky-200">Siswa</span>
                         </div>
-                        <p class="text-xs sm:text-sm text-emerald-100 mt-2">sudah dinilai.</p>
+                        <p class="text-xs sm:text-sm text-sky-100 mt-2">sudah dinilai.</p>
                     </div>
                 </div>
             </div>
@@ -71,16 +71,16 @@
                         <h3 class="text-lg font-bold text-slate-900">Daftar Pengumpulan Siswa</h3>
                         
                         <!-- Search & Filter -->
-                        <form action="{{ route('guru.assignments.show', $assignment) }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row gap-2.5 items-center">
-                            <div class="relative w-full sm:w-48 md:w-56">
-                                <div class="absolute inset-y-0 left-0 pl-4.5 flex items-center pointer-events-none z-10">
-                                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <form action="{{ route('guru.assignments.show', $assignment) }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row gap-3 items-center">
+                            <div class="relative w-full sm:w-44 md:w-48">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama/NIS..." class="w-full bg-white border border-slate-200 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl pl-9 pr-4 py-2.5 text-[14px] font-medium text-slate-800 shadow-2xs transition-all placeholder:text-slate-400">
+                                <input type="text" name="search" value="{{ request('search') }}" class="block w-full rounded-lg border-0 py-2 pl-10 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6" placeholder="Cari nama atau NIS...">
                             </div>
-                            <div class="w-full sm:w-48 md:w-56">
+                            <div class="w-full sm:w-44 md:w-48">
                                 <x-select name="status" 
                                           onchange="this.form.submit()" 
                                           placeholder="Semua Status" 

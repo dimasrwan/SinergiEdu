@@ -32,7 +32,7 @@
                         <tr class="hover:bg-slate-50/50 transition">
                             <td class="px-6 py-4">
                                 <div class="font-bold text-slate-950">{{ $eval->title }}</div>
-                                <div class="text-xs text-slate-400 mt-1 max-w-lg truncate mx-auto">{{ $eval->content }}</div>
+                                <div class="text-xs text-slate-500 mt-1 max-w-lg truncate">{{ $eval->content }}</div>
                             </td>
                             <td class="px-6 py-4">
                                 <x-badge variant="slate">{{ $eval->created_at->format('d M Y, H:i') }}</x-badge>

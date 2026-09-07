@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Detail Feedback</x-slot:title>
 
-    <div class="max-w-3xl space-y-6 mx-auto">
+    <div class="w-full space-y-6">
         <div>
             <a href="{{ route('kepala-sekolah.feedback.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary gap-1.5 transition-colors mb-4">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
@@ -12,7 +12,7 @@
                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">{{ $feedback->category_label }}</span>
                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $feedback->status_color }}">{{ $feedback->status_label }}</span>
             </div>
-            <x-page-header :title="$feedback->title" :description="'Dikirim oleh ' . ($feedback->sender->name ?? 'Anda') . ' • ' . $feedback->created_at->format('d M Y H:i')" />
+            <x-page-header :title="$feedback->title" :description="'Dikirim oleh ' . ($feedback->sender->name ?? 'Anda') . ' • ' . ($feedback->created_at?->format('d M Y H:i') ?? '-')" />
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

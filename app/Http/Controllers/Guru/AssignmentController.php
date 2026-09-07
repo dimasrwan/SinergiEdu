@@ -491,7 +491,7 @@ class AssignmentController extends Controller
                     [
                         'teacher_id' => $teacher->id,
                         'class_id' => $assignment->class_id,
-                        'assignment_score' => $averageScore ? round($averageScore) : null,
+                        'assignment_score' => $averageScore !== null ? (int) round((float) $averageScore) : null,
                     ]
                 );
             }

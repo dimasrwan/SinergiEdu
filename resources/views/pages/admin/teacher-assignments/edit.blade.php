@@ -25,7 +25,7 @@
             </div>
         </div>
 
-        <x-card padding="none" class="overflow-hidden shadow-xs border border-slate-200">
+        <x-card padding="none" class="shadow-xs border border-slate-200">
             <form action="{{ route('admin.teacher-assignments.update', $teacherAssignment) }}" method="POST">
                 @csrf
                 @method('PUT')

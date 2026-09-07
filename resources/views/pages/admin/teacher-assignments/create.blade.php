@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <x-card padding="none" class="overflow-hidden shadow-xs border border-slate-200" x-data="{
+        <x-card padding="none" class="shadow-xs border border-slate-200" x-data="{
             assignments: [{ id: Date.now(), class_id: '', subject_id: '' }],
             addAssignment() {
                 this.assignments.push({ id: Date.now(), class_id: '', subject_id: '' });

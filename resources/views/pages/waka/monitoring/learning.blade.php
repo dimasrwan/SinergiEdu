@@ -46,9 +46,9 @@
                     </x-select>
                 </div>
                 <div class="flex items-end gap-2">
-                    <x-button variant="primary" type="submit" class="flex-1 justify-center">Filter</x-button>
+                    <x-button variant="primary" type="submit" class="flex-1 justify-center h-[42px] !rounded-xl !py-2.5 text-[14px]">Filter</x-button>
                     @if (! empty($filters))
-                        <x-button variant="secondary" href="{{ route('waka.monitoring.learning') }}">Reset</x-button>
+                        <x-button variant="secondary" href="{{ route('waka.monitoring.learning') }}" class="h-[42px] !rounded-xl !py-2.5 text-[14px]">Reset</x-button>
                     @endif
                 </div>
             </form>
