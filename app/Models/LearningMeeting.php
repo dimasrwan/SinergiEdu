@@ -62,4 +62,9 @@ class LearningMeeting extends Model
     {
         return $this->hasMany(Assignment::class);
     }
+
+    public function reflections(): HasMany
+    {
+        return $this->hasMany(StudentReflection::class);
+    }
 }

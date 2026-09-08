@@ -171,5 +171,27 @@
             </table>
         </div>
     </div>
+
+    <!-- Section Refleksi Siswa -->
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-4">Refleksi Pembelajaran Siswa</h3>
+        @if(isset($reflections) && $reflections->isNotEmpty())
+            <div class="space-y-3">
+                @foreach($reflections as $ref)
+                    <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+                        <div class="flex items-center justify-between font-bold text-slate-800 text-sm">
+                            <span>Pertemuan {{ $ref->learningMeeting->meeting_number ?? '-' }} ({{ $ref->learningMeeting->topic ?? '' }})</span>
+                            <span class="text-xs text-slate-400 font-semibold">{{ $ref->created_at->format('d/m/Y') }}</span>
+                        </div>
+                        <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-line">"{{ $ref->content }}"</p>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="p-6 text-center bg-slate-50 rounded-xl border border-slate-200/75">
+                <p class="text-sm text-slate-500 font-medium">Belum ada refleksi yang ditulis oleh siswa untuk mata pelajaran ini.</p>
+            </div>
+        @endif
+    </div>
 </div>
 </x-layouts.app>

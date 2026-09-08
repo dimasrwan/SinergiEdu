@@ -56,6 +56,32 @@
                                 @include('pages.orangtua.progress._chart_item', ['label' => 'Karakter', 'score' => $grade->character_score, 'avg' => $avgs['character'], 'color' => 'bg-amber-500'])
                                 @include('pages.orangtua.progress._chart_item', ['label' => 'Hafalan', 'score' => $grade->memorization_score, 'avg' => $avgs['memorization'], 'color' => 'bg-rose-500'])
                             </div>
+
+                            @if(isset($meetingAssessments[$grade->subject_id]) && $meetingAssessments[$grade->subject_id]->isNotEmpty())
+                                <div class="mt-8 pt-6 border-t border-slate-100">
+                                    @include('pages.orangtua.progress._meeting_chart', [
+                                        'assessments' => $meetingAssessments[$grade->subject_id],
+                                        'meetingClassAverages' => $meetingClassAverages
+                                    ])
+                                </div>
+                            @endif
+
+                            @if(isset($childReflections[$grade->subject_id]) && $childReflections[$grade->subject_id]->isNotEmpty())
+                                <div class="mt-6 pt-5 border-t border-slate-100">
+                                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">Refleksi Anak</h4>
+                                    <div class="space-y-3">
+                                        @foreach($childReflections[$grade->subject_id] as $ref)
+                                            <div class="p-3 bg-slate-50 border border-slate-200/80 rounded-xl text-xs space-y-1">
+                                                <div class="flex items-center justify-between font-bold text-slate-800">
+                                                    <span>Pertemuan {{ $ref->learningMeeting->meeting_number ?? '-' }} ({{ $ref->learningMeeting->topic ?? '' }})</span>
+                                                    <span class="text-[10px] text-slate-400 font-semibold">{{ $ref->created_at->format('d/m/Y') }}</span>
+                                                </div>
+                                                <p class="text-slate-600 leading-relaxed italic">"{{ $ref->content }}"</p>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </x-card>
                     @empty
                         <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-8 text-center shadow-sm max-w-3xl mx-auto w-full">

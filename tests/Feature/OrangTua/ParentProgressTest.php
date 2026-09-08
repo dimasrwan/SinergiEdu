@@ -240,4 +240,90 @@ class ParentProgressTest extends TestCase
         $response->assertSee('Pertemuan 4');
         $response->assertSee('Materi Aljabar Dasar');
     }
+
+    public function test_parent_can_view_meeting_to_meeting_progress_assessments_chronologically(): void
+    {
+        $siswaRole = Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
+        $childUser = User::create([
+            'school_id' => $this->school->id,
+            'name' => 'Anak Test Meeting',
+            'email' => 'anakmeeting@test.com',
+            'password' => bcrypt('password'),
+            'role_id' => $siswaRole->id,
+        ]);
+
+        $child = Student::create([
+            'school_id' => $this->school->id,
+            'user_id' => $childUser->id,
+            'parent_id' => $this->parentProfile->id,
+            'nisn' => '9988776655',
+        ]);
+
+        $classroom = Classroom::create([
+            'school_id' => $this->school->id,
+            'name' => 'Kelas 9B',
+            'grade_level' => 9,
+            'education_level' => 'SMP',
+        ]);
+        $child->classes()->attach($classroom->id, [
+            'school_id' => $this->school->id,
+            'academic_year_id' => $this->academicYear->id,
+        ]);
+
+        StudentGrade::create([
+            'school_id' => $this->school->id,
+            'student_id' => $child->id,
+            'teacher_id' => $this->teacher->id,
+            'class_id' => $classroom->id,
+            'subject_id' => $this->subject->id,
+            'academic_year_id' => $this->academicYear->id,
+            'semester_id' => $this->semester->id,
+            'pre_test_score' => 75,
+        ]);
+
+        $meeting1 = \App\Models\LearningMeeting::create([
+            'teacher_id' => $this->teacher->id,
+            'class_id' => $classroom->id,
+            'subject_id' => $this->subject->id,
+            'academic_year_id' => $this->academicYear->id,
+            'semester_id' => $this->semester->id,
+            'meeting_number' => 1,
+            'meeting_date' => '2026-09-01',
+            'topic' => 'Pengenalan Trigonometri',
+        ]);
+
+        $meeting2 = \App\Models\LearningMeeting::create([
+            'teacher_id' => $this->teacher->id,
+            'class_id' => $classroom->id,
+            'subject_id' => $this->subject->id,
+            'academic_year_id' => $this->academicYear->id,
+            'semester_id' => $this->semester->id,
+            'meeting_number' => 2,
+            'meeting_date' => '2026-09-08',
+            'topic' => 'Sinus dan Cosinus',
+        ]);
+
+        \App\Models\StudentAssessment::create([
+            'learning_meeting_id' => $meeting1->id,
+            'student_id' => $child->id,
+            'pre_test_score' => 85,
+            'assignment_score' => 90,
+        ]);
+
+        \App\Models\StudentAssessment::create([
+            'learning_meeting_id' => $meeting2->id,
+            'student_id' => $child->id,
+            'pre_test_score' => 92,
+            'assignment_score' => 95,
+        ]);
+
+        $response = $this->actingAs($this->parentUser)->get(route('orangtua.progress.index', ['student_id' => $child->id]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Perkembangan per Pertemuan');
+        $response->assertSee('P1');
+        $response->assertSee('P2');
+        $response->assertSee('Pengenalan Trigonometri');
+        $response->assertSee('Sinus dan Cosinus');
+    }
 }

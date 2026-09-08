@@ -221,6 +221,16 @@ class StudentProgressController extends Controller
             
         $avgScore = $studentGrade ? $studentGrade->assignment_score : null;
 
-        return view('pages.guru.student-progress.show', compact('student', 'subject', 'classroom', 'assignments', 'avgScore'));
+        $reflections = \App\Models\StudentReflection::where('student_id', $student->id)
+            ->whereHas('learningMeeting', function ($q) use ($classId, $subjectId, $activeAcademicYear, $activeSemester) {
+                $q->where('class_id', $classId)
+                  ->where('subject_id', $subjectId)
+                  ->where('academic_year_id', $activeAcademicYear->id)
+                  ->where('semester_id', $activeSemester->id);
+            })
+            ->with(['learningMeeting'])
+            ->get();
+
+        return view('pages.guru.student-progress.show', compact('student', 'subject', 'classroom', 'assignments', 'avgScore', 'reflections'));
     }
 }

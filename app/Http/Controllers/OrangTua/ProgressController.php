@@ -48,6 +48,9 @@ class ProgressController extends Controller
         $grades = collect();
         $classAverages = [];
         $assignmentProgress = [];
+        $meetingAssessments = collect();
+        $meetingClassAverages = [];
+        $childReflections = collect();
 
         if ($selectedStudent && $classId = $selectedStudent->classes()->first()?->id) {
             if ($activeYear && $activeSemester) {
@@ -100,6 +103,61 @@ class ProgressController extends Controller
                         'submitted' => $submittedAssignmentsCount->get($grade->subject_id) ?? 0,
                     ];
                 }
+
+                // Ambil data penilaian per pertemuan (StudentAssessment) secara deterministik
+                $rawMeetingAssessments = \App\Models\StudentAssessment::where('student_id', $selectedStudentId)
+                    ->whereHas('learningMeeting', function ($q) use ($classId, $activeYear, $activeSemester) {
+                        $q->where('class_id', $classId)
+                          ->where('academic_year_id', $activeYear->id)
+                          ->where('semester_id', $activeSemester->id);
+                    })
+                    ->with(['learningMeeting.subject'])
+                    ->get()
+                    ->sortBy([
+                        ['learningMeeting.meeting_number', 'asc'],
+                        ['learningMeeting.meeting_date', 'asc'],
+                    ])
+                    ->values();
+
+                // Ambil data refleksi siswa per pertemuan
+                $childReflections = \App\Models\StudentReflection::where('student_id', $selectedStudentId)
+                    ->whereHas('learningMeeting', function ($q) use ($classId, $activeYear, $activeSemester) {
+                        $q->where('class_id', $classId)
+                          ->where('academic_year_id', $activeYear->id)
+                          ->where('semester_id', $activeSemester->id);
+                    })
+                    ->with(['learningMeeting.subject'])
+                    ->get()
+                    ->groupBy('learningMeeting.subject_id');
+
+                $meetingAssessments = $rawMeetingAssessments->groupBy('learningMeeting.subject_id');
+
+                // Hitung rata-rata kelas per pertemuan
+                $meetingIds = $rawMeetingAssessments->pluck('learning_meeting_id')->unique();
+                if ($meetingIds->isNotEmpty()) {
+                    $classMeetingAgg = \App\Models\StudentAssessment::whereIn('learning_meeting_id', $meetingIds)
+                        ->select(
+                            'learning_meeting_id',
+                            DB::raw('AVG(pre_test_score) as pre_test'),
+                            DB::raw('AVG(assignment_score) as assignment'),
+                            DB::raw('AVG(post_test_score) as post_test'),
+                            DB::raw('AVG(character_score) as character_avg'),
+                            DB::raw('AVG(memorization_score) as memorization')
+                        )
+                        ->groupBy('learning_meeting_id')
+                        ->get()
+                        ->keyBy('learning_meeting_id');
+
+                    foreach ($classMeetingAgg as $mId => $agg) {
+                        $meetingClassAverages[$mId] = [
+                            'pre_test' => round((float)$agg->pre_test, 1),
+                            'assignment' => round((float)$agg->assignment, 1),
+                            'post_test' => round((float)$agg->post_test, 1),
+                            'character' => round((float)$agg->character_avg, 1),
+                            'memorization' => round((float)$agg->memorization, 1),
+                        ];
+                    }
+                }
             }
         }
 
@@ -110,6 +168,9 @@ class ProgressController extends Controller
             'grades',
             'classAverages',
             'assignmentProgress',
+            'meetingAssessments',
+            'meetingClassAverages',
+            'childReflections',
             'activeYear',
             'activeSemester'
         ));
