@@ -1,53 +1,55 @@
 <x-layouts.app title="Detail Sekolah">
-    <div class="max-w-5xl space-y-6 mx-auto" x-data="{}">
-        <div class="mb-4">
-            <a href="{{ route('super_admin.schools.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+    <div class="max-w-5xl space-y-6 mx-auto px-0 sm:px-4 pt-2 sm:pt-4" x-data="{}">
+        <!-- Back Navigation -->
+        <div class="mb-2 px-1">
+            <a href="{{ route('super_admin.schools.index') }}" class="inline-flex items-center text-xs sm:text-sm font-semibold text-slate-500 hover:text-blue-600 gap-1.5 transition-colors">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Kembali ke Manajemen Sekolah
             </a>
         </div>
 
-        <div class="bg-white border border-slate-200/60 rounded-3xl p-6 md:p-8 shadow-sm space-y-8">
+        <div class="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm space-y-8">
             <!-- Header Profil -->
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-6">
-                <div class="flex items-center gap-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div class="flex items-start sm:items-center gap-3.5 sm:gap-4 min-w-0 w-full sm:w-auto">
                     @if($school->logo)
-                        <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="h-16 w-16 rounded-2xl object-cover border border-slate-100">
+                        <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl object-cover border border-slate-200/80 shadow-2xs shrink-0">
                     @else
-                        <div class="h-16 w-16 bg-blue-100 text-blue-700 font-bold rounded-2xl flex items-center justify-center">
-                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <div class="h-14 w-14 sm:h-16 sm:w-16 bg-blue-50 border border-blue-100 text-blue-600 font-bold rounded-2xl flex items-center justify-center shrink-0">
+                            <svg class="h-7 w-7 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
                             </svg>
                         </div>
                     @endif
-                    <div>
-                        <div class="flex items-center gap-3">
-                            <h1 class="text-2xl font-bold text-slate-950">{{ $school->name }}</h1>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-snug break-words whitespace-normal tracking-tight">{{ $school->name }}</h1>
                             @if($school->is_active)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200 shrink-0">
                                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                 </span>
                             @endif
                         </div>
-                        <p class="text-sm text-slate-500 font-medium mt-1">NPSN: {{ $school->npsn ?? '-' }}</p>
+                        <p class="text-xs sm:text-sm text-slate-500 font-semibold mt-1">NPSN: <span class="text-slate-700 font-bold">{{ $school->npsn ?? '-' }}</span></p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <form action="{{ route('super_admin.schools.toggle-status', $school) }}" method="POST" onsubmit="return confirm('Yakin ingin {{ $school->is_active ? 'menonaktifkan' : 'mengaktifkan' }} sekolah ini?')">
+
+                <div class="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
+                    <form action="{{ route('super_admin.schools.toggle-status', $school) }}" method="POST" class="flex-1 sm:flex-initial" onsubmit="return confirm('Yakin ingin {{ $school->is_active ? 'menonaktifkan' : 'mengaktifkan' }} sekolah ini?')">
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="is_active" value="{{ $school->is_active ? '0' : '1' }}">
-                        <button type="submit" class="px-4 py-2.5 text-sm font-semibold {{ $school->is_active ? 'text-slate-700 hover:bg-slate-50 bg-white border' : 'text-white bg-green-600 hover:bg-green-700' }} rounded-xl transition duration-150">
-                            {{ $school->is_active ? 'Nonaktifkan Sekolah' : 'Aktifkan Sekolah' }}
+                        <button type="submit" class="w-full sm:w-auto px-4 py-2 text-xs sm:text-sm font-semibold {{ $school->is_active ? 'text-slate-700 hover:bg-slate-50 bg-white border border-slate-200' : 'text-white bg-green-600 hover:bg-green-700' }} rounded-xl transition duration-150 text-center shadow-2xs">
+                            {{ $school->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                         </button>
                     </form>
-                    <a href="{{ route('super_admin.schools.edit', $school) }}" class="px-4 py-2.5 text-sm font-semibold text-white bg-accent hover:bg-blue-600 rounded-xl transition duration-150 inline-flex items-center gap-1.5">
+                    <a href="{{ route('super_admin.schools.edit', $school) }}" class="flex-1 sm:flex-initial px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition duration-150 inline-flex items-center justify-center gap-1.5 shadow-2xs">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
@@ -56,98 +58,115 @@
                 </div>
             </div>
 
-            <!-- Detail Informasi -->
-            <div class="grid grid-cols-1 gap-8">
+            <!-- Detail Sections -->
+            <div class="space-y-8">
+                <!-- Informasi Sekolah Section -->
                 <div class="space-y-4">
-                    <h2 class="text-base font-bold text-slate-900 border-b pb-2">Informasi Sekolah</h2>
-                    <div class="space-y-3 text-sm">
-                        <div class="grid grid-cols-3 md:grid-cols-6">
-                            <span class="text-slate-500">Email Utama</span>
-                            <span class="col-span-2 md:col-span-5 font-semibold text-slate-800">{{ $school->email ?? '-' }}</span>
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <span class="w-1.5 h-4 bg-blue-600 rounded-full"></span>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-wider">Informasi Sekolah</h2>
+                    </div>
+                    <div class="space-y-3.5 text-xs sm:text-sm pt-1">
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                            <span class="text-slate-400 sm:w-36 shrink-0 font-medium uppercase tracking-wider text-[11px]">Email Utama</span>
+                            <span class="font-bold text-slate-900 break-all leading-snug">{{ $school->email ?? '-' }}</span>
                         </div>
-                        <div class="grid grid-cols-3 md:grid-cols-6">
-                            <span class="text-slate-500">Nomor Telepon</span>
-                            <span class="col-span-2 md:col-span-5 font-semibold text-slate-800">{{ $school->phone ?? '-' }}</span>
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                            <span class="text-slate-400 sm:w-36 shrink-0 font-medium uppercase tracking-wider text-[11px]">Nomor Telepon</span>
+                            <span class="font-bold text-slate-900 leading-snug">{{ $school->phone ?? '-' }}</span>
                         </div>
-                        <div class="grid grid-cols-3 md:grid-cols-6">
-                            <span class="text-slate-500">Alamat Lengkap</span>
-                            <span class="col-span-2 md:col-span-5 text-slate-800">{{ $school->address ?? '-' }}</span>
+                        <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4">
+                            <span class="text-slate-400 sm:w-36 shrink-0 font-medium uppercase tracking-wider text-[11px]">Alamat Lengkap</span>
+                            <span class="font-semibold text-slate-800 break-words whitespace-normal leading-snug">{{ $school->address ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- Statistik Tenant Section -->
                 <div class="space-y-4">
-                    <h2 class="text-base font-bold text-slate-900 border-b pb-2">Statistik Tenant</h2>
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+                        <span class="w-1.5 h-4 bg-blue-600 rounded-full"></span>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-wider">Statistik Tenant</h2>
+                    </div>
                     
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="border border-slate-100 bg-slate-50 rounded-xl p-4 text-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Guru</p>
-                            <p class="text-2xl font-bold text-slate-900">{{ number_format($school->teachers_count) }}</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-1">
+                        <div class="border border-slate-200/80 bg-slate-50/70 rounded-xl p-3.5 sm:p-4 text-center shadow-2xs">
+                            <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Guru</p>
+                            <p class="text-xl sm:text-2xl font-extrabold text-slate-900">{{ number_format($school->teachers_count) }}</p>
                         </div>
-                        <div class="border border-slate-100 bg-slate-50 rounded-xl p-4 text-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Siswa</p>
-                            <p class="text-2xl font-bold text-slate-900">{{ number_format($school->students_count) }}</p>
+                        <div class="border border-slate-200/80 bg-slate-50/70 rounded-xl p-3.5 sm:p-4 text-center shadow-2xs">
+                            <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Siswa</p>
+                            <p class="text-xl sm:text-2xl font-extrabold text-slate-900">{{ number_format($school->students_count) }}</p>
                         </div>
-                        <div class="border border-slate-100 bg-slate-50 rounded-xl p-4 text-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Kelas</p>
-                            <p class="text-2xl font-bold text-slate-900">{{ number_format($school->classrooms_count) }}</p>
+                        <div class="border border-slate-200/80 bg-slate-50/70 rounded-xl p-3.5 sm:p-4 text-center shadow-2xs">
+                            <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Kelas</p>
+                            <p class="text-xl sm:text-2xl font-extrabold text-slate-900">{{ number_format($school->classrooms_count) }}</p>
                         </div>
-                        <div class="border border-slate-100 bg-blue-50/50 rounded-xl p-4 text-center">
-                            <p class="text-xs font-bold uppercase tracking-wider text-blue-500 mb-1">Total Pengguna</p>
-                            <p class="text-2xl font-bold text-primary">{{ number_format($school->users_count) }}</p>
+                        <div class="border border-blue-200/80 bg-blue-50/60 rounded-xl p-3.5 sm:p-4 text-center shadow-2xs">
+                            <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-blue-600 mb-1">Total Pengguna</p>
+                            <p class="text-xl sm:text-2xl font-extrabold text-blue-700">{{ number_format($school->users_count) }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between border-b pb-2">
-                        <h2 class="text-base font-bold text-slate-900">Admin Sekolah <span class="ml-2 inline-flex items-center rounded-lg bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">{{ count($admins) }}</span></h2>
-                        <a href="{{ route('super_admin.schools.admins.create', $school) }}" class="text-sm font-semibold text-primary hover:text-blue-700 transition-colors">
-                            + Tambah Admin
+                <!-- Admin Sekolah Section -->
+                <div class="space-y-4 pt-2">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded-full"></span>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                Admin Sekolah 
+                                <span class="inline-flex items-center rounded-md bg-blue-50 text-blue-700 px-2 py-0.5 text-xs font-bold border border-blue-100">{{ count($admins) }}</span>
+                            </h2>
+                        </div>
+                        <a href="{{ route('super_admin.schools.admins.create', $school) }}" class="text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            Tambah Admin
                         </a>
                     </div>
 
-                    <div class="overflow-x-auto border border-slate-100 rounded-xl">
+                    <!-- Desktop Admin Table (md:block) -->
+                    <div class="hidden md:block overflow-x-auto border border-slate-200/80 rounded-2xl shadow-2xs">
                         <table class="w-full text-left border-collapse min-w-max">
                             <thead>
-                                <tr class="bg-slate-50 border-b border-slate-100">
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Admin</th>
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tgl Bergabung</th>
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                                <tr class="bg-slate-50/80 border-b border-slate-200/80">
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Admin</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tgl Bergabung</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 @forelse($admins as $admin)
                                     <tr class="hover:bg-slate-50/50 transition-colors group">
-                                        <td class="py-3 px-4">
+                                        <td class="py-3.5 px-4">
                                             <div class="flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">
+                                                <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
                                                     {{ strtoupper(substr($admin->name, 0, 2)) }}
                                                 </div>
-                                                <p class="text-sm font-bold text-slate-900">{{ $admin->name }}</p>
+                                                <p class="text-sm font-bold text-slate-900 break-words whitespace-normal">{{ $admin->name }}</p>
                                             </div>
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <p class="text-sm text-slate-600">{{ $admin->email }}</p>
+                                        <td class="py-3.5 px-4">
+                                            <p class="text-sm font-medium text-slate-600 break-all">{{ $admin->email }}</p>
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <p class="text-sm text-slate-500">{{ $admin->created_at->format('d M Y') }}</p>
+                                        <td class="py-3.5 px-4">
+                                            <p class="text-sm text-slate-500 whitespace-nowrap">{{ $admin->created_at->format('d M Y') }}</p>
                                         </td>
-                                        <td class="py-3 px-4">
+                                        <td class="py-3.5 px-4">
                                             @if($admin->is_active)
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="py-3 px-4 text-right">
-                                            <div class="flex items-center justify-end gap-1.5 ">
+                                        <td class="py-3.5 px-4 text-right">
+                                            <div class="flex items-center justify-end gap-1.5">
                                                 <a href="{{ route('super_admin.schools.admins.edit', [$school, $admin]) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                                                 </a>
@@ -176,8 +195,60 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Mobile Admin Card List (block md:hidden) -->
+                    <div class="block md:hidden space-y-3">
+                        @forelse($admins as $admin)
+                            <div class="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                                            {{ strtoupper(substr($admin->name, 0, 2)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900 leading-snug break-words whitespace-normal">{{ $admin->name }}</p>
+                                            <p class="text-xs text-slate-500 font-medium break-all mt-0.5">{{ $admin->email }}</p>
+                                        </div>
+                                    </div>
+                                    @if($admin->is_active)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider shrink-0">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200 shrink-0">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-100 gap-2">
+                                    <span class="font-medium">Bergabung: <strong class="text-slate-700">{{ $admin->created_at->format('d M Y') }}</strong></span>
+                                    
+                                    <div class="flex items-center gap-2 pt-1 sm:pt-0">
+                                        <a href="{{ route('super_admin.schools.admins.edit', [$school, $admin]) }}" class="flex-1 sm:flex-initial text-center px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                            Edit
+                                        </a>
+                                        <form action="{{ route('super_admin.schools.admins.toggle-status', [$school, $admin]) }}" method="POST" class="flex-1 sm:flex-initial" onsubmit="return confirm('{{ $admin->is_active ? 'Nonaktifkan' : 'Aktifkan' }} Admin ini?')">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="is_active" value="{{ $admin->is_active ? 0 : 1 }}">
+                                            <button type="submit" class="w-full text-center px-3 py-1.5 text-xs font-semibold {{ $admin->is_active ? 'text-red-700 bg-red-50 hover:bg-red-100' : 'text-green-700 bg-green-50 hover:bg-green-100' }} rounded-lg transition-colors">
+                                                {{ $admin->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="bg-white border border-slate-100 rounded-xl p-6 text-center text-xs text-slate-500">
+                                Belum ada Admin Sekolah untuk tenant ini.
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </x-layouts.app>
+
+

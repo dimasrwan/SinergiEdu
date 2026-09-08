@@ -58,10 +58,10 @@
             </form>
         </div>
 
-        <!-- Table Container -->
-        <x-card padding="none" class="overflow-visible">
+        <!-- Table Container (Desktop / Tablet) -->
+        <x-card padding="none" class="hidden md:block overflow-visible">
             <div class="overflow-x-auto lg:overflow-visible w-full">
-                <table class="w-full text-left border-collapse min-w-[900px] table-fixed">
+                <table class="w-full text-left border-collapse min-w-[768px] table-fixed">
                     <thead>
                         <tr class="bg-slate-50/70 border-b border-slate-200">
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[32%]">Sekolah</th>
@@ -79,12 +79,12 @@
                                     @if($school->logo)
                                         <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                                     @else
-                                        <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                                        <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
                                         </div>
                                     @endif
                                     <div class="min-w-0 flex-1">
-                                        <div class="font-bold text-slate-900 text-sm truncate group-hover:text-primary transition-colors">
+                                        <div class="font-bold text-slate-900 text-sm break-words whitespace-normal group-hover:text-primary transition-colors">
                                             <a href="{{ route('super_admin.schools.show', $school) }}" class="focus:outline-none">{{ $school->name }}</a>
                                         </div>
                                     </div>
@@ -156,5 +156,79 @@
                 </div>
             @endif
         </x-card>
+
+        <!-- Mobile Card List Container -->
+        <div class="block md:hidden space-y-4">
+            @forelse($schools as $school)
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-start gap-3">
+                        @if($school->logo)
+                            <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                        @else
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
+                            </div>
+                        @endif
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-start justify-between gap-2">
+                                <a href="{{ route('super_admin.schools.show', $school) }}" class="font-bold text-slate-900 text-sm hover:text-primary leading-snug break-words whitespace-normal">
+                                    {{ $school->name }}
+                                </a>
+                                @if($school->is_active)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200 shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <p class="text-xs font-semibold text-slate-500 mt-1">
+                                NPSN: <span class="text-slate-700">{{ $school->npsn ?? '-' }}</span>
+                            </p>
+                            
+                            @if($school->email)
+                                <p class="text-xs text-slate-500 truncate mt-0.5">
+                                    {{ $school->email }}
+                                </p>
+                            @endif
+
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                                <span class="text-xs font-medium text-slate-500">
+                                    {{ number_format($school->users_count) }} akun
+                                </span>
+
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                                        <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        Lihat
+                                    </a>
+                                    <a href="{{ route('super_admin.schools.edit', $school) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                        <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                        Edit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white border border-slate-200 rounded-xl p-8 text-center">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-900 mb-1">Belum Ada Data Sekolah</h3>
+                    <p class="text-xs text-slate-500 mb-4">Belum terdapat data sekolah yang sesuai kriteria.</p>
+                </div>
+            @endforelse
+
+            @if($schools->hasPages())
+                <div class="pt-2">
+                    {{ $schools->links() }}
+                </div>
+            @endif
+        </div>
     </div>
 </x-layouts.app>

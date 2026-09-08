@@ -32,7 +32,7 @@
         <!-- Off-canvas menu untuk mobile -->
         <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-show="sidebarOpen" x-description="Off-canvas menu overlay" style="display: none;">
             <!-- Background overlay -->
-            <div class="fixed inset-0 bg-slate-900/80 transition-opacity duration-300 ease-linear-out" 
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 ease-linear-out" 
                  x-show="sidebarOpen"
                  x-transition:enter="transition-opacity ease-linear duration-300"
                  x-transition:enter-start="opacity-0"
@@ -44,7 +44,7 @@
 
             <div class="fixed inset-0 flex">
                 <!-- Sidebar panel -->
-                <div class="relative flex w-full max-w-xs flex-1 flex-col bg-white border-r border-slate-200 pt-5 pb-4 transition-transform duration-300 ease-in-out"
+                <div class="relative flex w-[80vw] max-w-[320px] flex-col bg-white border-r border-slate-200/80 shadow-2xl transition-transform duration-300 ease-in-out h-full"
                      x-show="sidebarOpen"
                      x-transition:enter="transition ease-in-out duration-300 transform"
                      x-transition:enter-start="-translate-x-full"
@@ -53,23 +53,51 @@
                      x-transition:leave-start="translate-x-0"
                      x-transition:leave-end="-translate-x-full">
                     
-                    <div class="absolute top-0 right-0 -mr-12 pt-2">
-                        <button type="button" class="ml-1 flex h-10 w-10 items-center justify-center rounded-lg focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" @click="sidebarOpen = false">
-                            <span class="sr-only">Tutup sidebar</span>
-                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" x-description="Heroicon name: outline/x-mark" d="M6 18L18 6M6 6l12 12" />
+                    <!-- Header Drawer -->
+                    <div class="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 shrink-0">
+                        <div class="flex items-center gap-2.5">
+                            <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-7 w-auto">
+                            <span class="text-lg font-bold text-slate-900 tracking-tight">SinergiEdu</span>
+                        </div>
+                        <button type="button" 
+                                class="h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20" 
+                                aria-label="Tutup menu navigasi"
+                                @click="sidebarOpen = false">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
-
-                    <div class="flex flex-shrink-0 items-center gap-3 px-6">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-9 w-auto">
-                        <span class="text-2xl font-bold text-slate-900 tracking-tight">SinergiEdu</span>
-                    </div>
                     
-                    <div class="mt-8 h-0 flex-1 overflow-y-auto px-4">
+                    <!-- Navigation Content -->
+                    <div class="flex-1 overflow-y-auto px-3 py-4">
                         <nav class="space-y-1">
-                            {{ $sidebar ?? '' }}
+                            @if(isset($sidebar) && trim((string)$sidebar) !== '')
+                                {{ $sidebar }}
+                            @else
+                                <ul role="list" class="space-y-1">
+                                    @php
+                                        $role = strtolower(Auth::user()->role->name ?? '');
+                                    @endphp
+                                    @if($role === 'super_admin')
+                                        <x-sidebars.super-admin />
+                                    @elseif($role === 'admin')
+                                        <x-sidebars.admin />
+                                    @elseif($role === 'guru')
+                                        <x-sidebars.guru />
+                                    @elseif($role === 'siswa')
+                                        <x-sidebars.siswa />
+                                    @elseif($role === 'orangtua')
+                                        <x-sidebars.orangtua />
+                                    @elseif($role === 'waka')
+                                        <x-sidebars.waka />
+                                    @elseif($role === 'pengawas')
+                                        <x-sidebars.pengawas />
+                                    @elseif($role === 'kepala_sekolah')
+                                        <x-sidebars.kepala-sekolah />
+                                    @endif
+                                </ul>
+                            @endif
                         </nav>
                     </div>
                 </div>

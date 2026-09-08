@@ -131,23 +131,25 @@
         <div class="grid grid-cols-1 gap-6 pt-2">
             <div class="col-span-1">
                 <x-card padding="none" class="overflow-hidden">
-                    <div class="border-b border-slate-100 bg-white px-6 py-5 flex items-center justify-between">
+                    <div class="border-b border-slate-100 bg-white px-4 sm:px-6 py-4 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
                         <div>
                             <h3 class="text-base font-bold text-slate-900">Sekolah Terbaru</h3>
-                            <p class="text-xs text-slate-500 mt-1">Daftar sekolah yang baru saja didaftarkan ke platform.</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Daftar sekolah yang baru saja didaftarkan ke platform SinergiEdu.</p>
                         </div>
-                        <a href="{{ route('super_admin.schools.index') }}" class="text-sm font-medium text-primary hover:text-blue-700 transition-colors">Lihat Semua</a>
+                        <a href="{{ route('super_admin.schools.index') }}" class="text-xs sm:text-sm font-bold text-primary hover:text-blue-700 transition-colors self-start sm:self-auto shrink-0">Lihat Semua &rarr;</a>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+
+                    <!-- Desktop View (lg:block) -->
+                    <div class="hidden lg:block overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-max">
                             <thead>
                                 <tr class="bg-slate-50/50 border-b border-slate-100">
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Sekolah</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">NPSN</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Pengguna</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Tgl Bergabung</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Sekolah</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">NPSN</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Pengguna</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Tgl Bergabung</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -155,17 +157,17 @@
                                     <tr class="hover:bg-slate-50/80 transition-colors group">
                                         <td class="px-6 py-4 font-semibold text-slate-900 text-sm flex items-center gap-3">
                                             @if($school->logo)
-                                                <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
+                                                <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0">
                                             @else
-                                                <div class="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
-                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
+                                                <div class="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
                                                 </div>
                                             @endif
-                                            {{ $school->name }}
+                                            <span class="break-words whitespace-normal">{{ $school->name }}</span>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-slate-600">{{ $school->npsn ?? '-' }}</td>
                                         <td class="px-6 py-4 text-sm text-slate-600">{{ number_format($school->users_count) }} akun</td>
-                                        <td class="px-6 py-4 text-sm text-slate-500">{{ \Carbon\Carbon::parse($school->created_at)->translatedFormat('d M Y') }}</td>
+                                        <td class="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">{{ \Carbon\Carbon::parse($school->created_at)->translatedFormat('d M Y') }}</td>
                                         <td class="px-6 py-4">
                                             @if($school->is_active)
                                                 <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
@@ -193,6 +195,58 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile List View (block lg:hidden) -->
+                    <div class="block lg:hidden divide-y divide-slate-100 p-3 sm:p-4 space-y-3">
+                        @forelse($recentSchools as $school)
+                            <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 sm:p-4 shadow-2xs space-y-3 hover:border-slate-300 transition-colors">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start gap-3 min-w-0 flex-1">
+                                        @if($school->logo)
+                                            <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-9 h-9 rounded-lg object-cover border border-slate-200 shrink-0 mt-0.5">
+                                        @else
+                                            <div class="w-9 h-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 mt-0.5">
+                                                <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
+                                            </div>
+                                        @endif
+                                        <div class="min-w-0 flex-1">
+                                            <a href="{{ route('super_admin.schools.show', $school) }}" class="text-sm font-semibold text-slate-900 hover:text-primary leading-snug break-words whitespace-normal block">
+                                                {{ $school->name }}
+                                            </a>
+                                            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500 font-medium mt-1">
+                                                <span>NPSN {{ $school->npsn ?? '-' }}</span>
+                                                <span class="text-slate-300">&bull;</span>
+                                                <span class="text-slate-600 font-semibold">{{ number_format($school->users_count) }} akun</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="shrink-0 pt-0.5">
+                                        @if($school->is_active)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between text-xs text-slate-400 pt-2.5 border-t border-slate-100/80">
+                                    <span class="font-medium text-slate-500">Bergabung: <span class="text-slate-700 font-semibold">{{ \Carbon\Carbon::parse($school->created_at)->translatedFormat('d M Y') }}</span></span>
+                                    <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center gap-1 font-bold text-primary hover:text-blue-700 transition-colors">
+                                        Detail
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="bg-white border border-slate-100 rounded-xl p-6 text-center text-xs text-slate-500">
+                                Belum ada sekolah terdaftar.
+                            </div>
+                        @endforelse
                     </div>
                 </x-card>
             </div>

@@ -1,7 +1,7 @@
-<li class="mb-1">
-    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">PLATFORM</span>
+<li class="pt-1 pb-1 px-3">
+    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">PLATFORM</span>
 </li>
-<li>
+<li class="mb-3">
     <x-sidebar-link href="{{ route('super_admin.dashboard') }}" :active="request()->routeIs('super_admin.dashboard')">
         <x-slot:icon>
             <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
@@ -12,8 +12,8 @@
     </x-sidebar-link>
 </li>
 
-<li class="mt-4 mb-1">
-    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">TENANTS</span>
+<li class="pt-3 pb-1 px-3">
+    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">TENANTS</span>
 </li>
 <li>
     <x-sidebar-link href="{{ route('super_admin.schools.index') }}" :active="request()->routeIs('super_admin.schools.*')">
