@@ -63,8 +63,8 @@
         <div class="flex-1 flex flex-col justify-center px-6 py-12 lg:px-20 bg-white">
             <!-- Header Mobile (Hanya muncul jika di mobile) -->
             <div class="md:hidden flex flex-col items-center mb-8">
-                <div class="w-16 h-16 bg-[#123B82] rounded-2xl flex items-center justify-center p-3 shadow-lg shadow-[#123B82]/20 mb-4">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-full h-full object-contain drop-shadow-md">
+                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center p-3 shadow-xl shadow-slate-200/60 border border-slate-100 mb-4">
+                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="w-full h-full object-contain">
                 </div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">SinergiEdu</h1>
             </div>
