@@ -66,7 +66,7 @@
                             </div>
 
                             <div class="pt-3 border-t border-slate-100 flex justify-end">
-                                <x-button variant="primary" type="submit">
+                                <x-button variant="primary" type="submit" class="w-full sm:w-auto min-h-[44px] justify-center">
                                     Simpan Refleksi
                                 </x-button>
                             </div>
@@ -75,24 +75,24 @@
                 </div>
 
                 <!-- Histori Refleksi Siswa -->
-                <div class="lg:col-span-1 space-y-4">
-                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+                <div class="lg:col-span-1 space-y-4 min-w-0">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm min-w-0">
                         <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-b border-slate-100 pb-2">Riwayat Refleksi</h3>
-                        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-1 min-w-0">
                             @foreach($meetings as $m)
                                 @php
                                     $ref = $reflections->get($m->id);
                                 @endphp
-                                <div class="p-3.5 rounded-xl border {{ $ref ? 'bg-blue-50/40 border-blue-100' : 'bg-slate-50/70 border-slate-200/70' }} space-y-2">
-                                    <div class="flex items-center justify-between gap-2">
-                                        <span class="text-xs font-bold text-slate-800">Pertemuan {{ $m->meeting_number }}</span>
-                                        <span class="text-[10px] font-semibold text-slate-500">{{ $m->meeting_date ? $m->meeting_date->format('d/m/Y') : '' }}</span>
+                                <div class="p-3.5 rounded-xl border {{ $ref ? 'bg-blue-50/40 border-blue-100' : 'bg-slate-50/70 border-slate-200/70' }} space-y-2 min-w-0">
+                                    <div class="flex items-center justify-between gap-2 min-w-0">
+                                        <span class="text-xs font-bold text-slate-800 shrink-0">Pertemuan {{ $m->meeting_number }}</span>
+                                        <span class="text-[10px] font-semibold text-slate-500 shrink-0">{{ $m->meeting_date ? $m->meeting_date->format('d/m/Y') : '' }}</span>
                                     </div>
-                                    <div class="text-xs text-slate-500 font-medium truncate" title="{{ $m->topic }}">
+                                    <div class="text-xs text-slate-500 font-medium break-words min-w-0">
                                         {{ $m->subject->name ?? 'Mapel' }} &bull; {{ $m->topic }}
                                     </div>
                                     @if($ref)
-                                        <p class="text-xs text-slate-700 bg-white p-2.5 rounded-lg border border-blue-100 leading-relaxed whitespace-pre-line">
+                                        <p class="text-xs text-slate-700 bg-white p-2.5 rounded-lg border border-blue-100 leading-relaxed whitespace-pre-line break-words min-w-0">
                                             {{ $ref->content }}
                                         </p>
                                     @else

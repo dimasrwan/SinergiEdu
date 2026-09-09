@@ -73,24 +73,24 @@
                     </div>
 
                     <h3 class="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Instruksi Tugas</h3>
-                    <div class="text-sm md:text-base text-slate-700 whitespace-pre-wrap leading-relaxed">{{ $assignment->description }}</div>
+                    <div class="text-sm md:text-base text-slate-700 whitespace-pre-wrap leading-relaxed break-words min-w-0">{{ $assignment->description }}</div>
                     
                     @if($assignment->attachment_path)
                         <div class="mt-8 pt-6 border-t border-slate-100">
                             <h4 class="text-[11px] font-bold text-slate-500 mb-3 uppercase tracking-wider">Lampiran Pendukung</h4>
-                            <div class="border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 hover:bg-slate-100 transition-colors">
-                                <div class="flex items-center gap-4 text-center sm:text-left">
-                                    <div class="p-3 bg-white text-slate-600 rounded-xl shadow-sm border border-slate-100">
+                            <div class="border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 hover:bg-slate-100 transition-colors min-w-0">
+                                <div class="flex items-center gap-4 text-center sm:text-left min-w-0">
+                                    <div class="p-3 bg-white text-slate-600 rounded-xl shadow-sm border border-slate-100 shrink-0">
                                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                         </svg>
                                     </div>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-slate-900">Materi Tugas (Berkas)</h4>
+                                    <div class="min-w-0">
+                                        <h4 class="text-sm font-bold text-slate-900 break-words">Materi Tugas (Berkas)</h4>
                                         <p class="text-xs text-slate-500 mt-0.5">Unduh untuk membaca rincian soal selengkapnya.</p>
                                     </div>
                                 </div>
-                                <a href="{{ route('siswa.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg-lg text-sm font-semibold transition w-full sm:w-auto shadow-sm">
+                                <a href="{{ route('siswa.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl text-sm font-semibold transition w-full sm:w-auto shadow-sm shrink-0">
                                     Unduh File
                                 </a>
                             </div>
@@ -101,7 +101,7 @@
 
             <!-- Kolom Pengumpulan Jawaban -->
             <div class="lg:col-span-1">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-md shadow-slate-200/50 sticky top-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-md shadow-slate-200/50 sticky top-6">
                     <h3 class="text-[15px] font-bold text-slate-900 mb-4 border-b border-slate-100 pb-3">Pengumpulan Jawaban</h3>
 
                     @if($submission)
@@ -119,19 +119,19 @@
                         <div class="space-y-4">
                             <div>
                                 <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">File Jawaban Anda:</span>
-                                <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition text-slate-700 group">
-                                    <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 group-hover:text-primary transition-colors">
+                                <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 group min-w-0">
+                                    <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 group-hover:text-primary transition-colors shrink-0">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                         </svg>
                                     </div>
-                                    <span class="text-[13px] font-bold group-hover:text-primary transition-colors">Lihat Berkas</span>
+                                    <span class="text-[13px] font-bold group-hover:text-primary transition-colors truncate">Lihat Berkas</span>
                                 </a>
                             </div>
                             @if($submission->notes)
                                 <div>
                                     <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Catatan Tambahan:</span>
-                                    <div class="text-[13px] text-slate-700 bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                                    <div class="text-[13px] text-slate-700 bg-slate-50 border border-slate-200 p-3 rounded-xl break-words">
                                         {{ $submission->notes }}
                                     </div>
                                 </div>
@@ -167,7 +167,7 @@
                                 <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Umpan Balik (Feedback):</span>
                                 <div class="p-3 rounded-xl border border-slate-200 bg-white">
                                     @if($submission->feedback)
-                                        <p class="text-[13px] text-slate-700">{{ $submission->feedback }}</p>
+                                        <p class="text-[13px] text-slate-700 break-words">{{ $submission->feedback }}</p>
                                     @else
                                         <p class="text-[13px] text-slate-400 italic">Belum ada feedback.</p>
                                     @endif
@@ -197,14 +197,14 @@
                                         @dragleave.prevent="dragover = false"
                                         @drop.prevent="drop($event)"
                                         :class="{'border-primary bg-blue-50/50': dragover, 'border-slate-200 bg-slate-50 hover:border-slate-300': !dragover}"
-                                        class="flex justify-center rounded-lg border-2 border-dashed px-4 py-5 transition-colors cursor-pointer"
+                                        class="flex justify-center rounded-xl border-2 border-dashed p-4 sm:p-5 transition-colors cursor-pointer w-full max-w-full min-w-0 box-border"
                                         @click="document.getElementById('file').click()"
                                     >
-                                        <div class="space-y-1 text-center">
+                                        <div class="space-y-1 text-center min-w-0">
                                             <svg class="mx-auto h-8 w-8 text-slate-400 mb-2" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                             </svg>
-                                            <div class="flex text-[13px] text-slate-600 justify-center">
+                                            <div class="flex text-[13px] text-slate-600 justify-center flex-wrap">
                                                 <span class="font-bold text-primary">Pilih File</span>
                                                 <input id="file" name="file" type="file" required class="sr-only" @change="handleFileChange">
                                                 <p class="pl-1">atau tarik ke sini</p>
@@ -213,15 +213,15 @@
                                         </div>
                                     </div>
                                     
-                                    <div x-show="fileName" style="display: none;" class="mt-2 flex items-center p-2 bg-blue-50 border border-blue-100 rounded-lg-lg">
+                                    <div x-show="fileName" style="display: none;" class="mt-2 flex items-center p-2 bg-blue-50 border border-blue-100 rounded-xl min-w-0">
                                         <svg class="h-5 w-5 text-blue-500 mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm3.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75z" />
                                         </svg>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-[11px] font-bold text-slate-900 truncate" x-text="fileName"></p>
+                                            <p class="text-[11px] font-bold text-slate-900 break-words" x-text="fileName"></p>
                                             <p class="text-[10px] font-semibold text-blue-600" x-text="fileSize"></p>
                                         </div>
-                                        <button type="button" @click.stop="removeFile" class="ml-2 text-slate-400 hover:text-red-500 transition-colors p-1" title="Hapus">
+                                        <button type="button" @click.stop="removeFile" class="ml-2 text-slate-400 hover:text-red-500 transition-colors p-1 shrink-0" title="Hapus">
                                             <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                                             </svg>
@@ -235,13 +235,13 @@
                                 <div>
                                     <label for="notes" class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Catatan Tambahan (Opsional)</label>
                                     <textarea id="notes" name="notes" rows="2" placeholder="Pesan singkat untuk guru..."
-                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-[13px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition duration-150">{{ old('notes') }}</textarea>
+                                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-[13px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:bg-white transition duration-150">{{ old('notes') }}</textarea>
                                     @error('notes')
                                         <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-bold transition shadow-sm">
+                                <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 min-h-[44px] bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-bold transition shadow-sm">
                                     <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                                     </svg>
