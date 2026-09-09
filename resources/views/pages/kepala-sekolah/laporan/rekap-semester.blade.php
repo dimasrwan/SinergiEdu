@@ -17,14 +17,14 @@
         </div>
 
         <!-- Rata-rata Sekolah -->
-        <div class="bg-primary rounded-2xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+        <div class="bg-primary rounded-2xl p-6 md:p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
             <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <p class="text-xs text-blue-200 font-semibold uppercase tracking-wider mb-1">Rata-rata Sekolah</p>
-                    <h3 class="text-2xl font-bold">{{ $schoolAvgGrade }}</h3>
+                    <h3 class="text-2xl md:text-3xl font-bold">{{ $schoolAvgGrade }}</h3>
                 </div>
-                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     @php
                         $components = [
                             ['label' => 'Pretest', 'key' => 'avg_pre_test'],
@@ -35,23 +35,41 @@
                         ];
                     @endphp
                     @foreach($components as $component)
-                        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3 text-center">
-                            <p class="text-xs text-blue-200 font-semibold uppercase tracking-wider">{{ $component['label'] }}</p>
-                            <h4 class="text-xl font-bold mt-1">{{ $componentAverages[$component['key']] }}</h4>
+                        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-3 text-center min-w-0">
+                            <p class="text-[10px] sm:text-xs text-blue-200 font-semibold uppercase tracking-wider truncate">{{ $component['label'] }}</p>
+                            <h4 class="text-lg sm:text-xl font-bold mt-1 truncate">{{ $componentAverages[$component['key']] }}</h4>
                         </div>
                     @endforeach
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             <!-- Rangking Kelas -->
             <x-card padding="none">
-                <div class="px-6 py-4 border-b border-slate-200">
+                <div class="px-4 sm:px-6 py-4 border-b border-slate-200">
                     <h2 class="text-base font-bold text-slate-900">Rangking Kelas</h2>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                {{-- Mobile list --}}
+                <div class="block sm:hidden divide-y divide-slate-100">
+                    @forelse($classRankings as $row)
+                        <div class="p-4 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="inline-flex items-center justify-center h-7 w-7 rounded-lg {{ $loop->iteration <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} text-xs font-bold shrink-0">
+                                    #{{ $loop->iteration }}
+                                </span>
+                                <h3 class="font-bold text-slate-900 text-sm truncate">{{ $row['name'] }}</h3>
+                            </div>
+                            <span class="text-sm font-bold text-slate-900 shrink-0">{{ $row['avg'] }}</span>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-sm text-slate-500">Belum ada data.</div>
+                    @endforelse
+                </div>
+
+                {{-- Desktop table --}}
+                <div class="hidden sm:block">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200">
                                 <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
@@ -76,11 +94,35 @@
 
             <!-- Analisis Mapel -->
             <x-card padding="none">
-                <div class="px-6 py-4 border-b border-slate-200">
+                <div class="px-4 sm:px-6 py-4 border-b border-slate-200">
                     <h2 class="text-base font-bold text-slate-900">Analisis Mata Pelajaran</h2>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                {{-- Mobile list --}}
+                <div class="block sm:hidden divide-y divide-slate-100">
+                    @forelse($subjectAnalysis as $subject)
+                        <div class="p-4 space-y-2">
+                            <div class="flex items-start justify-between gap-3">
+                                <h3 class="font-bold text-slate-900 text-sm truncate">{{ $subject['name'] }}</h3>
+                                <span class="text-xs font-bold text-slate-900 shrink-0">Rerata: {{ $subject['avg'] }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs text-slate-500 font-medium">Ketuntasan:</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-20 bg-slate-200 rounded-full h-1.5">
+                                        <div class="{{ $subject['pass_rate'] >= 75 ? 'bg-emerald-500' : 'bg-amber-500' }} h-1.5 rounded-full" style="width: {{ min($subject['pass_rate'], 100) }}%"></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-700">{{ $subject['pass_rate'] }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-sm text-slate-500">Belum ada data.</div>
+                    @endforelse
+                </div>
+
+                {{-- Desktop table --}}
+                <div class="hidden sm:block">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200">
                                 <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mapel</th>

@@ -21,8 +21,36 @@
         </div>
 
         <x-card padding="none">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            {{-- Mobile Cards --}}
+            <div class="block lg:hidden divide-y divide-slate-100">
+                @forelse($gradingStatus as $status)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <a href="{{ route('kepala-sekolah.supervision.teacher-detail', $status->teacher_id) }}" class="font-bold text-slate-900 text-base hover:text-primary block truncate">{{ $status->teacher_name }}</a>
+                                <p class="text-xs text-slate-500 mt-0.5">Mapel: {{ $status->subject_name }} &bull; Kelas: {{ $status->class_name }}</p>
+                            </div>
+                            @if($status->status === 'completed')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 shrink-0">Selesai</span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-100 text-amber-700 shrink-0">Belum Dinilai</span>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-end pt-2 border-t border-slate-100">
+                            <a href="{{ route('kepala-sekolah.supervision.teacher-detail', $status->teacher_id) }}" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg transition min-h-[44px]">
+                                Detail Guru &rarr;
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-sm text-slate-500">Belum ada data penilaian. Pastikan penugasan guru sudah diatur.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop Table --}}
+            <div class="hidden lg:block">
+                <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
                             <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Guru</th>

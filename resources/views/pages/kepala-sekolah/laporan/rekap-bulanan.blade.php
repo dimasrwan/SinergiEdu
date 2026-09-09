@@ -11,11 +11,46 @@
         </div>
 
         <x-card padding="none">
-            <div class="px-6 py-4 border-b border-slate-200">
+            <div class="px-4 sm:px-6 py-4 border-b border-slate-200">
                 <h2 class="text-base font-bold text-slate-900">Analisis Mata Pelajaran</h2>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            
+            {{-- Mobile Cards --}}
+            <div class="block lg:hidden divide-y divide-slate-100">
+                @forelse($subjectAnalysis as $subject)
+                    <div class="p-4 space-y-2">
+                        <div class="flex items-start justify-between gap-3">
+                            <h3 class="font-bold text-slate-900 text-sm truncate">{{ $subject['name'] }}</h3>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 shrink-0">Rerata: {{ $subject['avg'] }}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+                            <div class="bg-slate-50 p-2 rounded-lg">
+                                <span class="text-slate-400 block text-[10px]">Karakter</span>
+                                <span class="font-semibold text-slate-700">{{ $subject['avg_character'] }}</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg">
+                                <span class="text-slate-400 block text-[10px]">Hafalan</span>
+                                <span class="font-semibold text-slate-700">{{ $subject['avg_memorization'] }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 pt-1">
+                            <span class="text-xs text-slate-500 font-medium">Ketuntasan:</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-20 bg-slate-200 rounded-full h-1.5">
+                                    <div class="{{ $subject['pass_rate'] >= 75 ? 'bg-emerald-500' : 'bg-amber-500' }} h-1.5 rounded-full" style="width: {{ min($subject['pass_rate'], 100) }}%"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-700">{{ $subject['pass_rate'] }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-sm text-slate-500">Belum ada data.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop Table --}}
+            <div class="hidden lg:block">
+                <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
                             <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Mata Pelajaran</th>

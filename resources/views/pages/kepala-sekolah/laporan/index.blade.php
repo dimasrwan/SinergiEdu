@@ -51,11 +51,55 @@
 
         <!-- Tabel Rekap -->
         <x-card padding="none">
-            <div class="px-6 py-4 border-b border-slate-200">
+            <div class="px-4 sm:px-6 py-4 border-b border-slate-200">
                 <h2 class="text-base font-bold text-slate-900">Rekap Nilai Siswa</h2>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            
+            {{-- Mobile Cards --}}
+            <div class="block lg:hidden divide-y divide-slate-100">
+                @forelse($rows as $row)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-slate-900 text-base truncate">{{ $row['name'] }}</h3>
+                                <p class="text-xs text-slate-500">Kelas: {{ $row['class_name'] ?? '-' }}</p>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-800 shrink-0">
+                                Rerata: {{ $row['avg'] }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 pt-2 text-xs border-t border-slate-100">
+                            <div class="bg-slate-50 p-2 rounded-lg text-center">
+                                <span class="text-slate-400 block text-[10px]">Pretest</span>
+                                <span class="font-semibold text-slate-800">{{ $row['avg_pre_test'] }}</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg text-center">
+                                <span class="text-slate-400 block text-[10px]">Tugas</span>
+                                <span class="font-semibold text-slate-800">{{ $row['avg_assignment'] }}</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg text-center">
+                                <span class="text-slate-400 block text-[10px]">Posttest</span>
+                                <span class="font-semibold text-slate-800">{{ $row['avg_post_test'] }}</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg text-center">
+                                <span class="text-slate-400 block text-[10px]">Karakter</span>
+                                <span class="font-semibold text-slate-800">{{ $row['avg_character'] }}</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg text-center col-span-2">
+                                <span class="text-slate-400 block text-[10px]">Hafalan</span>
+                                <span class="font-semibold text-slate-800">{{ $row['avg_memorization'] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-sm text-slate-500">Belum ada data nilai untuk ditampilkan.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop Table --}}
+            <div class="hidden lg:block">
+                <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
                             <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>

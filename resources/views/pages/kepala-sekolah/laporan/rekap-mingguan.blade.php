@@ -11,7 +11,7 @@
         </div>
 
         <!-- Komponen Nilai -->
-        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             @php
                 $components = [
                     ['label' => 'Pretest', 'key' => 'avg_pre_test', 'color' => 'bg-blue-50 text-blue-600 border-blue-100'],
@@ -22,20 +22,42 @@
                 ];
             @endphp
             @foreach($components as $component)
-                <div class="border border-slate-200 rounded-2xl p-4 {{ $component['color'] }}">
-                    <p class="text-xs font-bold uppercase tracking-wider opacity-70">{{ $component['label'] }}</p>
-                    <p class="text-2xl font-bold mt-1">{{ $componentAverages[$component['key']] }}</p>
+                <div class="border border-slate-200 rounded-2xl p-3.5 sm:p-4 {{ $component['color'] }} min-w-0">
+                    <p class="text-[10px] sm:text-xs font-bold uppercase tracking-wider opacity-70 truncate">{{ $component['label'] }}</p>
+                    <p class="text-xl sm:text-2xl font-bold mt-1 truncate">{{ $componentAverages[$component['key']] }}</p>
                 </div>
             @endforeach
         </div>
 
         <!-- Rangking Kelas -->
         <x-card padding="none">
-            <div class="px-6 py-4 border-b border-slate-200">
+            <div class="px-4 sm:px-6 py-4 border-b border-slate-200">
                 <h2 class="text-base font-bold text-slate-900">Rangking Kelas</h2>
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            
+            {{-- Mobile list --}}
+            <div class="block sm:hidden divide-y divide-slate-100">
+                @forelse($classRankings as $row)
+                    <div class="p-4 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="inline-flex items-center justify-center h-7 w-7 rounded-lg {{ $loop->iteration <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600' }} text-xs font-bold shrink-0">
+                                #{{ $loop->iteration }}
+                            </span>
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-slate-900 text-sm truncate">{{ $row['name'] }}</h3>
+                                <p class="text-xs text-slate-500">Tingkat: {{ $row['grade_level'] }}</p>
+                            </div>
+                        </div>
+                        <span class="text-sm font-bold text-slate-900 shrink-0">{{ $row['avg'] }}</span>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-sm text-slate-500">Belum ada data.</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop table --}}
+            <div class="hidden sm:block">
+                <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
                             <th class="p-6 text-xs font-bold text-slate-500 uppercase tracking-wider">#</th>
