@@ -104,7 +104,55 @@
                 </form>
             </div>
             
-            <div class="overflow-x-auto w-full">
+            <!-- Mobile Card View -->
+            <div class="block lg:hidden divide-y divide-slate-100">
+                @forelse($students as $item)
+                    <div class="p-4 sm:p-5 hover:bg-slate-50/50 transition-colors space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 shrink-0 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                                {{ strtoupper(substr($item->student->user->name, 0, 1)) }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="font-bold text-slate-950 text-base break-words">{{ $item->student->user->name }}</h4>
+                                <div class="text-xs text-slate-500">NIS: {{ $item->student->nis ?? '-' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 rounded-xl p-3">
+                            <div>
+                                <span class="text-slate-400 block mb-0.5">Kelas & Mapel</span>
+                                <span class="font-medium text-slate-800 block">{{ $item->classroom->name }}</span>
+                                <span class="text-slate-500 block">{{ $item->subject->name }}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block mb-0.5">Tugas & Nilai</span>
+                                <span class="font-medium text-slate-800 block">{{ $item->completed_assignments }} / {{ $item->total_assignments }} Tugas</span>
+                                <span class="font-bold text-blue-600 block mt-0.5">Rata-rata: {{ $item->avg_score ?? 'Belum Ada' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <div>
+                                @if($item->status == 'Lengkap')
+                                    <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-medium">Lengkap</span>
+                                @else
+                                    <span class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full text-xs font-medium">Tunggakan Tugas</span>
+                                @endif
+                            </div>
+                            <a href="{{ route('guru.student-progress.show', ['student' => $item->id, 'class_id' => $item->classroom->id, 'subject_id' => $item->subject->id]) }}" class="inline-flex items-center justify-center min-h-[40px] px-4 py-2 rounded-xl bg-white text-xs font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+                                Lihat Perkembangan
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-slate-400 text-sm">
+                        Belum ada siswa pada kelas Anda.
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Desktop Table View -->
+            <div class="hidden lg:block overflow-x-auto w-full">
                 <table class="w-full divide-y divide-slate-200">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr>

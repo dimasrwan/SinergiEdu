@@ -45,13 +45,83 @@
             @endif
         </div>
 
-        <x-card padding="none">
-        <x-table :headers="['Tugas', 'Kelas & Mapel', 'Tenggat Waktu', 'Dikumpulkan', 'Aksi']">
+        <!-- Mobile Card List (< lg) -->
+        <div class="space-y-3 lg:hidden">
+            @forelse($assignments as $assignment)
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <h3 class="font-bold text-slate-900 text-sm break-words">{{ $assignment->title }}</h3>
+                            <p class="text-xs text-slate-500 mt-0.5 line-clamp-2 break-words">{{ $assignment->description }}</p>
+                        </div>
+                        <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
+                            {{ $assignment->classroom->name ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 rounded-xl space-y-2 text-xs">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-slate-400">Mata Pelajaran:</span>
+                            <span class="font-bold text-slate-700 break-words text-right">{{ $assignment->subject->name ?? '-' }}</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 border-t border-slate-200/60 pt-1.5">
+                            <span class="text-slate-400">Deadline:</span>
+                            @if(now()->isAfter($assignment->deadline))
+                                <x-badge variant="danger" class="whitespace-nowrap">
+                                    {{ $assignment->deadline->format('d M Y, H:i') }} (Terlewat)
+                                </x-badge>
+                            @else
+                                <x-badge variant="success" class="whitespace-nowrap">
+                                    {{ $assignment->deadline->format('d M Y, H:i') }} (Aktif)
+                                </x-badge>
+                            @endif
+                        </div>
+                        <div class="flex items-center justify-between gap-2 border-t border-slate-200/60 pt-1.5">
+                            <span class="text-slate-400">Pengumpulan:</span>
+                            <span class="font-bold text-blue-700">{{ $assignment->submissions_count }} Siswa</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                        <a href="{{ route('guru.assignments.show', $assignment) }}" class="px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                            <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            Detail
+                        </a>
+                        <a href="{{ route('guru.assignments.edit', $assignment) }}" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                            <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                            Edit
+                        </a>
+                        @if($assignment->submissions_count == 0)
+                            <button type="button" x-on:click.prevent="$dispatch('open-modal', 'confirm-deletion-{{ $assignment->id }}')" class="px-3 py-2 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                Hapus
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center">
+                    <h3 class="text-lg font-bold text-slate-900">Belum Ada Tugas</h3>
+                    <p class="text-sm text-slate-500 mt-2 max-w-md mx-auto mb-6">Belum ada tugas pembelajaran yang Anda buat.</p>
+                    <x-button variant="primary" href="{{ route('guru.assignments.create') }}">Buat Tugas Baru</x-button>
+                </div>
+            @endforelse
+
+            @if($assignments->hasPages())
+                <div class="pt-2">
+                    {{ $assignments->links() }}
+                </div>
+            @endif
+        </div>
+
+        <!-- Desktop Table Container (>= lg) -->
+        <x-card padding="none" class="hidden lg:block">
+            <x-table :headers="['Tugas', 'Kelas & Mapel', 'Tenggat Waktu', 'Dikumpulkan', 'Aksi']">
                 @forelse($assignments as $assignment)
                     <tr class="hover:bg-slate-50/50 transition-colors">
                         <td class="px-6 py-4">
                             <div class="font-bold text-slate-950 mb-1">{{ $assignment->title }}</div>
-                            <div class="text-xs text-slate-500 max-w-xs truncate mx-auto" title="{{ $assignment->description }}">{{ Str::limit($assignment->description, 50) }}</div>
+                            <div class="text-xs text-slate-500 max-w-xs truncate" title="{{ $assignment->description }}">{{ Str::limit($assignment->description, 50) }}</div>
                         </td>
                         <td class="px-6 py-4">
                             <div class="font-semibold text-slate-800">{{ $assignment->classroom->name ?? '-' }}</div>
@@ -78,45 +148,25 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('guru.assignments.show', $assignment) }}" class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg-lg transition" title="Lihat Detail & Jawaban">
+                                <a href="{{ route('guru.assignments.show', $assignment) }}" class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Lihat Detail & Jawaban">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 </a>
-                                <a href="{{ route('guru.assignments.edit', $assignment) }}" class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg-lg transition" title="Edit Tugas">
+                                <a href="{{ route('guru.assignments.edit', $assignment) }}" class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition" title="Edit Tugas">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                                     </svg>
                                 </a>
                                 @if($assignment->submissions_count == 0)
-                                    <button type="button" x-data="" x-on:click="$dispatch('open-modal', 'confirm-deletion-{{ $assignment->id }}')" class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg-lg transition" title="Hapus Tugas">
+                                    <button type="button" x-on:click.prevent="$dispatch('open-modal', 'confirm-deletion-{{ $assignment->id }}')" class="inline-flex items-center justify-center p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Hapus Tugas">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                         </svg>
                                     </button>
-                                    
-                                    <x-modal name="confirm-deletion-{{ $assignment->id }}" maxWidth="sm">
-                                        <div class="p-6 text-center">
-                                            <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                                                <svg class="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                </svg>
-                                            </div>
-                                            <h2 class="text-lg font-bold text-slate-900 mb-2">Hapus Tugas Ini?</h2>
-                                            <p class="text-sm text-slate-500 mb-6">Anda yakin ingin menghapus tugas <strong>"{{ $assignment->title }}"</strong>? Tindakan ini tidak dapat dibatalkan.</p>
-                                            <div class="flex justify-center gap-3">
-                                                <x-button type="button" variant="secondary" x-on:click="$dispatch('close')">Batal</x-button>
-                                                <form action="{{ route('guru.assignments.destroy', $assignment) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <x-button type="submit" variant="danger">Ya, Hapus</x-button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </x-modal>
                                 @else
-                                    <button type="button" class="inline-flex items-center justify-center p-2 text-slate-300 cursor-not-allowed rounded-lg-lg transition" title="Tugas tidak dapat dihapus karena sudah ada submission" disabled>
+                                    <button type="button" class="inline-flex items-center justify-center p-2 text-slate-300 cursor-not-allowed rounded-lg transition" title="Tugas tidak dapat dihapus karena sudah ada submission" disabled>
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                         </svg>
@@ -143,7 +193,7 @@
                         </td>
                     </tr>
                 @endforelse
-        </x-table>
+            </x-table>
 
             @if($assignments->hasPages())
                 <div class="px-6 py-4 border-t border-slate-200">
@@ -151,5 +201,30 @@
                 </div>
             @endif
         </x-card>
+
+        <!-- Delete Modals Outside Loop -->
+        @foreach($assignments as $assignment)
+            @if($assignment->submissions_count == 0)
+                <x-modal name="confirm-deletion-{{ $assignment->id }}" maxWidth="sm">
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-900 mb-2">Hapus Tugas Ini?</h2>
+                        <p class="text-sm text-slate-500 mb-6">Anda yakin ingin menghapus tugas <strong>"{{ $assignment->title }}"</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                        <div class="flex justify-center gap-3">
+                            <x-button type="button" variant="secondary" x-on:click="$dispatch('close-modal', 'confirm-deletion-{{ $assignment->id }}')">Batal</x-button>
+                            <form action="{{ route('guru.assignments.destroy', $assignment) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <x-button type="submit" variant="danger">Ya, Hapus</x-button>
+                            </form>
+                        </div>
+                    </div>
+                </x-modal>
+            @endif
+        @endforeach
     </div>
 </x-layouts.app>

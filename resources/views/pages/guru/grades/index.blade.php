@@ -82,61 +82,121 @@
                         <input type="hidden" name="subject_id" value="{{ $selectedSubjectId }}">
                         <input type="hidden" name="meeting_id" value="{{ $selectedMeetingId }}">
                         
-                        <x-table>
-                            <x-slot:head>
-                                <tr>
-                                    <th class="px-6 py-4 text-left w-64">Nama Siswa</th>
-                                    <th class="px-4 py-4 w-28 text-center">Tes Awal</th>
-                                    <th class="px-4 py-4 w-28 text-center">Tugas</th>
-                                    <th class="px-4 py-4 w-28 text-center">Tes Akhir</th>
-                                    <th class="px-4 py-4 w-28 text-center">Karakter</th>
-                                    <th class="px-4 py-4 w-28 text-center">Hafalan</th>
-                                    <th class="px-4 py-4 w-32 text-center">Juz</th>
-                                    <th class="px-4 py-4 w-32 text-center">Ayat</th>
-                                    <th class="px-4 py-4 min-w-52">Catatan</th>
-                                </tr>
-                            </x-slot:head>
-                            <x-slot:body>
-                                @foreach($students as $index => $student)
-                                    @php
-                                        $grade = $grades->get($student->id);
-                                    @endphp
-                                    <tr class="hover:bg-slate-50/50 transition-colors">
-                                        <td class="px-6 py-4 font-bold text-slate-950">
-                                            {{ $student->user->name }}
-                                            <input type="hidden" name="grades[{{ $index }}][student_id]" value="{{ $student->id }}">
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input type="number" name="grades[{{ $index }}][pre_test_score]" value="{{ old("grades.{$index}.pre_test_score", $grade?->pre_test_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input type="number" name="grades[{{ $index }}][assignment_score]" value="{{ old("grades.{$index}.assignment_score", $grade?->assignment_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input type="number" name="grades[{{ $index }}][post_test_score]" value="{{ old("grades.{$index}.post_test_score", $grade?->post_test_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input type="number" name="grades[{{ $index }}][character_score]" value="{{ old("grades.{$index}.character_score", $grade?->character_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input type="number" name="grades[{{ $index }}][memorization_score]" value="{{ old("grades.{$index}.memorization_score", $grade?->memorization_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input name="grades[{{ $index }}][memorization_juz]" value="{{ old("grades.{$index}.memorization_juz", $grade?->memorization_juz) }}" class="w-full text-center" placeholder="Contoh: 30" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input name="grades[{{ $index }}][memorization_ayat]" value="{{ old("grades.{$index}.memorization_ayat", $grade?->memorization_ayat) }}" class="w-full text-center" placeholder="Contoh: 1–20" />
-                                        </td>
-                                        <td class="px-4 py-4">
-                                            <x-text-input name="grades[{{ $index }}][notes]" value="{{ old("grades.{$index}.notes", $grade?->notes) }}" class="w-full" placeholder="Catatan singkat" />
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </x-slot:body>
-                        </x-table>
+                        <!-- Mobile Cards View -->
+                        <div class="block lg:hidden divide-y divide-slate-100">
+                            @foreach($students as $index => $student)
+                                @php
+                                    $grade = $grades->get($student->id);
+                                @endphp
+                                <div class="p-4 sm:p-5 space-y-4">
+                                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                        <div>
+                                            <h4 class="font-bold text-slate-950 text-base">{{ $student->user->name }}</h4>
+                                            <div class="text-xs text-slate-500 mt-0.5">NIS: {{ $student->nis ?? '-' }}</div>
+                                        </div>
+                                        <input type="hidden" name="grades[{{ $index }}][student_id]" value="{{ $student->id }}">
+                                    </div>
 
-                        <div class="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-end">
-                            <x-button variant="primary" type="submit">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <x-input-label for="m_pre_{{ $index }}" value="Tes Awal" class="text-xs text-slate-500 mb-1" />
+                                            <input type="number" inputmode="numeric" id="m_pre_{{ $index }}" name="grades[{{ $index }}][pre_test_score]" value="{{ old("grades.{$index}.pre_test_score", $grade?->pre_test_score) }}" min="0" max="100" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base text-center min-h-[44px]" placeholder="-" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="m_asgn_{{ $index }}" value="Tugas" class="text-xs text-slate-500 mb-1" />
+                                            <input type="number" inputmode="numeric" id="m_asgn_{{ $index }}" name="grades[{{ $index }}][assignment_score]" value="{{ old("grades.{$index}.assignment_score", $grade?->assignment_score) }}" min="0" max="100" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base text-center min-h-[44px]" placeholder="-" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="m_post_{{ $index }}" value="Tes Akhir" class="text-xs text-slate-500 mb-1" />
+                                            <input type="number" inputmode="numeric" id="m_post_{{ $index }}" name="grades[{{ $index }}][post_test_score]" value="{{ old("grades.{$index}.post_test_score", $grade?->post_test_score) }}" min="0" max="100" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base text-center min-h-[44px]" placeholder="-" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="m_char_{{ $index }}" value="Karakter" class="text-xs text-slate-500 mb-1" />
+                                            <input type="number" inputmode="numeric" id="m_char_{{ $index }}" name="grades[{{ $index }}][character_score]" value="{{ old("grades.{$index}.character_score", $grade?->character_score) }}" min="0" max="100" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base text-center min-h-[44px]" placeholder="-" />
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-3 gap-3 bg-slate-50 rounded-xl p-3">
+                                        <div class="col-span-1">
+                                            <x-input-label for="m_mem_{{ $index }}" value="Hafalan" class="text-xs text-slate-500 mb-1" />
+                                            <input type="number" inputmode="numeric" id="m_mem_{{ $index }}" name="grades[{{ $index }}][memorization_score]" value="{{ old("grades.{$index}.memorization_score", $grade?->memorization_score) }}" min="0" max="100" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base text-center min-h-[44px]" placeholder="-" />
+                                        </div>
+                                        <div class="col-span-1">
+                                            <x-input-label for="m_juz_{{ $index }}" value="Juz" class="text-xs text-slate-500 mb-1" />
+                                            <input type="text" id="m_juz_{{ $index }}" name="grades[{{ $index }}][memorization_juz]" value="{{ old("grades.{$index}.memorization_juz", $grade?->memorization_juz) }}" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-sm text-center min-h-[44px]" placeholder="30" />
+                                        </div>
+                                        <div class="col-span-1">
+                                            <x-input-label for="m_ayat_{{ $index }}" value="Ayat" class="text-xs text-slate-500 mb-1" />
+                                            <input type="text" id="m_ayat_{{ $index }}" name="grades[{{ $index }}][memorization_ayat]" value="{{ old("grades.{$index}.memorization_ayat", $grade?->memorization_ayat) }}" class="block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-sm text-center min-h-[44px]" placeholder="1-20" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <x-input-label for="m_notes_{{ $index }}" value="Catatan Guru" class="text-xs text-slate-500 mb-1" />
+                                        <input type="text" id="m_notes_{{ $index }}" name="grades[{{ $index }}][notes]" value="{{ old("grades.{$index}.notes", $grade?->notes) }}" class="block w-full rounded-xl border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-sm" placeholder="Catatan perkembangan..." />
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Desktop Table View -->
+                        <div class="hidden lg:block">
+                            <x-table>
+                                <x-slot:head>
+                                    <tr>
+                                        <th class="px-6 py-4 text-left w-64">Nama Siswa</th>
+                                        <th class="px-4 py-4 w-28 text-center">Tes Awal</th>
+                                        <th class="px-4 py-4 w-28 text-center">Tugas</th>
+                                        <th class="px-4 py-4 w-28 text-center">Tes Akhir</th>
+                                        <th class="px-4 py-4 w-28 text-center">Karakter</th>
+                                        <th class="px-4 py-4 w-28 text-center">Hafalan</th>
+                                        <th class="px-4 py-4 w-32 text-center">Juz</th>
+                                        <th class="px-4 py-4 w-32 text-center">Ayat</th>
+                                        <th class="px-4 py-4 min-w-52">Catatan</th>
+                                    </tr>
+                                </x-slot:head>
+                                <x-slot:body>
+                                    @foreach($students as $index => $student)
+                                        @php
+                                            $grade = $grades->get($student->id);
+                                        @endphp
+                                        <tr class="hover:bg-slate-50/50 transition-colors">
+                                            <td class="px-6 py-4 font-bold text-slate-950">
+                                                {{ $student->user->name }}
+                                                <input type="hidden" name="grades[{{ $index }}][student_id]" value="{{ $student->id }}">
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input type="number" name="grades[{{ $index }}][pre_test_score]" value="{{ old("grades.{$index}.pre_test_score", $grade?->pre_test_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input type="number" name="grades[{{ $index }}][assignment_score]" value="{{ old("grades.{$index}.assignment_score", $grade?->assignment_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input type="number" name="grades[{{ $index }}][post_test_score]" value="{{ old("grades.{$index}.post_test_score", $grade?->post_test_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input type="number" name="grades[{{ $index }}][character_score]" value="{{ old("grades.{$index}.character_score", $grade?->character_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input type="number" name="grades[{{ $index }}][memorization_score]" value="{{ old("grades.{$index}.memorization_score", $grade?->memorization_score) }}" min="0" max="100" class="w-full text-center" placeholder="-" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input name="grades[{{ $index }}][memorization_juz]" value="{{ old("grades.{$index}.memorization_juz", $grade?->memorization_juz) }}" class="w-full text-center" placeholder="Contoh: 30" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input name="grades[{{ $index }}][memorization_ayat]" value="{{ old("grades.{$index}.memorization_ayat", $grade?->memorization_ayat) }}" class="w-full text-center" placeholder="Contoh: 1–20" />
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <x-text-input name="grades[{{ $index }}][notes]" value="{{ old("grades.{$index}.notes", $grade?->notes) }}" class="w-full" placeholder="Catatan singkat" />
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </x-slot:body>
+                            </x-table>
+                        </div>
+
+                        <div class="p-4 sm:p-6 bg-slate-50/50 border-t border-slate-100 flex justify-end">
+                            <x-button variant="primary" type="submit" class="w-full sm:w-auto min-h-[44px] justify-center">
                                 <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>

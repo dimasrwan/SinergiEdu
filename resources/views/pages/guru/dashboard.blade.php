@@ -21,12 +21,12 @@
                         @endif
                     @endif
                 </div>
-                <div class="flex items-center gap-3 shrink-0">
-                    <a href="{{ route('guru.materials.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-semibold transition backdrop-blur-sm border border-white/10">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+                    <a href="{{ route('guru.materials.create') }}" class="inline-flex items-center justify-center px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-sm font-semibold transition backdrop-blur-sm border border-white/10 min-h-[44px]">
                         <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         Tambah Materi
                     </a>
-                    <a href="{{ route('guru.assignments.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-white text-primary hover:bg-slate-50 rounded-lg text-sm font-semibold transition shadow-sm">
+                    <a href="{{ route('guru.assignments.create') }}" class="inline-flex items-center justify-center px-4 py-2.5 bg-white text-primary hover:bg-slate-50 rounded-xl text-sm font-semibold transition shadow-sm min-h-[44px]">
                         <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         Buat Tugas Baru
                     </a>

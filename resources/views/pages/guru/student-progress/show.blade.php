@@ -111,7 +111,59 @@
         <div class="border-b border-slate-200 p-4 sm:p-6">
             <h3 class="text-base font-semibold leading-6 text-slate-900">Riwayat Penugasan</h3>
         </div>
-        <div class="overflow-x-auto">
+        <!-- Mobile Assignments History Card View -->
+        <div class="block lg:hidden divide-y divide-slate-100">
+            @forelse($assignments as $assignment)
+                @php
+                    $submission = $assignment->submissions->first();
+                @endphp
+                <div class="p-4 sm:p-5 space-y-2">
+                    <div class="flex items-start justify-between gap-3">
+                        <h4 class="font-bold text-slate-950 text-sm break-words flex-1 min-w-0">{{ $assignment->title }}</h4>
+                        <div class="shrink-0">
+                            @if($submission)
+                                <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Selesai</span>
+                            @else
+                                @if(now()->gt($assignment->deadline))
+                                    <span class="inline-flex items-center rounded-lg bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Terlewat</span>
+                                @else
+                                    <span class="inline-flex items-center rounded-lg bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Belum</span>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 rounded-xl p-3 my-2">
+                        <div>
+                            <span class="text-slate-400 block mb-0.5">Batas Waktu</span>
+                            <span class="font-medium text-slate-700 block break-words">{{ $assignment->deadline->format('d M Y, H:i') }}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block mb-0.5">Nilai Siswa</span>
+                            @if($submission && $submission->score !== null)
+                                <span class="font-bold text-sm text-slate-900">{{ $submission->score }}</span>
+                            @else
+                                <span class="text-slate-400 font-medium">-</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if($submission && $submission->feedback)
+                        <div class="text-xs text-slate-600 bg-purple-50/60 border border-purple-100 rounded-xl p-2.5 break-words">
+                            <span class="font-semibold text-purple-900 block mb-0.5">Feedback Guru:</span>
+                            {{ $submission->feedback }}
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="p-8 text-center text-slate-500 text-sm">
+                    Belum ada tugas untuk dianalisis.
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Desktop Assignments History Table View -->
+        <div class="hidden lg:block overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50">
                     <tr>
