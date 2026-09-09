@@ -41,12 +41,13 @@
             </div>
 
             <div class="xl:col-span-2">
-                <x-card padding="none">
-                    <div class="border-b border-slate-100 p-6">
-                        <h2 class="text-lg font-bold text-slate-900">Status dan Jawaban Siswa</h2>
+                <x-card padding="none" class="overflow-hidden border border-slate-200/75 min-w-0">
+                    <div class="border-b border-slate-100 p-4 sm:p-6 min-w-0">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 truncate">Status dan Jawaban Siswa</h2>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[700px] text-left text-sm">
+                    <!-- Desktop Table (hidden lg:block) -->
+                    <div class="hidden lg:block overflow-x-auto">
+                        <table class="w-full text-left text-sm">
                             <thead class="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th class="px-6 py-4">Siswa</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Waktu Kumpul</th><th class="px-6 py-4">Berkas / Catatan</th></tr></thead>
                             <tbody class="divide-y divide-slate-100">
                                 @forelse ($enrolledStudents as $student)
@@ -67,7 +68,7 @@
                                             <td class="px-6 py-4">
                                                 @if ($submission)
                                                     <div class="font-bold text-slate-900 mb-1">Nilai: {{ $submission->score ?? '-' }}</div>
-                                                    <a href="{{ asset('storage/'.$submission->file_path) }}" target="_blank" class="text-xs font-semibold text-blue-700 hover:text-blue-900">Buka jawaban</a>
+                                                    <a href="{{ asset('storage/'.$submission->file_path) }}" target="_blank" class="text-xs font-semibold text-primary hover:text-blue-900 min-h-[44px] inline-flex items-center">Buka jawaban</a>
                                                 @else
                                                     <span class="text-xs text-slate-400">-</span>
                                                 @endif
@@ -78,6 +79,42 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Mobile Card View (lg:hidden) -->
+                    <div class="lg:hidden p-4 space-y-3 divide-y divide-slate-100">
+                        @forelse ($enrolledStudents as $student)
+                            @php($submission = $submissionByStudent->get($student->id))
+                            <div class="pt-3 first:pt-0 space-y-2 min-w-0">
+                                <div class="flex items-center justify-between gap-2 min-w-0">
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="font-bold text-slate-900 text-sm truncate">{{ $student->user->name ?? '-' }}</h4>
+                                        <p class="text-xs text-slate-400">NIS: {{ $student->nis ?? '-' }}</p>
+                                    </div>
+                                    <div class="shrink-0">
+                                        @if ($submission)
+                                            @php($isLate = $submission->submitted_at && $submission->submitted_at->isAfter($assignment->deadline))
+                                            <x-badge variant="{{ $isLate ? 'danger' : 'success' }}">{{ $isLate ? 'Terlambat' : 'Tepat Waktu' }}</x-badge>
+                                        @elseif (now()->isAfter($assignment->deadline))
+                                            <x-badge variant="danger">Belum mengumpulkan</x-badge>
+                                        @else
+                                            <x-badge variant="slate">Menunggu</x-badge>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between pt-1 text-xs text-slate-600">
+                                    <span>Waktu: {{ $submission ? $submission->submitted_at?->format('d M Y, H:i') : '-' }}</span>
+                                    @if ($submission)
+                                        <div class="flex items-center gap-3">
+                                            <span class="font-bold text-slate-900">Nilai: {{ $submission->score ?? '-' }}</span>
+                                            <a href="{{ asset('storage/'.$submission->file_path) }}" target="_blank" class="font-bold text-primary hover:text-blue-900 min-h-[44px] flex items-center px-1">Buka jawaban &rarr;</a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="py-12 text-center text-slate-500 text-sm">Tidak ada siswa pada kelas aktif.</div>
+                        @endforelse
                     </div>
                 </x-card>
             </div>

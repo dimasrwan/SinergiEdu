@@ -125,9 +125,10 @@
                                 </form>
                             </x-card>
 
-                            <x-card padding="lg">
+                            <x-card padding="lg" class="min-w-0">
                                 <h4 class="text-base font-bold text-slate-900 mb-4">Tabel Aksi Kolaboratif</h4>
-                                <div class="overflow-x-auto">
+                                <!-- Desktop Table (hidden lg:block) -->
+                                <div class="hidden lg:block overflow-x-auto min-w-0">
                                     <table class="w-full text-sm border-collapse">
                                         <thead>
                                             <tr class="text-slate-500 border-b">
@@ -141,12 +142,32 @@
                                             @php $action = \App\Models\CollaborativeAction::where(['assessment_id' => $studentGrades->first()->id ?? 0, 'role_type' => $role, 'week_number' => $selectedWeek])->first(); @endphp
                                             <tr>
                                                 <td class="py-4 font-bold text-slate-700 capitalize">{{ $role }}</td>
-                                                <td class="py-4 text-slate-600">{{ $action->feedback_content ?? '-' }}</td>
-                                                <td class="py-4 text-slate-600">{{ $action->action_plan ?? '-' }}</td>
+                                                <td class="py-4 text-slate-600 break-words">{{ $action->feedback_content ?? '-' }}</td>
+                                                <td class="py-4 text-slate-600 break-words">{{ $action->action_plan ?? '-' }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
+                                </div>
+
+                                <!-- Mobile Cards (lg:hidden) -->
+                                <div class="lg:hidden space-y-3 divide-y divide-slate-100">
+                                    @foreach(['guru', 'ortu', 'waka', 'pengawas'] as $role)
+                                    @php $action = \App\Models\CollaborativeAction::where(['assessment_id' => $studentGrades->first()->id ?? 0, 'role_type' => $role, 'week_number' => $selectedWeek])->first(); @endphp
+                                    <div class="pt-3 first:pt-0 space-y-1.5 min-w-0">
+                                        <span class="inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-primary text-xs font-bold uppercase tracking-wider">
+                                            Pihak: {{ $role }}
+                                        </span>
+                                        <div class="text-xs space-y-1 pt-1">
+                                            <p class="text-slate-500 font-medium">Feedback:</p>
+                                            <p class="text-slate-800 break-words italic">{{ $action->feedback_content ?? '-' }}</p>
+                                        </div>
+                                        <div class="text-xs space-y-1 pt-1">
+                                            <p class="text-slate-500 font-medium">Rencana Aksi:</p>
+                                            <p class="text-slate-800 break-words">{{ $action->action_plan ?? '-' }}</p>
+                                        </div>
+                                    </div>
+                                    @endforeach
                                 </div>
                             </x-card>
                         </div>

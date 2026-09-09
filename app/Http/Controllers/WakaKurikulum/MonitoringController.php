@@ -229,10 +229,12 @@ class MonitoringController extends Controller
         // Calculate class average for the current subject and meeting
         $classAverage = 0;
         if ($selectedStudent) {
-            $classAverage = StudentAssessment::whereHas('learningMeeting', function ($query) use ($selectedStudent, $activeYear) {
+            $assessments = StudentAssessment::whereHas('learningMeeting', function ($query) use ($selectedStudent, $activeYear) {
                 $query->where('academic_year_id', $activeYear->id)
                       ->where('class_id', $selectedStudent->activeClassroom()?->id);
-            })->avg('average_score');
+            })->get();
+
+            $classAverage = $assessments->isEmpty() ? 0 : round($assessments->avg(fn ($a) => $a->average_score), 2);
         }
 
         return view('pages.waka.monitoring.student-progress', compact(
