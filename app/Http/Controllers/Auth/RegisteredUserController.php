@@ -42,11 +42,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        $roles = Role::whereIn('name', self::SELF_REGISTERABLE_ROLES)
-            ->orderBy('display_name')
-            ->get();
-
-        return view('auth.register', compact('roles'));
+        abort(404);
     }
 
     /**
@@ -56,42 +52,6 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['nullable', 'string', Rule::in(self::SELF_REGISTERABLE_ROLES)],
-        ]);
-
-        // Role ditentukan EKSPLISIT dari request; tidak ada fallback diam-diam ke role lain.
-        // Jika field `role` tidak dikirim, gunakan DEFAULT_ROLE; jika dikirim namun tidak valid,
-        // validasi di atas akan gagal (bukan jatuh ke siswa).
-        $roleName = $request->input('role', self::DEFAULT_ROLE);
-        $role = Role::firstOrCreate(
-            ['name' => $roleName],
-            ['display_name' => ucwords(str_replace('_', ' ', $roleName))]
-        );
-
-        $school = School::firstOrCreate(
-            ['npsn' => 'TEST'],
-            ['name' => 'Test School', 'email' => 'test@school.com', 'is_active' => true]
-        );
-
-        $user = User::create([
-            'school_id' => $school->id,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $role->id,
-        ]);
-
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        // Redirect sesuai role yang benar-benar tersimpan, bukan hardcode ke /siswa/dashboard.
-        $redirectRoute = DashboardRouter::forUser($user) ?? 'siswa.dashboard';
-
-        return redirect()->route($redirectRoute);
+        abort(404);
     }
 }
