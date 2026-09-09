@@ -77,8 +77,62 @@
                 </form>
             </div>
 
-            <!-- Table -->
-            <div class="overflow-x-auto">
+            <!-- Mobile Card List (< lg) -->
+            <div class="p-4 space-y-3 lg:hidden">
+                @forelse($assignments as $index => $assignment)
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-slate-900 text-sm break-words">{{ $assignment->teacher->user->name ?? '-' }}</h3>
+                                <p class="text-xs text-slate-500 font-mono mt-0.5 break-all">NIP: {{ $assignment->teacher->nip ?? '-' }}</p>
+                            </div>
+                            <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
+                                {{ $assignment->classroom->name }}
+                            </span>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-xl space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Mata Pelajaran:</span>
+                                <span class="font-bold text-primary break-words text-right">{{ $assignment->subject->name }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2 border-t border-slate-200/60 pt-1.5">
+                                <span class="text-slate-400">Periode:</span>
+                                <span class="font-medium text-slate-700">{{ $assignment->academicYear->year }} ({{ $assignment->semester->name }})</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                            <a href="{{ route('admin.teacher-assignments.edit', $assignment) }}" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                Edit
+                            </a>
+                            <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-assignment-{{ $assignment->id }}')" class="px-3 py-2 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                @empty
+                    <div class="py-12 text-center">
+                        <div class="mx-auto w-16 h-16 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-900">Belum ada penugasan</h3>
+                        <p class="text-sm text-slate-500 mt-1 mb-4">
+                            Data penugasan guru berdasarkan filter yang dipilih tidak ditemukan.
+                        </p>
+                        @if(!request()->anyFilled(['search', 'academic_year_id', 'semester_id', 'class_id']))
+                            <x-button variant="primary" href="{{ route('admin.teacher-assignments.create') }}" class="!py-2 !text-xs">
+                                Tambah Penugasan Pertama
+                            </x-button>
+                        @endif
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Desktop Table Container (>= lg) -->
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-max">
                     <thead>
                         <tr class="bg-white border-b border-slate-100">
@@ -101,7 +155,7 @@
                                     <p class="text-sm font-bold text-slate-900">
                                         {{ $assignment->teacher->user->name }}
                                     </p>
-                                    <p class="text-xs text-slate-500 mt-0.5">NIP. {{ $assignment->teacher->nip ?? '-' }}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5 font-mono">NIP. {{ $assignment->teacher->nip ?? '-' }}</p>
                                 </td>
                                 <td class="py-4 px-6">
                                     <p class="text-sm font-bold text-primary">
@@ -120,17 +174,13 @@
                                     {{ $assignment->semester->name }}
                                 </td>
                                 <td class="py-4 px-6 text-right">
-                                    <div class="flex items-center justify-end gap-2 ">
+                                    <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('admin.teacher-assignments.edit', $assignment) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit" aria-label="Edit penugasan">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                                         </a>
-                                        <form action="{{ route('admin.teacher-assignments.destroy', $assignment) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus penugasan ini?\n\nPENTING: Jika penugasan ini sudah digunakan oleh data pembelajaran (Materi/Tugas), sistem akan menolak penghapusan demi keamanan data.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg-lg transition-colors" title="Hapus" aria-label="Hapus penugasan">
-                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-assignment-{{ $assignment->id }}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus" aria-label="Hapus penugasan">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -163,5 +213,27 @@
                 </div>
             @endif
         </x-card>
+
+        <!-- Delete Modals -->
+        @foreach($assignments as $assignment)
+            <x-modal name="delete-assignment-{{ $assignment->id }}" maxWidth="sm">
+                <div class="p-6">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-danger flex items-center justify-center mb-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900">Hapus Penugasan Guru</h2>
+                    <p class="mt-2 text-sm text-slate-600">Apakah Anda yakin ingin menghapus penugasan <strong>{{ $assignment->teacher->user->name ?? '' }}</strong> ({{ $assignment->subject->name ?? '' }} - {{ $assignment->classroom->name ?? '' }})?</p>
+                    <p class="mt-1 text-xs text-slate-500">Jika penugasan ini sudah digunakan oleh data pembelajaran, sistem akan menolak penghapusan demi keamanan data.</p>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'delete-assignment-{{ $assignment->id }}')">Batal</x-button>
+                        <form action="{{ route('admin.teacher-assignments.destroy', $assignment) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-button variant="danger" type="submit">Hapus Penugasan</x-button>
+                        </form>
+                    </div>
+                </div>
+            </x-modal>
+        @endforeach
     </div>
 </x-layouts.app>

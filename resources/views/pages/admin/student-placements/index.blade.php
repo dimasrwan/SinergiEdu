@@ -64,8 +64,59 @@
                 </form>
             </div>
 
-            <!-- Table -->
-            <div class="overflow-x-auto">
+            <!-- Mobile Card List (< lg) -->
+            <div class="p-4 space-y-3 lg:hidden">
+                @forelse($placements as $index => $placement)
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-slate-900 text-sm break-words">{{ $placement->student->user->name ?? '-' }}</h3>
+                                <p class="text-xs text-slate-500 font-mono mt-0.5 break-all">NIS: {{ $placement->student->nis ?? '-' }}</p>
+                            </div>
+                            <span class="inline-flex items-center text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
+                                {{ $placement->classroom->name }} (Tingkat {{ $placement->classroom->level }})
+                            </span>
+                        </div>
+
+                        <div class="text-xs border-t border-slate-100 pt-2 flex items-center justify-between text-slate-500">
+                            <span>Tahun Ajaran: <strong class="text-slate-700">{{ $placement->academicYear->year }}</strong></span>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                            <a href="{{ route('admin.student-placements.edit', $placement) }}" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                Pindah Kelas
+                            </a>
+                            <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-placement-{{ $placement->id }}')" class="px-3 py-2 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors min-h-[38px] inline-flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                @empty
+                    <div class="py-12 text-center">
+                        <div class="mx-auto w-16 h-16 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" /></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-900">Belum ada penempatan siswa</h3>
+                        <p class="text-sm text-slate-500 mt-1 mb-4">
+                            @if(request()->anyFilled(['search', 'academic_year_id', 'class_id']))
+                                Tidak ada data penempatan yang ditemukan.
+                            @else
+                                Belum ada siswa yang ditempatkan ke kelas untuk periode yang dipilih.
+                            @endif
+                        </p>
+                        @if(!request()->anyFilled(['search', 'academic_year_id', 'class_id']))
+                            <x-button variant="primary" href="{{ route('admin.student-placements.create') }}" class="!py-2 !text-xs">
+                                Tambah Penempatan
+                            </x-button>
+                        @endif
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Table Container (>= lg) -->
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-max">
                     <thead>
                         <tr class="bg-white border-b border-slate-100">
@@ -89,7 +140,7 @@
                                     </p>
                                 </td>
                                 <td class="py-4 px-6">
-                                    <p class="text-sm font-medium text-slate-600">
+                                    <p class="text-sm font-medium text-slate-600 font-mono">
                                         {{ $placement->student->nis ?? '-' }}
                                     </p>
                                 </td>
@@ -102,17 +153,13 @@
                                     {{ $placement->academicYear->year }}
                                 </td>
                                 <td class="py-4 px-6 text-right">
-                                    <div class="flex items-center justify-end gap-2 ">
+                                    <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('admin.student-placements.edit', $placement) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Pindah Kelas">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                                         </a>
-                                        <form action="{{ route('admin.student-placements.destroy', $placement) }}" method="POST" class="inline" onsubmit="return confirm('Hapus penempatan siswa?\n\nIni hanya akan menghapus hubungan siswa dengan kelas untuk tahun ajaran ini, BUKAN menghapus data siswa atau kelas.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg-lg transition-colors" title="Hapus Penempatan">
-                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
-                                            </button>
-                                        </form>
+                                        <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-placement-{{ $placement->id }}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus Penempatan">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -149,5 +196,26 @@
                 </div>
             @endif
         </x-card>
+
+        <!-- Delete Modals -->
+        @foreach($placements as $placement)
+            <x-modal name="delete-placement-{{ $placement->id }}" maxWidth="sm">
+                <div class="p-6">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-danger flex items-center justify-center mb-4">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900">Hapus Penempatan Siswa</h2>
+                    <p class="mt-2 text-sm text-slate-600">Hapus penempatan <strong>{{ $placement->student->user->name ?? '' }}</strong> di kelas {{ $placement->classroom->name ?? '' }}? Ini hanya akan menghapus hubungan siswa dengan kelas untuk tahun ajaran ini, BUKAN menghapus data siswa.</p>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'delete-placement-{{ $placement->id }}')">Batal</x-button>
+                        <form action="{{ route('admin.student-placements.destroy', $placement) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <x-button variant="danger" type="submit">Hapus Penempatan</x-button>
+                        </form>
+                    </div>
+                </div>
+            </x-modal>
+        @endforeach
     </div>
 </x-layouts.app>

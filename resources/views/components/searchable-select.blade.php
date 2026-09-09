@@ -108,7 +108,7 @@
          x-transition:leave="transition ease-in duration-75" 
          x-transition:leave-start="transform opacity-100 scale-100" 
          x-transition:leave-end="transform opacity-0 scale-95" 
-         class="absolute z-50 mt-1.5 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-64 overflow-hidden flex flex-col focus:outline-none" 
+         class="absolute z-50 mt-1.5 w-full bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-hidden flex flex-col focus:outline-none ring-1 ring-slate-900/5" 
          style="display: none;"
     >
         <div class="p-2 border-b border-slate-100 bg-slate-50/50">

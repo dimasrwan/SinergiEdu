@@ -73,18 +73,86 @@
             </form>
         </div>
 
-        <!-- Table Container -->
+        <!-- Table / Mobile Cards Container -->
         <x-card padding="none" class="overflow-visible">
-            <div class="overflow-x-auto lg:overflow-visible">
+            <!-- Mobile Cards View (lg:hidden) -->
+            <div class="lg:hidden divide-y divide-slate-100">
+                @forelse($students as $student)
+                    @php
+                        $activeClass = $student->activeClassroom();
+                    @endphp
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-bold text-slate-900 text-base leading-snug break-words">{{ $student->user->name ?? '-' }}</h3>
+                                <div class="text-xs text-slate-500 font-medium mt-0.5">NIS: {{ $student->nis ?? '-' }}</div>
+                            </div>
+                            <div class="shrink-0">
+                                @if($activeClass)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                                        {{ $activeClass->name }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">
+                                        Belum ditempatkan
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-100">
+                            <div>
+                                <span class="text-slate-400 block font-medium">Jenis Kelamin</span>
+                                <span class="text-slate-700 font-semibold mt-0.5 block">{{ $student->gender == 'L' ? 'Laki-laki' : ($student->gender == 'P' ? 'Perempuan' : '-') }}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-medium">Tanggal Lahir</span>
+                                <span class="text-slate-700 font-semibold mt-0.5 block">{{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->locale('id')->translatedFormat('d F Y') : '-' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="text-xs pt-1">
+                            <span class="text-slate-400 block font-medium">Orang Tua / Wali</span>
+                            @if($student->parent)
+                                <div class="font-semibold text-slate-800 mt-0.5">{{ $student->parent->user->name ?? '-' }}</div>
+                                <div class="text-slate-500 font-medium mt-0.5">HP: {{ $student->parent->phone ?? '-' }}</div>
+                            @else
+                                <span class="text-slate-400 italic mt-0.5 block">Belum terhubung</span>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
+                            <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-placement-{{ $student->id }}')" class="px-3 py-2 text-xs font-bold text-white bg-accent hover:bg-blue-600 rounded-xl transition-colors shrink-0 min-h-[38px] inline-flex items-center justify-center">
+                                + Penempatan
+                            </button>
+                            <div class="flex items-center gap-1">
+                                <a href="{{ route('admin.students.show', $student) }}" class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors min-h-[38px] min-w-[38px] inline-flex items-center justify-center" title="Lihat Detail" aria-label="Lihat detail siswa">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                </a>
+                                <a href="{{ route('admin.students.edit', $student) }}" class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors min-h-[38px] min-w-[38px] inline-flex items-center justify-center" title="Edit" aria-label="Edit siswa">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                </a>
+                                <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-student-{{ $student->id }}')" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors min-h-[38px] min-w-[38px] inline-flex items-center justify-center" title="Hapus" aria-label="Hapus siswa">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-slate-500 text-sm font-medium">
+                        Belum ada data siswa
+                    </div>
+                @endforelse
+            </div>
+
+            <!-- Desktop View Table (hidden lg:block) -->
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="bg-slate-50/70 border-b border-slate-200">
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama / NIS</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas Aktif</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                                <span class="hidden md:inline">Jenis Kelamin</span>
-                                <span class="md:hidden">JK</span>
-                            </th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Jenis Kelamin</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Lahir</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Orang Tua / Wali</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
@@ -108,8 +176,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-700">
-                                    <span class="hidden md:inline">{{ $student->gender == 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
-                                    <span class="md:hidden font-medium">{{ $student->gender }}</span>
+                                    {{ $student->gender == 'L' ? 'Laki-laki' : ($student->gender == 'P' ? 'Perempuan' : '-') }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-700">
                                     {{ $student->date_of_birth ? \Carbon\Carbon::parse($student->date_of_birth)->locale('id')->translatedFormat('d F Y') : 'Belum diisi' }}
@@ -137,63 +204,6 @@
                                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                                         </button>
                                     </div>
-                                    
-                                    <!-- Delete Modal -->
-                                    <x-modal name="delete-student-{{ $student->id }}" maxWidth="sm">
-                                        <div class="p-6 text-left whitespace-normal">
-                                            <div class="w-12 h-12 rounded-full bg-red-100 text-danger flex items-center justify-center mb-4">
-                                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                            </div>
-                                            <h2 class="text-lg font-bold text-slate-900">Konfirmasi Penghapusan</h2>
-                                            <p class="mt-2 text-sm text-slate-600">Apakah Anda yakin ingin menghapus data siswa <strong>{{ $student->user->name ?? '' }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
-                                            <div class="mt-6 flex justify-end gap-3">
-                                                <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'delete-student-{{ $student->id }}')">Batal</x-button>
-                                                <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <x-button variant="danger" type="submit">Hapus Data</x-button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </x-modal>
-
-                                    <!-- Add Placement Modal -->
-                                    <x-modal name="add-placement-{{ $student->id }}" maxWidth="xl">
-                                        <form action="{{ route('admin.student-placements.store') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="redirect_to" value="students_index">
-                                            <input type="hidden" name="student_id" value="{{ $student->id }}">
-                                            
-                                            <div class="p-6 text-left whitespace-normal">
-                                                <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Tambah Penempatan Siswa</h2>
-                                                
-                                                <div class="space-y-5">
-                                                    <!-- Readonly Siswa Info -->
-                                                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col gap-1">
-                                                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Siswa</span>
-                                                        <div class="font-bold text-slate-900">{{ $student->user->name ?? '-' }}</div>
-                                                        <div class="text-xs text-slate-500 font-mono">NIS: {{ $student->nis ?? '-' }}</div>
-                                                    </div>
-                                                    
-                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                        <div>
-                                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
-                                                            <x-select name="class_id" required placeholder="-- Pilih Kelas --" :selected="old('class_id')" :options="$classes->map(fn($cls) => ['value' => $cls->id, 'label' => $cls->name])->toArray()" />
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
-                                                            <x-select name="academic_year_id" required placeholder="-- Pilih Tahun Ajaran --" :selected="old('academic_year_id', $academicYears->first()->id ?? null)" :options="$academicYears->map(fn($ay) => ['value' => $ay->id, 'label' => $ay->year])->toArray()" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
-                                                    <button type="button" x-on:click.prevent="$dispatch('close-modal', 'add-placement-{{ $student->id }}')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
-                                                    <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </x-modal>
                                 </td>
                             </tr>
                         @empty
@@ -225,6 +235,66 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Delete & Placement Modals Outside Cards loop to prevent duplication -->
+            @foreach($students as $student)
+                <!-- Delete Modal -->
+                <x-modal name="delete-student-{{ $student->id }}" maxWidth="sm">
+                    <div class="p-6 text-left whitespace-normal">
+                        <div class="w-12 h-12 rounded-full bg-red-100 text-danger flex items-center justify-center mb-4">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-900">Konfirmasi Penghapusan</h2>
+                        <p class="mt-2 text-sm text-slate-600">Apakah Anda yakin ingin menghapus data siswa <strong>{{ $student->user->name ?? '' }}</strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                        <div class="mt-6 flex justify-end gap-3">
+                            <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'delete-student-{{ $student->id }}')">Batal</x-button>
+                            <form action="{{ route('admin.students.destroy', $student) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <x-button variant="danger" type="submit">Hapus Data</x-button>
+                            </form>
+                        </div>
+                    </div>
+                </x-modal>
+
+                <!-- Add Placement Modal -->
+                <x-modal name="add-placement-{{ $student->id }}" maxWidth="xl">
+                    <form action="{{ route('admin.student-placements.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="redirect_to" value="students_index">
+                        <input type="hidden" name="student_id" value="{{ $student->id }}">
+                        
+                        <div class="p-6 text-left whitespace-normal">
+                            <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Tambah Penempatan Siswa</h2>
+                            
+                            <div class="space-y-5">
+                                <!-- Readonly Siswa Info -->
+                                <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col gap-1">
+                                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Siswa</span>
+                                    <div class="font-bold text-slate-900">{{ $student->user->name ?? '-' }}</div>
+                                    <div class="text-xs text-slate-500 font-mono">NIS: {{ $student->nis ?? '-' }}</div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kelas <span class="text-danger">*</span></label>
+                                        <x-select name="class_id" required placeholder="-- Pilih Kelas --" :selected="old('class_id')" :options="$classes->map(fn($cls) => ['value' => $cls->id, 'label' => $cls->name])->toArray()" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Tahun Ajaran <span class="text-danger">*</span></label>
+                                        <x-select name="academic_year_id" required placeholder="-- Pilih Tahun Ajaran --" :selected="old('academic_year_id', $academicYears->first()->id ?? null)" :options="$academicYears->map(fn($ay) => ['value' => $ay->id, 'label' => $ay->year])->toArray()" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 flex justify-end gap-3 pt-5 border-t border-slate-100">
+                                <button type="button" x-on:click.prevent="$dispatch('close-modal', 'add-placement-{{ $student->id }}')" class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">Batal</button>
+                                <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-primary rounded-lg hover:bg-blue-900 transition-colors">Simpan Penempatan</button>
+                            </div>
+                        </div>
+                    </form>
+                </x-modal>
+            @endforeach
 
             @if($students->hasPages())
                 <div class="p-5 border-t border-slate-100 bg-slate-50/50">

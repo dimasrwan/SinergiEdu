@@ -169,15 +169,15 @@
 
                 <div class="h-6 w-px bg-slate-200 lg:hidden" aria-hidden="true"></div>
 
-                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between">
-                    <div class="flex items-center gap-x-3">
+                <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between min-w-0">
+                    <div class="flex items-center gap-x-3 min-w-0 flex-1">
                         <!-- Desktop Logo/Brand -->
-                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center lg:hidden">
+                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center shrink-0 lg:hidden">
                             <span class="text-white font-bold text-sm">S</span>
                         </div>
-                        <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6">{{ $title ?? 'Dashboard' }}</h2>
+                        <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-0 flex-1">{{ $title ?? 'Dashboard' }}</h2>
                     </div>
-                    <div class="flex items-center gap-x-4 lg:gap-x-6">
+                    <div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
                         @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -216,8 +216,8 @@
                         <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200" aria-hidden="true"></div>
 
                         <!-- Dropdown Menu / Profile -->
-                        <div class="relative" x-data="{ open: false }">
-                            <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3" @click="open = !open">
+                        <div class="relative shrink-0" x-data="{ open: false }">
+                            <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200" @click="open = !open">
                                 <span class="sr-only">Buka menu user</span>
                                 <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-sm" />
                                 <div class="hidden lg:flex lg:items-center">
@@ -228,7 +228,7 @@
                                 </div>
                             </button>
                             <!-- Dropdown panel -->
-                            <div class="absolute right-0 z-10 mt-2.5 w-56 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-slate-900/5 focus:outline-none"
+                            <div class="absolute right-0 z-50 mt-2.5 w-56 origin-top-right rounded-xl bg-white py-1 shadow-lg ring-1 ring-slate-900/5 focus:outline-none"
                                  x-show="open"
                                  x-transition:enter="transition ease-out duration-100"
                                  x-transition:enter-start="transform opacity-0 scale-95"
