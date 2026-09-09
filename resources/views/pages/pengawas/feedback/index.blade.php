@@ -9,14 +9,14 @@
         </div>
 
         {{-- Statistik Cards --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <x-card padding="sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Siswa</span>
                         <h3 class="text-2xl font-bold tracking-tight text-slate-900 mt-1">{{ $feedbacks->total() }}</h3>
                     </div>
-                    <div class="text-blue-600 bg-blue-50/50 p-3 rounded-xl border border-blue-100">
+                    <div class="text-blue-600 bg-blue-50/50 p-3 rounded-xl border border-blue-100 shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
                             {{ $feedbacks->filter(fn($f) => $f->studentGrades->where('supervisor_feedback')->isNotEmpty())->count() }}
                         </h3>
                     </div>
-                    <div class="text-emerald-600 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100">
+                    <div class="text-emerald-600 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                             {{ $feedbacks->filter(fn($f) => !$f->studentGrades->where('supervisor_feedback')->isNotEmpty())->count() }}
                         </h3>
                     </div>
-                    <div class="text-amber-600 bg-amber-50/50 p-3 rounded-xl border border-amber-100">
+                    <div class="text-amber-600 bg-amber-50/50 p-3 rounded-xl border border-amber-100 shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
                     </div>
                 </div>
@@ -53,7 +53,71 @@
 
         {{-- Daftar Feedback --}}
         <x-card padding="none">
-            <div class="overflow-x-auto">
+            @php
+                $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
+                $feedbacks->load('classes');
+            @endphp
+
+            {{-- Mobile Cards --}}
+            <div class="block lg:hidden divide-y divide-slate-100">
+                @forelse($feedbacks as $feedback)
+                    @php
+                        $hasFeedback = $feedback->studentGrades->where('supervisor_feedback')->isNotEmpty();
+                        $lastFeedback = $feedback->studentGrades->where('supervisor_feedback')->sortByDesc('updated_at')->first();
+                        $classroom = $activeYear ? $feedback->classes->first(fn ($c) => $c->pivot?->academic_year_id == $activeYear->id) : null;
+                    @endphp
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-slate-900 text-base truncate">{{ $feedback->user?->name }}</h3>
+                                <p class="text-xs text-slate-500">NIS: {{ $feedback->nis }} &bull; Kelas: {{ $classroom?->name ?? '-' }}</p>
+                            </div>
+                            @if($hasFeedback)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 shrink-0">
+                                    Sudah Feedback
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-orange-100 text-orange-800 shrink-0">
+                                    Perlu Feedback
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Feedback Terakhir</span>
+                            @if($hasFeedback)
+                                <p class="text-xs text-slate-700 line-clamp-2 leading-relaxed">{{ $lastFeedback?->supervisor_feedback }}</p>
+                                <p class="text-[10px] text-slate-400 mt-1">{{ $lastFeedback?->updated_at->diffForHumans() }}</p>
+                            @else
+                                <p class="text-xs text-slate-400 italic">Belum ada feedback</p>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                            <a href="{{ route('pengawas.students.show', $feedback->id) }}"
+                               class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition min-h-[44px]">
+                                Lihat
+                            </a>
+                            @if($hasFeedback)
+                                <a href="{{ route('pengawas.feedback.edit', $feedback->id) }}"
+                                   class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg transition min-h-[44px]">
+                                    Edit
+                                </a>
+                            @else
+                                <a href="{{ route('pengawas.feedback.create', ['student_id' => $feedback->id]) }}"
+                                   class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition min-h-[44px]">
+                                    Feedback
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-slate-400 text-sm">Belum ada data siswa</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop Table --}}
+            <div class="hidden lg:block">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
@@ -66,24 +130,20 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
-@php
-    $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
-    $feedbacks->load('classes');
-@endphp
-@forelse($feedbacks as $feedback)
-    @php
-        $hasFeedback = $feedback->studentGrades->where('supervisor_feedback')->isNotEmpty();
-        $lastFeedback = $feedback->studentGrades->where('supervisor_feedback')->sortByDesc('updated_at')->first();
-        $classroom = $activeYear ? $feedback->classes->first(fn ($c) => $c->pivot?->academic_year_id == $activeYear->id) : null;
-    @endphp
-    <tr class="hover:bg-slate-50 transition">
-        <td class="px-4 py-4">
-            <div class="font-medium text-slate-900">{{ $feedback->user?->name }}</div>
-            <div class="text-xs text-slate-500">{{ $feedback->nis }}</div>
-        </td>
-        <td class="px-4 py-4 text-slate-600">
-            {{ $classroom?->name ?? '-' }}
-        </td>
+                        @forelse($feedbacks as $feedback)
+                            @php
+                                $hasFeedback = $feedback->studentGrades->where('supervisor_feedback')->isNotEmpty();
+                                $lastFeedback = $feedback->studentGrades->where('supervisor_feedback')->sortByDesc('updated_at')->first();
+                                $classroom = $activeYear ? $feedback->classes->first(fn ($c) => $c->pivot?->academic_year_id == $activeYear->id) : null;
+                            @endphp
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-4 py-4">
+                                    <div class="font-medium text-slate-900">{{ $feedback->user?->name }}</div>
+                                    <div class="text-xs text-slate-500">{{ $feedback->nis }}</div>
+                                </td>
+                                <td class="px-4 py-4 text-slate-600">
+                                    {{ $classroom?->name ?? '-' }}
+                                </td>
                                 <td class="px-4 py-4 text-center">
                                     <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-sm font-semibold
                                         {{ $feedback->studentGrades->avg('average_score') >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
@@ -144,7 +204,7 @@
             </div>
 
             @if($feedbacks->hasPages())
-                <div class="p-6 border-t border-slate-200">
+                <div class="p-4 sm:p-6 border-t border-slate-200">
                     {{ $feedbacks->links() }}
                 </div>
             @endif

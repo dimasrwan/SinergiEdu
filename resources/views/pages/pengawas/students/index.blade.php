@@ -12,23 +12,67 @@
 
         {{-- Filter & Search --}}
         <x-card padding="md">
-            <form method="GET" class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1">
+            <form method="GET" class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+                <div class="flex-1 min-w-0">
                     <x-select name="class_id" onchange="this.form.submit()" placeholder="Pilih Kelas" :selected="$selectedClassId" :options="$classes->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
                 </div>
                 <a href="{{ route('pengawas.students.downloadReport', ['class_id' => $selectedClassId]) }}" 
-                   class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition inline-flex items-center gap-2 justify-center">
+                   class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition inline-flex items-center gap-2 justify-center min-h-[44px]">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    Download Excel
+                    <span>Download Excel</span>
                 </a>
             </form>
         </x-card>
 
         {{-- Daftar Siswa --}}
         <x-card padding="none">
-            <div class="overflow-x-auto">
+            {{-- Mobile Cards --}}
+            <div class="block lg:hidden divide-y divide-slate-100">
+                @forelse($students as $student)
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-slate-900 text-base truncate">{{ $student->user?->name }}</h3>
+                                <p class="text-xs text-slate-500 truncate">{{ $student->user?->email }}</p>
+                                <p class="text-xs text-slate-400 mt-0.5">NIS: {{ $student->nis ?? '-' }} / NISN: {{ $student->nisn ?? '-' }}</p>
+                            </div>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0
+                                {{ $student->studentGrades->avg('average_score') >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                Rerata: {{ number_format($student->studentGrades->avg('average_score') ?? 0, 1) }}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-2 text-xs border-t border-slate-100">
+                            <div class="bg-slate-50 p-2 rounded-lg">
+                                <span class="text-slate-500 block">Tes Akhir</span>
+                                <span class="font-semibold text-slate-800 text-sm">{{ number_format($student->studentGrades->avg('post_test_score') ?? 0, 1) }}</span>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-lg">
+                                <span class="text-slate-500 block">Karakter</span>
+                                <span class="font-semibold text-slate-800 text-sm">{{ number_format($student->studentGrades->avg('character_score') ?? 0, 1) }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                            <a href="{{ route('pengawas.students.show', $student->id) }}"
+                               class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg transition min-h-[44px]">
+                                Lihat Detail
+                            </a>
+                            <a href="{{ route('pengawas.feedback.create', ['student_id' => $student->id]) }}"
+                               class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition min-h-[44px]">
+                                Beri Feedback
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-slate-400 text-sm">Tidak ada siswa ditemukan</div>
+                @endforelse
+            </div>
+
+            {{-- Desktop Table --}}
+            <div class="hidden lg:block">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
@@ -93,7 +137,7 @@
             </div>
 
             @if($students instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $students->hasPages())
-                <div class="p-6 border-t border-slate-200">
+                <div class="p-4 sm:p-6 border-t border-slate-200">
                     {{ $students->links() }}
                 </div>
             @endif
