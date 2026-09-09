@@ -14,30 +14,30 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-2 space-y-6">
                 <!-- Info Section -->
-                <x-card padding="md" class="border border-slate-200">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <div class="text-xs text-slate-500 font-medium">Nama Anak</div>
-                            <div class="text-sm font-bold text-slate-900 mt-1">{{ $student->user->name ?? '-' }}</div>
+                <x-card padding="md" class="border border-slate-200 min-w-0">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 min-w-0">
+                        <div class="min-w-0">
+                            <div class="text-xs text-slate-500 font-medium truncate">Nama Anak</div>
+                            <div class="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">{{ $student->user->name ?? '-' }}</div>
                         </div>
-                        <div>
-                            <div class="text-xs text-slate-500 font-medium">Kelas</div>
-                            <div class="text-sm font-bold text-slate-900 mt-1">{{ $studentClass->classroom->name ?? '-' }}</div>
+                        <div class="min-w-0">
+                            <div class="text-xs text-slate-500 font-medium truncate">Kelas</div>
+                            <div class="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">{{ $studentClass->classroom->name ?? '-' }}</div>
                         </div>
-                        <div>
-                            <div class="text-xs text-slate-500 font-medium">Guru Pengampu</div>
-                            <div class="text-sm font-bold text-slate-900 mt-1">{{ $grade->teacher->user->name ?? '-' }}</div>
+                        <div class="min-w-0">
+                            <div class="text-xs text-slate-500 font-medium truncate">Guru Pengampu</div>
+                            <div class="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">{{ $grade->teacher->user->name ?? '-' }}</div>
                         </div>
-                        <div>
-                            <div class="text-xs text-slate-500 font-medium">Tahun / Semester</div>
-                            <div class="text-sm font-bold text-slate-900 mt-1">{{ $grade->academicYear->year ?? '-' }} - {{ $grade->semester->name ?? '-' }}</div>
+                        <div class="min-w-0">
+                            <div class="text-xs text-slate-500 font-medium truncate">Tahun / Semester</div>
+                            <div class="text-xs sm:text-sm font-bold text-slate-900 mt-1 truncate">{{ $grade->academicYear->year ?? '-' }} - {{ $grade->semester->name ?? '-' }}</div>
                         </div>
                     </div>
                 </x-card>
 
                 <!-- Tugas List -->
-                <h3 class="text-lg font-bold text-slate-900">Rincian Tugas</h3>
-                <div class="space-y-4">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900">Rincian Tugas</h3>
+                <div class="space-y-4 min-w-0">
                     @forelse($assignments as $assignment)
                         @php
                             $submission = $assignment->submissions->first();
@@ -61,26 +61,26 @@
                                 $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-red-50 text-red-700 border border-red-200">Terlewat</span>';
                             }
                         @endphp
-                        <x-card padding="none" class="overflow-hidden border border-slate-200">
-                            <div class="p-4 md:p-6">
-                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <div class="flex-1">
+                        <x-card padding="none" class="overflow-hidden border border-slate-200 min-w-0">
+                            <div class="p-4 sm:p-6 min-w-0">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
+                                    <div class="flex-1 min-w-0">
                                         <div class="mb-2">
                                             {!! $statusBadge !!}
                                         </div>
-                                        <h4 class="text-base font-bold text-slate-900 mb-1">{{ $assignment->title }}</h4>
-                                        <div class="text-xs text-slate-500">
+                                        <h4 class="text-sm sm:text-base font-bold text-slate-900 mb-1 break-words">{{ $assignment->title }}</h4>
+                                        <div class="text-xs text-slate-500 truncate">
                                             Deadline: {{ $assignment->deadline ? $assignment->deadline->format('d M Y, H:i') : '-' }}
                                         </div>
                                         @if($submission && $submission->feedback)
-                                            <div class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                                            <div class="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-xl min-w-0">
                                                 <div class="text-xs font-bold text-blue-800 mb-1">Komentar Guru:</div>
-                                                <p class="text-sm text-blue-900">{{ $submission->feedback }}</p>
+                                                <p class="text-xs sm:text-sm text-blue-900 break-words">{{ $submission->feedback }}</p>
                                             </div>
                                         @endif
                                     </div>
                                     @if($submission && $submission->score !== null)
-                                        <div class="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-lg min-w-[80px] border border-slate-200">
+                                        <div class="self-start sm:self-center shrink-0 flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl min-w-[70px] sm:min-w-[80px] border border-slate-200">
                                             <span class="text-[10px] font-bold uppercase text-slate-500">Nilai</span>
                                             <span class="text-xl font-black {{ $submission->score >= 80 ? 'text-emerald-600' : ($submission->score >= 60 ? 'text-amber-600' : 'text-red-600') }}">
                                                 {{ $submission->score }}

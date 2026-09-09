@@ -25,48 +25,48 @@
                     <p class="text-sm text-slate-500 font-medium">Guru belum mengunggah rekapitulasi nilai untuk anak Anda pada periode yang dipilih.</p>
                 </div>
             @else
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <x-card padding="sm" class="border border-slate-200">
-                            <div class="text-sm text-slate-500 font-medium">Rata-rata Nilai</div>
-                            <div class="text-2xl font-bold {{ $stats['rata_rata'] >= 80 ? 'text-emerald-600' : ($stats['rata_rata'] >= 60 ? 'text-amber-600' : 'text-slate-800') }} mt-1">
+                <div class="space-y-6 min-w-0">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <x-card padding="sm" class="border border-slate-200 min-w-0">
+                            <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Rata-rata Nilai</div>
+                            <div class="text-xl sm:text-2xl font-bold {{ $stats['rata_rata'] >= 80 ? 'text-emerald-600' : ($stats['rata_rata'] >= 60 ? 'text-amber-600' : 'text-slate-800') }} mt-1">
                                 {{ $stats['rata_rata'] ?? '-' }}
                             </div>
                         </x-card>
-                        <x-card padding="sm" class="border border-slate-200">
-                            <div class="text-sm text-slate-500 font-medium">Mata Pelajaran</div>
-                            <div class="text-2xl font-bold text-blue-600 mt-1">{{ $stats['jumlah_mapel'] }}</div>
+                        <x-card padding="sm" class="border border-slate-200 min-w-0">
+                            <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Mata Pelajaran</div>
+                            <div class="text-xl sm:text-2xl font-bold text-blue-600 mt-1">{{ $stats['jumlah_mapel'] }}</div>
                         </x-card>
-                        <x-card padding="sm" class="border border-slate-200">
-                            <div class="text-sm text-slate-500 font-medium">Tugas Dinilai</div>
-                            <div class="text-2xl font-bold text-slate-800 mt-1">{{ $stats['tugas_dinilai'] }}</div>
+                        <x-card padding="sm" class="border border-slate-200 min-w-0">
+                            <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Tugas Dinilai</div>
+                            <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-1">{{ $stats['tugas_dinilai'] }}</div>
                         </x-card>
                     </div>
 
-                    <h2 class="text-lg font-bold text-slate-900">Nilai Mata Pelajaran</h2>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Nilai Mata Pelajaran</h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                         @foreach($grades as $grade)
                             @php
                                 $avg = $grade->average_score;
                             @endphp
-                            <x-card padding="none" class="overflow-hidden border border-slate-200 hover:shadow-md transition-shadow">
-                                <div class="p-6">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <div>
-                                            <h3 class="text-lg font-bold text-slate-900">{{ $grade->subject->name ?? '-' }}</h3>
-                                            <p class="text-sm text-slate-500">Guru: {{ $grade->teacher->user->name ?? '-' }}</p>
+                            <x-card padding="none" class="overflow-hidden border border-slate-200 hover:shadow-md transition-shadow min-w-0">
+                                <div class="p-5 sm:p-6 min-w-0">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 min-w-0">
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="text-base sm:text-lg font-bold text-slate-900 break-words">{{ $grade->subject->name ?? '-' }}</h3>
+                                            <p class="text-xs sm:text-sm text-slate-500 truncate">Guru: {{ $grade->teacher->user->name ?? '-' }}</p>
                                         </div>
-                                        <div class="flex flex-col items-center justify-center p-3 {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ($avg >= 60 ? 'bg-amber-50 text-amber-700 border-amber-100' : ($avg > 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-slate-50 text-slate-500 border-slate-100')) }} rounded-xl min-w-[80px] border">
+                                        <div class="self-start sm:self-center shrink-0 flex flex-col items-center justify-center p-3 {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ($avg >= 60 ? 'bg-amber-50 text-amber-700 border-amber-100' : ($avg > 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-slate-50 text-slate-500 border-slate-100')) }} rounded-xl min-w-[80px] border">
                                             <span class="text-[10px] font-bold uppercase opacity-70">Rata-rata</span>
                                             <span class="text-xl font-black">{{ $avg > 0 ? $avg : '-' }}</span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between mt-4">
-                                        <div class="text-sm text-slate-500">
+                                    <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 min-w-0">
+                                        <div class="text-xs sm:text-sm text-slate-500 truncate">
                                             Tugas Dinilai: <span class="font-bold text-slate-700">{{ $grade->tugas_dinilai_text }}</span>
                                         </div>
-                                        <a href="{{ route('orangtua.grades.show', $grade->id) }}" class="inline-flex items-center justify-center px-4 py-2 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                                        <a href="{{ route('orangtua.grades.show', $grade->id) }}" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-white border border-slate-300 rounded-xl font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-2xs hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition shrink-0">
                                             Detail
                                         </a>
                                     </div>

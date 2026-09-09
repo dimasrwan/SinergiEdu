@@ -51,7 +51,7 @@
                         </div>
 
                         <div class="pt-2">
-                            <button type="submit" class="w-full md:w-auto inline-flex justify-center items-center px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-[14px] font-bold transition shadow-sm">
+                            <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center min-h-[44px] px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl text-[14px] font-bold transition shadow-2xs">
                                 Simpan Dukungan
                             </button>
                         </div>
@@ -60,43 +60,43 @@
             </div>
 
             <!-- Riwayat Dukungan (Right Column) -->
-            <div class="col-span-1 space-y-6">
+            <div class="col-span-1 space-y-6 min-w-0">
                 <!-- Panduan Kolaborasi (Compact) -->
-                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-5 shadow-sm flex items-start gap-4">
-                    <div class="h-10 w-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shrink-0 shadow-sm border border-blue-100">
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 sm:p-5 shadow-2xs flex items-start gap-3.5 sm:gap-4 min-w-0">
+                    <div class="h-10 w-10 bg-white rounded-xl flex items-center justify-center text-blue-600 shrink-0 shadow-2xs border border-blue-100">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                         </svg>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-blue-900 text-sm mb-1">Kolaborasi 4 Pilar</h3>
-                        <p class="text-[12px] text-blue-800/80 leading-relaxed font-medium">Catatan dukungan Anda dibaca oleh guru untuk menyelaraskan pendampingan anak.</p>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="font-bold text-blue-900 text-sm mb-1 truncate">Kolaborasi 4 Pilar</h3>
+                        <p class="text-[12px] text-blue-800/80 leading-relaxed font-medium break-words">Catatan dukungan Anda dibaca oleh guru untuk menyelaraskan pendampingan anak.</p>
                     </div>
                 </div>
 
                 <!-- Dukungan Sebelumnya -->
-                <div class="bg-white border border-slate-200/75 rounded-2xl p-6 shadow-sm">
+                <div class="bg-white border border-slate-200/75 rounded-2xl p-5 sm:p-6 shadow-2xs min-w-0">
                     <h3 class="font-bold text-slate-900 text-[15px] mb-5">Dukungan Sebelumnya</h3>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4 min-w-0">
                         @forelse($supports as $support)
-                            <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-3">
-                                <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
-                                    <span class="font-bold text-xs text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-100 uppercase tracking-wider">
+                            <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-3 min-w-0">
+                                <div class="flex justify-between items-center border-b border-slate-200/60 pb-2 gap-2 min-w-0">
+                                    <span class="font-bold text-xs text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-100 uppercase tracking-wider truncate">
                                         {{ $support->week_number }}
                                     </span>
-                                    <span class="text-[10px] text-slate-400 font-medium">
+                                    <span class="text-[10px] text-slate-400 font-medium shrink-0">
                                         {{ $support->created_at->format('d M Y') }}
                                     </span>
                                 </div>
-                                <div>
+                                <div class="min-w-0">
                                     <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Dukungan Rumah</p>
-                                    <p class="text-[13px] text-slate-700 font-medium line-clamp-3 leading-relaxed">{{ $support->support_description }}</p>
+                                    <p class="text-[13px] text-slate-700 font-medium line-clamp-3 leading-relaxed break-words">{{ $support->support_description }}</p>
                                 </div>
                                 @if($support->action_plan)
-                                    <div class="pt-2 border-t border-slate-200/60">
+                                    <div class="pt-2 border-t border-slate-200/60 min-w-0">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Rencana Aksi</p>
-                                        <p class="text-[13px] text-slate-700 font-medium line-clamp-3 leading-relaxed">{{ $support->action_plan }}</p>
+                                        <p class="text-[13px] text-slate-700 font-medium line-clamp-3 leading-relaxed break-words">{{ $support->action_plan }}</p>
                                     </div>
                                 @endif
                             </div>

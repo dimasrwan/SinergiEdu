@@ -17,89 +17,89 @@
 
         @if($selectedStudent)
             <div class="space-y-6">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <x-card padding="sm" class="border border-slate-200">
-                        <div class="text-sm text-slate-500 font-medium">Total Tugas</div>
-                        <div class="text-2xl font-bold text-slate-800 mt-1">{{ $stats['total_tugas'] ?? 0 }}</div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                    <x-card padding="sm" class="border border-slate-200 min-w-0">
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Total Tugas</div>
+                        <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-1">{{ $stats['total_tugas'] ?? 0 }}</div>
                     </x-card>
-                    <x-card padding="sm" class="border border-slate-200">
-                        <div class="text-sm text-slate-500 font-medium">Sudah Dikumpulkan</div>
-                        <div class="text-2xl font-bold text-emerald-600 mt-1">{{ $stats['selesai'] ?? 0 }}</div>
+                    <x-card padding="sm" class="border border-slate-200 min-w-0">
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Sudah Dikumpulkan</div>
+                        <div class="text-xl sm:text-2xl font-bold text-emerald-600 mt-1">{{ $stats['selesai'] ?? 0 }}</div>
                     </x-card>
-                    <x-card padding="sm" class="border border-slate-200">
-                        <div class="text-sm text-slate-500 font-medium">Menunggu Penilaian</div>
-                        <div class="text-2xl font-bold text-blue-600 mt-1">{{ $stats['menunggu_penilaian'] ?? 0 }}</div>
+                    <x-card padding="sm" class="border border-slate-200 min-w-0">
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Menunggu Penilaian</div>
+                        <div class="text-xl sm:text-2xl font-bold text-blue-600 mt-1">{{ $stats['menunggu_penilaian'] ?? 0 }}</div>
                     </x-card>
-                    <x-card padding="sm" class="border border-slate-200">
-                        <div class="text-sm text-slate-500 font-medium">Belum Dikumpulkan</div>
-                        <div class="text-2xl font-bold text-amber-600 mt-1">{{ $stats['belum_dikumpulkan'] ?? 0 }}</div>
+                    <x-card padding="sm" class="border border-slate-200 min-w-0">
+                        <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Belum Dikumpulkan</div>
+                        <div class="text-xl sm:text-2xl font-bold text-amber-600 mt-1">{{ $stats['belum_dikumpulkan'] ?? 0 }}</div>
                     </x-card>
                 </div>
 
-                <h2 class="text-[15px] font-bold text-slate-900 uppercase tracking-wide">Daftar Tugas Anak</h2>
+                <h2 class="text-[14px] sm:text-[15px] font-bold text-slate-900 uppercase tracking-wide">Daftar Tugas Anak</h2>
 
-                <div class="grid grid-cols-1 gap-4">
+                <div class="grid grid-cols-1 gap-4 min-w-0">
                     @forelse($assignments as $assignment)
                         @php
                             $submission = $assignment->submissions->first();
                             $isDeadlinePassed = $assignment->deadline && $assignment->deadline->isPast();
                             
-                            $statusBadge = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">Belum Mengumpulkan</span>';
+                            $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-50 text-slate-600 border border-slate-200/50">Belum Dikerjakan</span>';
                             
                             if ($submission) {
                                 $isLate = $assignment->deadline && $submission->submitted_at && \Carbon\Carbon::parse($submission->submitted_at)->gt($assignment->deadline);
                                 
                                 if ($submission->score !== null) {
-                                    $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border-emerald-200/50">Dinilai</span>';
+                                    $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200/50">Dinilai</span>';
                                 } else {
-                                    $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border-blue-200/50">Menunggu Penilaian</span>';
+                                    $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200/50">Menunggu Penilaian</span>';
                                 }
                                 
                                 if ($isLate) {
-                                    $statusBadge .= ' <span class="inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border-amber-200/50 ml-1.5">Terlambat</span>';
+                                    $statusBadge .= ' <span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/50 ml-1.5">Terlambat</span>';
                                 }
                             } elseif ($isDeadlinePassed) {
-                                $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border-red-200/50">Terlewat</span>';
-                            } else {
-                                $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider bg-slate-50 text-slate-600 border-slate-200/50">Belum Dikerjakan</span>';
+                                $statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-200/50">Terlewat</span>';
                             }
                         @endphp
-                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-sm relative group hover:shadow-md transition">
-                            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                                <div class="flex-1">
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-4 sm:p-5 shadow-sm relative group hover:shadow-md transition min-w-0">
+                            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 min-w-0">
+                                <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2 mb-3 flex-wrap">
-                                        <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-slate-50 border border-slate-100 text-slate-600 uppercase tracking-wider">
+                                        <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-slate-50 border border-slate-100 text-slate-600 uppercase tracking-wider truncate">
                                             {{ $assignment->subject->name }}
                                         </span>
                                         @if($assignment->learningMeeting)
-                                            <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 border border-blue-100 text-blue-700 uppercase tracking-wider">
+                                            <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 border border-blue-100 text-blue-700 uppercase tracking-wider shrink-0">
                                                 Pertemuan {{ $assignment->learningMeeting->meeting_number }}
                                             </span>
                                         @endif
                                         @if($assignment->material)
-                                            <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-50 border border-emerald-100 text-emerald-700 uppercase tracking-wider">
+                                            <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-50 border border-emerald-100 text-emerald-700 uppercase tracking-wider truncate max-w-[200px]">
                                                 Materi: {{ $assignment->material->title }}
                                             </span>
                                         @endif
                                         {!! $statusBadge !!}
                                     </div>
-                                    <h3 class="font-bold text-slate-900 text-[15px] mb-2 leading-snug">{{ $assignment->title }}</h3>
-                                    <p class="text-[13px] text-slate-600 mb-4 line-clamp-2 leading-relaxed">{{ Str::limit($assignment->description, 100) }}</p>
-                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-slate-500 font-medium">
-                                        <div class="flex items-center gap-1.5">
-                                            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                                            Guru: {{ $assignment->teacher->user->name ?? '-' }}
+                                    <h3 class="font-bold text-slate-900 text-[14px] sm:text-[15px] mb-2 leading-snug break-words">{{ $assignment->title }}</h3>
+                                    @if($assignment->description)
+                                        <p class="text-[13px] text-slate-600 mb-4 line-clamp-2 leading-relaxed break-words">{{ Str::limit($assignment->description, 120) }}</p>
+                                    @endif
+                                    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-slate-500 font-medium">
+                                        <div class="flex items-center gap-1.5 min-w-0">
+                                            <svg class="h-3.5 w-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                            <span class="truncate">Guru: {{ $assignment->teacher->user->name ?? '-' }}</span>
                                         </div>
                                         @if($assignment->deadline)
-                                        <div class="flex items-center gap-1.5">
-                                            <svg class="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                                            Deadline: <span class="{{ $isDeadlinePassed ? 'text-red-600 font-bold' : '' }}">{{ $assignment->deadline->format('d M Y') }}</span>
+                                        <div class="flex items-center gap-1.5 min-w-0">
+                                            <svg class="h-3.5 w-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                            <span class="truncate">Deadline: <span class="{{ $isDeadlinePassed ? 'text-red-600 font-bold' : '' }}">{{ $assignment->deadline->format('d M Y') }}</span></span>
                                         </div>
                                         @endif
                                     </div>
                                 </div>
-                                @if($submission && $submission->score)
-                                    <div class="shrink-0 md:ml-4 flex flex-col items-center justify-center p-3 bg-emerald-50 text-emerald-700 rounded-xl min-w-[70px] border border-emerald-100">
+                                @if($submission && $submission->score !== null)
+                                    <div class="self-start sm:self-center shrink-0 flex flex-col items-center justify-center p-3 bg-emerald-50 text-emerald-700 rounded-xl min-w-[70px] border border-emerald-100">
                                         <span class="text-[10px] font-bold uppercase tracking-wider mb-0.5">Nilai</span>
                                         <span class="text-xl font-black">{{ $submission->score }}</span>
                                     </div>

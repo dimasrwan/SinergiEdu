@@ -11,34 +11,36 @@
             <x-page-header title="Detail Feedback" description="Umpan balik yang diberikan oleh guru kepada anak Anda." />
         </div>
 
-        <x-card padding="lg" class="border border-slate-200">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 pb-8 border-b border-slate-100">
-                <div>
-                    <div class="text-sm font-medium text-slate-500 mb-1">Nama Anak</div>
-                    <div class="font-bold text-slate-900">{{ $feedback->student->user->name ?? '-' }}</div>
+        <x-card padding="lg" class="border border-slate-200 min-w-0">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 pb-8 border-b border-slate-100 min-w-0">
+                <div class="min-w-0">
+                    <div class="text-xs sm:text-sm font-medium text-slate-500 mb-1">Nama Anak</div>
+                    <div class="font-bold text-slate-900 truncate">{{ $feedback->student->user->name ?? '-' }}</div>
                 </div>
-                <div>
-                    <div class="text-sm font-medium text-slate-500 mb-1">Tanggal Diberikan</div>
-                    <div class="font-bold text-slate-900">{{ $feedback->created_at->format('d F Y, H:i') }}</div>
+                <div class="min-w-0">
+                    <div class="text-xs sm:text-sm font-medium text-slate-500 mb-1">Tanggal Diberikan</div>
+                    <div class="font-bold text-slate-900 truncate">{{ $feedback->created_at->format('d F Y, H:i') }}</div>
                 </div>
-                <div>
-                    <div class="text-sm font-medium text-slate-500 mb-1">Mata Pelajaran</div>
-                    <div class="font-bold text-slate-900">{{ $feedback->subject->name ?? '-' }}</div>
+                <div class="min-w-0">
+                    <div class="text-xs sm:text-sm font-medium text-slate-500 mb-1">Mata Pelajaran</div>
+                    <div class="font-bold text-slate-900 truncate">{{ $feedback->subject->name ?? '-' }}</div>
                 </div>
-                <div>
-                    <div class="text-sm font-medium text-slate-500 mb-1">Guru Pengampu</div>
-                    <div class="font-bold text-slate-900">{{ $feedback->teacher->user->name ?? '-' }}</div>
+                <div class="min-w-0">
+                    <div class="text-xs sm:text-sm font-medium text-slate-500 mb-1">Guru Pengampu</div>
+                    <div class="font-bold text-slate-900 truncate">{{ $feedback->teacher->user->name ?? '-' }}</div>
                 </div>
             </div>
 
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-slate-900">{{ $feedback->title }}</h2>
-                <x-badge :variant="$feedback->type === 'positive' ? 'success' : ($feedback->type === 'negative' ? 'danger' : 'slate')">
-                    {{ $feedback->type_label }}
-                </x-badge>
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+                <h2 class="text-lg sm:text-xl font-bold text-slate-900 break-words">{{ $feedback->title }}</h2>
+                <div class="shrink-0 self-start sm:self-center">
+                    <x-badge :variant="$feedback->type === 'positive' ? 'success' : ($feedback->type === 'negative' ? 'danger' : 'slate')">
+                        {{ $feedback->type_label }}
+                    </x-badge>
+                </div>
             </div>
 
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-slate-800 leading-relaxed whitespace-pre-wrap">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-6 text-slate-800 leading-relaxed whitespace-pre-wrap break-words min-w-0 text-xs sm:text-sm">
                 {{ $feedback->message }}
             </div>
         </x-card>

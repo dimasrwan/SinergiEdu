@@ -17,15 +17,15 @@
         @else
 
         <!-- 1. Child Context / Profile Header (With SinergiEdu Blue Accent) -->
-        <div class="bg-gradient-to-r from-blue-50/70 via-blue-50/30 to-white border border-blue-100 border-l-4 border-l-primary rounded-2xl px-5 py-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="bg-gradient-to-r from-blue-50/70 via-blue-50/30 to-white border border-blue-100 border-l-4 border-l-primary rounded-2xl px-4 sm:px-5 py-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
             <!-- Profile Info -->
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
                 <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xs shrink-0 font-bold text-base">
                     {{ strtoupper(substr($selectedStudent->user->name, 0, 2)) }}
                 </div>
-                <div>
-                    <h1 class="text-[17px] font-bold text-slate-900 leading-tight">{{ $selectedStudent->user->name }}</h1>
-                    <p class="text-slate-500 text-[12px] font-medium mt-0.5">
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-[16px] sm:text-[17px] font-bold text-slate-900 leading-tight truncate" title="{{ $selectedStudent->user->name }}">{{ $selectedStudent->user->name }}</h1>
+                    <p class="text-slate-500 text-[12px] font-medium mt-0.5 truncate">
                         @if($classroom)
                             <span class="inline-flex items-center gap-1 text-primary font-bold">Kelas {{ $classroom->name }}</span>
                         @else
@@ -36,7 +36,7 @@
             </div>
 
             <!-- Selector & Periode -->
-            <div class="flex flex-col sm:items-end gap-1.5 w-full sm:w-auto border-t sm:border-t-0 border-slate-100 pt-3 sm:pt-0">
+            <div class="flex flex-col sm:items-end gap-1.5 w-full sm:w-auto border-t sm:border-t-0 border-slate-100 pt-3 sm:pt-0 shrink-0">
                 @if($children->count() > 1)
                 <form action="{{ route('orangtua.dashboard') }}" method="GET" class="w-full sm:w-56">
                     <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name])->toArray()" />
@@ -45,10 +45,10 @@
                 
                 <div class="inline-flex items-center gap-1.5 text-primary text-[11px] font-bold tracking-wide sm:self-end">
                     @if($activeYear && $activeSemester)
-                        <svg class="w-3.5 h-3.5 text-primary" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                         </svg>
-                        <span>{{ $activeYear->year }} &bull; {{ $activeSemester->name }}</span>
+                        <span class="truncate">{{ $activeYear->year }} &bull; {{ $activeSemester->name }}</span>
                     @else
                         Tidak Ada Periode
                     @endif
@@ -72,7 +72,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             <!-- LEFT / PRIMARY CONTENT (≈70% -> col-span-8) -->
-            <div class="lg:col-span-8 space-y-6">
+            <div class="lg:col-span-8 space-y-6 min-w-0">
                 
                 <!-- 3. Ringkasan Perkembangan (Exactly 2 Cards with Blue Value Accent) -->
                 <section>
@@ -117,11 +117,11 @@
                 <!-- 5. Tugas Terdekat -->
                 <section>
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1 h-3.5 bg-primary rounded-full"></span>
-                            <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider">Tugas Terdekat</h2>
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-1 h-3.5 bg-primary rounded-full shrink-0"></span>
+                            <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider truncate">Tugas Terdekat</h2>
                         </div>
-                        <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="text-[12px] font-bold text-primary hover:text-blue-700 transition">Lihat Semua &rarr;</a>
+                        <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="text-[12px] font-bold text-primary hover:text-blue-700 transition shrink-0">Lihat Semua &rarr;</a>
                     </div>
                     
                     @if($upcomingAssignments->isEmpty())
@@ -149,18 +149,18 @@
                                         $statusClass = 'text-red-700 bg-red-50 border-red-200/50';
                                     }
                                 @endphp
-                                <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="flex items-center justify-between bg-white border border-slate-200/75 rounded-2xl p-4 shadow-2xs hover:border-blue-300 hover:bg-blue-50/20 transition group">
-                                    <div class="min-w-0 pr-4">
-                                        <h4 class="font-bold text-slate-900 text-[14px] group-hover:text-primary transition-colors truncate mb-1">{{ $assignment->title }}</h4>
-                                        <p class="text-[12px] text-slate-500 font-medium">
-                                            <span class="font-bold text-primary uppercase tracking-wide">{{ $assignment->subject->name ?? '-' }}</span>
+                                <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200/75 rounded-2xl p-4 shadow-2xs hover:border-blue-300 hover:bg-blue-50/20 transition group min-w-0">
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="font-bold text-slate-900 text-[14px] group-hover:text-primary transition-colors truncate mb-1" title="{{ $assignment->title }}">{{ $assignment->title }}</h4>
+                                        <p class="text-[12px] text-slate-500 font-medium flex flex-wrap items-center gap-1.5">
+                                            <span class="font-bold text-primary uppercase tracking-wide shrink-0">{{ $assignment->subject->name ?? '-' }}</span>
                                             @if($assignment->due_date)
-                                                <span class="mx-1.5 text-slate-300">&bull;</span>
-                                                Deadline: {{ \Carbon\Carbon::parse($assignment->due_date)->format('d M Y') }}
+                                                <span class="text-slate-300 shrink-0">&bull;</span>
+                                                <span class="truncate">Deadline: {{ \Carbon\Carbon::parse($assignment->due_date)->format('d M Y') }}</span>
                                             @endif
                                         </p>
                                     </div>
-                                    <div class="shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border {{ $statusClass }}">
+                                    <div class="self-start sm:self-center shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border {{ $statusClass }}">
                                         {{ $statusText }}
                                     </div>
                                 </a>
@@ -171,12 +171,12 @@
             </div>
 
             <!-- RIGHT / SUPPORTING CONTENT (≈30% -> col-span-4) -->
-            <div class="lg:col-span-4 space-y-6">
+            <div class="lg:col-span-4 space-y-6 min-w-0">
                 
                 <!-- 4. Catatan Guru -->
                 <section>
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="w-1 h-3.5 bg-primary rounded-full"></span>
+                        <span class="w-1 h-3.5 bg-primary rounded-full shrink-0"></span>
                         <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider">Catatan Guru</h2>
                     </div>
                     
@@ -187,18 +187,18 @@
                     @else
                         <div>
                             @foreach($recentFeedbacks->take(1) as $feedback)
-                                <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex items-center gap-3 mb-3">
+                                <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between min-w-0">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-3 mb-3 min-w-0">
                                             <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[11px] font-bold text-primary shrink-0">
                                                 {{ strtoupper(substr($feedback->teacher->user->name ?? 'G', 0, 2)) }}
                                             </div>
-                                            <div class="min-w-0">
+                                            <div class="min-w-0 flex-1">
                                                 <h4 class="font-bold text-slate-900 text-[13px] leading-tight truncate">{{ $feedback->teacher->user->name ?? '-' }}</h4>
                                                 <p class="text-[11px] font-semibold text-primary/80 truncate">{{ $feedback->subject->name ?? 'Wali Kelas' }}</p>
                                             </div>
                                         </div>
-                                        <p class="text-[13px] text-slate-700 italic line-clamp-4 leading-relaxed font-medium mb-3">"{{ $feedback->message }}"</p>
+                                        <p class="text-[13px] text-slate-700 italic line-clamp-4 leading-relaxed font-medium mb-3 break-words">"{{ $feedback->message }}"</p>
                                     </div>
                                     <div class="text-[11px] font-medium text-slate-400 border-t border-slate-100 pt-2.5">
                                         {{ $feedback->created_at->diffForHumans() }}
@@ -215,9 +215,9 @@
                 </section>
 
                 <!-- 6. Dukungan Belajar Anak -->
-                <section class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs">
+                <section class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs min-w-0">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="w-1 h-3 bg-primary rounded-full"></span>
+                        <span class="w-1 h-3 bg-primary rounded-full shrink-0"></span>
                         <h3 class="text-[12px] font-bold text-slate-900">Dukungan Belajar Anak</h3>
                     </div>
                     <p class="text-[12px] text-slate-500 font-medium mb-3 leading-relaxed">Catat dukungan yang Anda berikan minggu ini.</p>

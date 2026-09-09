@@ -5,17 +5,17 @@
         <x-page-header title="Feedback Guru" description="Lihat umpan balik yang diberikan guru untuk perkembangan anak Anda." />
 
         <!-- Child Selector -->
-        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-sm">
+        <div class="bg-white border border-slate-200/75 rounded-2xl p-4 sm:p-5 shadow-sm min-w-0">
             <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Anak yang Dipantau</h2>
-            <form action="{{ route('orangtua.feedbacks.index') }}" method="GET" class="w-full">
-                <div class="flex flex-col md:flex-row md:items-center gap-4">
-                    <div class="relative w-full md:max-w-md">
+            <form action="{{ route('orangtua.feedbacks.index') }}" method="GET" class="w-full min-w-0">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
+                    <div class="relative w-full sm:max-w-md min-w-0">
                         <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name ?? 'Anak'])->toArray()" />
                     </div>
-                    <!-- Search bar if any -->
-                    <div class="flex items-center gap-2 w-full md:w-auto">
-                        <x-text-input name="search" value="{{ request('search') }}" placeholder="Cari catatan..." class="w-full md:w-56 h-[42px] px-4 py-2.5 rounded-xl text-[14px]" />
-                        <x-primary-button type="submit" class="h-[42px] px-5 rounded-xl text-[14px] font-medium shrink-0 flex items-center justify-center">Cari</x-primary-button>
+                    <!-- Search bar -->
+                    <div class="flex items-center gap-2 w-full sm:w-auto min-w-0">
+                        <x-text-input name="search" value="{{ request('search') }}" placeholder="Cari catatan..." class="w-full sm:w-56 h-[44px] px-4 py-2.5 rounded-xl text-[14px]" />
+                        <x-primary-button type="submit" class="h-[44px] px-5 rounded-xl text-[14px] font-medium shrink-0 flex items-center justify-center">Cari</x-primary-button>
                     </div>
                 </div>
             </form>
@@ -40,36 +40,36 @@
                 </p>
             </div>
         @else
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                 @foreach($feedbacks as $feedback)
-                    <div class="bg-white border border-slate-200/75 rounded-2xl p-6 shadow-sm relative group hover:shadow-md transition flex flex-col h-full">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <h3 class="font-bold text-slate-900 text-[15px] mb-1 line-clamp-1" title="{{ $feedback->title }}">
+                    <div class="bg-white border border-slate-200/75 rounded-2xl p-5 sm:p-6 shadow-sm relative group hover:shadow-md transition flex flex-col h-full min-w-0">
+                        <div class="flex items-start justify-between gap-3 mb-4 min-w-0">
+                            <div class="min-w-0 flex-1">
+                                <h3 class="font-bold text-slate-900 text-[15px] mb-1 line-clamp-1 break-words" title="{{ $feedback->title }}">
                                     {{ $feedback->title }}
                                 </h3>
-                                <p class="text-[12px] text-slate-500 font-medium">{{ $feedback->created_at->format('d M Y') }}</p>
+                                <p class="text-[12px] text-slate-500 font-medium truncate">{{ $feedback->created_at->format('d M Y') }}</p>
                             </div>
-                            <span class="inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider {{ $feedback->type === 'positive' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/50' : ($feedback->type === 'negative' ? 'bg-red-50 text-red-700 border-red-200/50' : 'bg-slate-50 text-slate-600 border-slate-200/50') }}">
+                            <span class="shrink-0 inline-flex items-center px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider {{ $feedback->type === 'positive' ? 'bg-emerald-50 text-emerald-700 border-emerald-200/50' : ($feedback->type === 'negative' ? 'bg-red-50 text-red-700 border-red-200/50' : 'bg-slate-50 text-slate-600 border-slate-200/50') }}">
                                 {{ $feedback->type_label }}
                             </span>
                         </div>
                         
-                        <div class="pl-3 border-l-2 {{ $feedback->type === 'positive' ? 'border-emerald-300' : ($feedback->type === 'negative' ? 'border-red-300' : 'border-primary/30') }} mb-5 flex-1">
-                            <p class="text-[13px] text-slate-700 italic line-clamp-4 leading-relaxed font-medium">"{{ $feedback->message }}"</p>
+                        <div class="pl-3 border-l-2 {{ $feedback->type === 'positive' ? 'border-emerald-300' : ($feedback->type === 'negative' ? 'border-red-300' : 'border-primary/30') }} mb-5 flex-1 min-w-0">
+                            <p class="text-[13px] text-slate-700 italic line-clamp-4 leading-relaxed font-medium break-words">"{{ $feedback->message }}"</p>
                         </div>
                         
-                        <div class="flex items-center justify-between mt-auto">
-                            <div class="flex items-center gap-2">
+                        <div class="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 min-w-0 gap-3">
+                            <div class="flex items-center gap-2 min-w-0">
                                 <div class="h-8 w-8 bg-white border border-slate-200/50 rounded-full flex items-center justify-center font-bold text-primary text-xs shrink-0 shadow-sm">
                                     {{ strtoupper(substr($feedback->teacher->user->name ?? 'G', 0, 2)) }}
                                 </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-900 text-[12px] leading-tight">{{ $feedback->teacher->user->name ?? '-' }}</h4>
-                                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{{ $feedback->subject->name ?? 'Wali Kelas' }}</p>
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-slate-900 text-[12px] leading-tight truncate">{{ $feedback->teacher->user->name ?? '-' }}</h4>
+                                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider truncate">{{ $feedback->subject->name ?? 'Wali Kelas' }}</p>
                                 </div>
                             </div>
-                            <a href="{{ route('orangtua.feedbacks.show', $feedback->id) }}" class="text-[12px] font-bold text-primary hover:text-blue-700 transition">
+                            <a href="{{ route('orangtua.feedbacks.show', $feedback->id) }}" class="text-[12px] font-bold text-primary hover:text-blue-700 transition shrink-0 min-h-[44px] flex items-center px-2">
                                 Detail &rarr;
                             </a>
                         </div>
