@@ -29,7 +29,7 @@
                         <x-card padding="lg" class="border border-slate-200">
                             <div class="border-b border-slate-100 pb-4 mb-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4 min-w-0">
                                 <div class="min-w-0 flex-1">
-                                    <h3 class="text-base font-bold text-slate-900 break-words">{{ $grade->subject->name }}</h3>
+                                    <h3 class="text-base font-bold text-slate-900 break-words">{{ $grade->subject->name ?? 'Mata Pelajaran' }}</h3>
                                     <p class="text-xs text-slate-500 truncate">Guru: {{ $grade->teacher->user->name ?? '-' }}</p>
                                 </div>
                                 <div class="sm:text-right shrink-0">
