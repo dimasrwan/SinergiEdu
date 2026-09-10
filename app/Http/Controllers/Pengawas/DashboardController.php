@@ -24,14 +24,21 @@ class DashboardController extends Controller
      */
     public function index(): View
     {
+        $schoolId = session('pengawas_school_id');
+        $activeSchool = \App\Models\School::find($schoolId);
+
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
 
-        // Penghitungan Data Sekolah
+        // Penghitungan Data Sekolah (TenantScoped otomatis filter by school_id)
         $totalTeachers = Teacher::count();
         $totalStudents = Student::count();
         $totalClasses = Classroom::count();
         $totalSubjects = Subject::count();
+
+        // Tambahan stats role lain
+        $totalWaka = \App\Models\User::where('school_id', $schoolId)->whereHas('role', fn($q) => $q->where('name', 'waka'))->count();
+        $totalKepsek = \App\Models\User::where('school_id', $schoolId)->whereHas('role', fn($q) => $q->where('name', 'kepala_sekolah'))->count();
 
         // Statistik Pengawas Sendiri
         $totalEvaluations = SchoolEvaluation::where('user_id', auth()->id())->count();
@@ -52,8 +59,7 @@ class DashboardController extends Controller
                 ->get();
 
             if ($grades->isNotEmpty()) {
-                $schoolAvgGrade = round($grades->avg(function ($g) {
-                    return $g->average_score; }) ?? 0, 2);
+                $schoolAvgGrade = round($grades->avg('average_score') ?? 0, 2);
                 $avgPreTest = round($grades->whereNotNull('pre_test_score')->avg('pre_test_score') ?? 0, 1);
                 $avgAssignment = round($grades->whereNotNull('assignment_score')->avg('assignment_score') ?? 0, 1);
                 $avgPostTest = round($grades->whereNotNull('post_test_score')->avg('post_test_score') ?? 0, 1);
@@ -70,8 +76,7 @@ class DashboardController extends Controller
                     ->where('academic_year_id', $activeYear->id)
                     ->where('semester_id', $activeSemester->id)
                     ->get()
-                    ->avg(function ($g) {
-                        return $g->average_score; });
+                    ->avg('average_score');
                 return [
                     'name' => $class->name,
                     'avg' => $avg ? round($avg, 2) : 0
@@ -80,10 +85,13 @@ class DashboardController extends Controller
         }
 
         return view('pages.pengawas.dashboard', compact(
+            'activeSchool',
             'totalTeachers',
             'totalStudents',
             'totalClasses',
             'totalSubjects',
+            'totalWaka',
+            'totalKepsek',
             'totalEvaluations',
             'totalFeedbacks',
             'totalActionPlans',

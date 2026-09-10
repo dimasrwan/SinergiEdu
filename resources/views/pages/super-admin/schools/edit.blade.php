@@ -85,6 +85,22 @@
                                 <p class="mt-2 text-[11px] text-slate-500 font-medium">Biarkan kosong jika tidak ingin mengubah logo yang sudah ada.</p>
                                 <x-input-error :messages="$errors->get('logo')" class="mt-2 text-xs" />
                             </div>
+
+                            <!-- Assign Pengawas -->
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pengawas Sekolah</label>
+                                <div class="space-y-2">
+                                    @foreach($pengawas as $p)
+                                        <label class="flex items-center gap-2 p-3 border rounded-lg hover:bg-slate-50 cursor-pointer">
+                                            <input type="checkbox" name="pengawas_ids[]" value="{{ $p->id }}" 
+                                                @if($school->supervisors->contains($p->id)) checked @endif
+                                                class="rounded border-slate-300 text-primary focus:ring-primary">
+                                            <span class="text-sm text-slate-700">{{ $p->name }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                                <x-input-error :messages="$errors->get('pengawas_ids')" class="mt-2 text-xs" />
+                            </div>
                         </div>
 
                         <!-- Kontak & Alamat -->

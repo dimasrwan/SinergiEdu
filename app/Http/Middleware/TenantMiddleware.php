@@ -28,7 +28,19 @@ class TenantMiddleware
 
             if ($user->role && $user->role->name === 'super_admin') {
                 // Platform context untuk Super Admin
-                app(TenantService::class)->setPlatformContext();
+                app(\App\Services\TenantService::class)->setPlatformContext();
+            } elseif ($user->role && $user->role->name === 'pengawas') {
+                // Untuk Pengawas, ambil school_id dari session
+                $schoolId = session('pengawas_school_id');
+                
+                if ($schoolId) {
+                    $school = \App\Models\School::find($schoolId);
+                    if ($school && $school->is_active) {
+                        app(\App\Services\TenantService::class)->setSchool($school);
+                    }
+                }
+                // Jika tidak ada schoolId di session, TenantService tetap kosong 
+                // dan middleware PengawasSchoolScope yang akan menangani redirect.
             } else {
                 // Pastikan user memiliki school_id
                 if (!$user->school_id) {

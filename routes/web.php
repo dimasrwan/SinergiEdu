@@ -54,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('orangtua')->name('orangtua.')->middleware('role:orangtua')->group(base_path('routes/web/orangtua.php'));
     
     // Pengawas
-    Route::prefix('pengawas')->name('pengawas.')->middleware('role:pengawas')->group(base_path('routes/web/pengawas.php'));
+    Route::prefix('pengawas')->name('pengawas.')->middleware(['role:pengawas', 'pengawas.scope', 'pengawas.access'])->group(base_path('routes/web/pengawas.php'));
     
     // Kepala Sekolah
     Route::prefix('kepala-sekolah')->name('kepala-sekolah.')->middleware('role:kepala_sekolah')->group(base_path('routes/web/kepala_sekolah.php'));

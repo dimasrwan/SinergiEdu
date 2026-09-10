@@ -41,14 +41,14 @@ class PengawasController extends Controller
     public function create(): View
     {
         Gate::authorize('create', \App\Models\Pengawas::class);
-        return view('pages.admin.pengawas.create');
+        $schools = \App\Models\School::where('is_active', true)->orderBy('name')->get();
+        return view('pages.admin.pengawas.create', compact('schools'));
     }
 
     public function store(PengawasRequest $request): RedirectResponse
     {
         Gate::authorize('create', \App\Models\Pengawas::class);
         DB::transaction(function () use ($request) {
-            // Find role pengawas
             $rolePengawas = Role::where('name', 'pengawas')->firstOrFail();
 
             $user = User::create([
@@ -64,6 +64,11 @@ class PengawasController extends Controller
                 'phone' => $request->phone,
                 'address' => $request->address,
             ]);
+
+            // Assign sekolah ke pengawas
+            if ($request->filled('schools')) {
+                $user->assignedSchools()->sync($request->schools);
+            }
         });
 
         return redirect()->route('admin.pengawas.index')->with('success', 'Data Pengawas berhasil ditambahkan.');
@@ -80,7 +85,9 @@ class PengawasController extends Controller
     {
         Gate::authorize('update', $pengawas);
         $pengawas->load(['user']);
-        return view('pages.admin.pengawas.edit', compact('pengawas'));
+        $schools = \App\Models\School::where('is_active', true)->orderBy('name')->get();
+        $assignedSchoolIds = $pengawas->user->assignedSchools()->pluck('schools.id')->toArray();
+        return view('pages.admin.pengawas.edit', compact('pengawas', 'schools', 'assignedSchoolIds'));
     }
 
     public function update(PengawasRequest $request, Pengawas $pengawas): RedirectResponse
@@ -103,6 +110,9 @@ class PengawasController extends Controller
                 'phone' => $request->phone,
                 'address' => $request->address,
             ]);
+
+            // Sync sekolah yang di-assign
+            $pengawas->user->assignedSchools()->sync($request->schools ?? []);
         });
 
         return redirect()->route('admin.pengawas.index')->with('success', 'Data Pengawas berhasil diperbarui.');

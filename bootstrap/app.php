@@ -17,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+            'pengawas.scope' => \App\Http\Middleware\PengawasSchoolScope::class,
+            'pengawas.access' => \App\Http\Middleware\EnsurePengawasAccess::class,
         ]);
         $middleware->priority([
             \Illuminate\Session\Middleware\StartSession::class,
