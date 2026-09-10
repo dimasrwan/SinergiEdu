@@ -12,8 +12,14 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-950">{{ $assignment->title }}</h1>
-                    <div class="flex items-center gap-3 mt-2 text-sm">
+                    <div class="flex items-center gap-3 mt-2 text-sm flex-wrap">
                         <x-badge variant="primary">{{ $assignment->classroom->name ?? '-' }}</x-badge>
+                        @if($assignment->learningMeeting)
+                            <x-badge variant="info">Pertemuan {{ $assignment->learningMeeting->meeting_number }}</x-badge>
+                        @endif
+                        @if($assignment->material)
+                            <x-badge variant="neutral">Materi: {{ $assignment->material->title }}</x-badge>
+                        @endif
                         <span class="text-slate-500">Tenggat Waktu: <strong class="{{ now()->isAfter($assignment->deadline) ? 'text-red-600' : 'text-slate-800' }}">{{ $assignment->deadline->format('d M Y, H:i') }}</strong></span>
                     </div>
                 </div>
@@ -30,7 +36,7 @@
                     @if($assignment->attachment_path)
                         <div class="mt-5 pt-5 border-t border-slate-100">
                             <h4 class="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Lampiran Pendukung</h4>
-                            <a href="{{ route('guru.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center gap-2 p-3 w-full bg-blue-50/50 border border-blue-100 rounded-xl text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
+                            <a href="{{ route('guru.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center gap-2 p-3 w-full bg-blue-50/50 border border-blue-100 rounded-lg text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
                                 <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                 </svg>
@@ -48,12 +54,12 @@
                         </div>
                         <p class="text-xs sm:text-sm text-blue-100 mt-2">telah mengumpulkan tugas.</p>
                     </div>
-                    <div class="bg-emerald-600 rounded-3xl p-5 sm:p-6 text-white shadow-sm bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-blend-overlay">
-                        <h3 class="text-xs sm:text-sm font-bold text-emerald-100 mb-1">Status Penilaian</h3>
+                    <div class="bg-[#119FEA] rounded-3xl p-5 sm:p-6 text-white shadow-sm bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-blend-overlay" style="background-color: #119FEA;">
+                        <h3 class="text-xs sm:text-sm font-bold text-sky-100 mb-1">Status Penilaian</h3>
                         <div class="text-3xl sm:text-4xl font-bold mt-1">
-                            {{ $gradedCount ?? 0 }} <span class="text-xl sm:text-2xl font-medium text-emerald-200">/ {{ $submittedCount }}</span> <span class="text-sm sm:text-lg font-medium text-emerald-200">Siswa</span>
+                            {{ $gradedCount ?? 0 }} <span class="text-xl sm:text-2xl font-medium text-sky-200">/ {{ $submittedCount }}</span> <span class="text-sm sm:text-lg font-medium text-sky-200">Siswa</span>
                         </div>
-                        <p class="text-xs sm:text-sm text-emerald-100 mt-2">sudah dinilai.</p>
+                        <p class="text-xs sm:text-sm text-sky-100 mt-2">sudah dinilai.</p>
                     </div>
                 </div>
             </div>
@@ -65,25 +71,30 @@
                         <h3 class="text-lg font-bold text-slate-900">Daftar Pengumpulan Siswa</h3>
                         
                         <!-- Search & Filter -->
-                        <form action="{{ route('guru.assignments.show', $assignment) }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <form action="{{ route('guru.assignments.show', $assignment) }}" method="GET" class="w-full sm:w-auto flex flex-col sm:flex-row gap-3 items-center">
+                            <div class="relative w-full sm:w-44 md:w-48">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama/NIS..." class="block w-full pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg text-sm bg-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                <input type="text" name="search" value="{{ request('search') }}" class="block w-full rounded-lg border-0 py-2 pl-10 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6" placeholder="Cari nama atau NIS...">
                             </div>
-                            <select name="status" onchange="this.form.submit()" class="block w-full sm:w-auto py-1.5 pl-3 pr-8 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
-                                <option value="">Semua Status</option>
-                                <option value="submitted" {{ request('status') == 'submitted' ? 'selected' : '' }}>Sudah Mengumpulkan</option>
-                                <option value="not_submitted" {{ request('status') == 'not_submitted' ? 'selected' : '' }}>Belum Mengumpulkan</option>
-                                <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Terlambat</option>
-                                <option value="graded" {{ request('status') == 'graded' ? 'selected' : '' }}>Sudah Dinilai</option>
-                                <option value="not_graded" {{ request('status') == 'not_graded' ? 'selected' : '' }}>Belum Dinilai</option>
-                            </select>
+                            <div class="w-full sm:w-44 md:w-48">
+                                <x-select name="status" 
+                                          onchange="this.form.submit()" 
+                                          placeholder="Semua Status" 
+                                          :selected="request('status')" 
+                                          :options="[
+                                              ['value' => 'submitted', 'label' => 'Sudah Mengumpulkan'],
+                                              ['value' => 'not_submitted', 'label' => 'Belum Mengumpulkan'],
+                                              ['value' => 'late', 'label' => 'Terlambat'],
+                                              ['value' => 'graded', 'label' => 'Sudah Dinilai'],
+                                              ['value' => 'not_graded', 'label' => 'Belum Dinilai']
+                                          ]" />
+                            </div>
                             @if(request('search') || request('status'))
-                                <a href="{{ route('guru.assignments.show', $assignment) }}" class="inline-flex items-center justify-center p-1.5 text-slate-400 hover:text-slate-600 border border-transparent rounded-lg" title="Clear Filters">
+                                <a href="{{ route('guru.assignments.show', $assignment) }}" class="inline-flex items-center justify-center p-1.5 text-slate-400 hover:text-slate-600 border border-transparent rounded-lg-lg" title="Clear Filters">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -92,7 +103,159 @@
                         </form>
                     </div>
 
-                    <x-table :headers="['No', 'Nama Siswa', 'Status', 'Waktu Kumpul', 'Nilai', 'Aksi']">
+                    <!-- Mobile Card View -->
+                    <div class="block lg:hidden divide-y divide-slate-100">
+                        @forelse($students as $index => $student)
+                            @php
+                                $submission = $student->submissions->first();
+                            @endphp
+                            <div class="p-4 sm:p-5 hover:bg-slate-50/50 transition-colors">
+                                <div class="flex items-start justify-between gap-3 mb-2">
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="font-bold text-slate-950 text-base break-words">{{ $student->user->name ?? '-' }}</h4>
+                                        <div class="text-xs text-slate-500 mt-0.5">NIS: {{ $student->nis ?? '-' }}</div>
+                                    </div>
+                                    <div class="shrink-0">
+                                        @if($submission)
+                                            <x-badge variant="success" class="whitespace-nowrap text-xs">Sudah Mengumpulkan</x-badge>
+                                        @else
+                                            <x-badge variant="slate" class="whitespace-nowrap text-xs">Belum Mengumpulkan</x-badge>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3 text-xs bg-slate-50 rounded-xl p-3 my-3">
+                                    <div>
+                                        <span class="text-slate-400 block mb-0.5">Waktu Kumpul</span>
+                                        @if($submission)
+                                            <span class="font-semibold {{ $submission->created_at->isAfter($assignment->deadline) ? 'text-red-600' : 'text-slate-700' }} break-words">
+                                                {{ $submission->created_at->format('d M Y, H:i') }}
+                                            </span>
+                                            @if($submission->created_at->isAfter($assignment->deadline))
+                                                <span class="inline-block text-[10px] font-bold text-red-500 uppercase"> (Terlambat)</span>
+                                            @endif
+                                        @else
+                                            <span class="text-slate-400">—</span>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block mb-0.5">Nilai</span>
+                                        @if($submission && $submission->score !== null)
+                                            <span class="font-bold text-base {{ $submission->score >= 75 ? 'text-emerald-600' : 'text-amber-600' }}">
+                                                {{ $submission->score }}
+                                            </span>
+                                        @else
+                                            <span class="text-slate-400 font-medium">—</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2 pt-1 flex-wrap" x-data="{ openModal: false, openFeedbackModal: false }">
+                                    @if($submission)
+                                        @if($submission->file_path)
+                                            <a href="{{ route('guru.assignments.submissions.download', [$assignment, $submission]) }}" title="Unduh File" class="inline-flex items-center justify-center min-h-[40px] px-3 py-2 rounded-xl text-blue-700 bg-blue-50 hover:bg-blue-100 font-medium text-xs transition gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                                </svg>
+                                                File
+                                            </a>
+                                        @endif
+
+                                        <button @click="openModal = true" class="inline-flex items-center justify-center min-h-[40px] px-3.5 py-2 rounded-xl font-medium text-xs transition gap-1.5 {{ $submission->score !== null ? 'text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-blue-700 bg-blue-50 hover:bg-blue-100' }}">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                            </svg>
+                                            {{ $submission->score !== null ? 'Edit Nilai' : 'Beri Nilai' }}
+                                        </button>
+
+                                        <button @click="openFeedbackModal = true" class="inline-flex items-center justify-center min-h-[40px] px-3.5 py-2 rounded-xl font-medium text-xs transition gap-1.5 {{ $submission->feedback !== null ? 'text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-purple-700 bg-purple-50 hover:bg-purple-100' }}">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                            </svg>
+                                            {{ $submission->feedback !== null ? 'Edit Feedback' : 'Beri Feedback' }}
+                                        </button>
+
+                                        <!-- Modal Grading Mobile -->
+                                        <div x-show="openModal" class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+                                            <div x-show="openModal" x-transition.opacity class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
+                                            <div class="fixed inset-0 z-10 overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
+                                                <div x-show="openModal" x-transition.scale.origin.bottom class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all">
+                                                    <form action="{{ route('guru.assignments.submissions.grade', [$assignment->id, $submission->id]) }}" method="POST">
+                                                        @csrf
+                                                        <div class="bg-white p-5 sm:p-6">
+                                                            <div class="flex items-start gap-4">
+                                                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100">
+                                                                    <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                                                    </svg>
+                                                                </div>
+                                                                <div class="w-full min-w-0">
+                                                                    <h3 class="text-base font-semibold leading-6 text-slate-900">Penilaian: {{ $student->user->name }}</h3>
+                                                                    <p class="text-xs text-slate-500 mt-1">Masukkan nilai (0-100) untuk pengumpulan tugas ini.</p>
+                                                                    <div class="mt-4">
+                                                                        <label for="m-score-{{ $submission->id }}" class="block text-xs font-medium text-slate-700">Nilai</label>
+                                                                        <input type="number" inputmode="numeric" name="score" id="m-score-{{ $submission->id }}" class="mt-1 block w-full rounded-xl border-0 py-2.5 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-base" placeholder="0-100" min="0" max="100" value="{{ $submission->score }}" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="bg-slate-50 px-5 py-3.5 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                                                            <button type="button" @click="openModal = false" class="w-full sm:w-auto inline-flex justify-center items-center min-h-[44px] px-4 rounded-xl bg-white text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Batal</button>
+                                                            <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center min-h-[44px] px-4 rounded-xl bg-blue-600 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">Simpan Penilaian</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Modal Feedback Mobile -->
+                                        <div x-show="openFeedbackModal" class="relative z-50" aria-labelledby="modal-feedback-title" role="dialog" aria-modal="true" style="display: none;">
+                                            <div x-show="openFeedbackModal" x-transition.opacity class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
+                                            <div class="fixed inset-0 z-10 overflow-y-auto p-4 sm:p-6 flex items-center justify-center">
+                                                <div x-show="openFeedbackModal" x-transition.scale.origin.bottom class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all">
+                                                    <form action="{{ route('guru.assignments.submissions.feedback', [$assignment->id, $submission->id]) }}" method="POST">
+                                                        @csrf
+                                                        <div class="bg-white p-5 sm:p-6">
+                                                            <div class="flex items-start gap-4">
+                                                                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100">
+                                                                    <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                                                                    </svg>
+                                                                </div>
+                                                                <div class="w-full min-w-0">
+                                                                    <h3 class="text-base font-semibold leading-6 text-slate-900">Feedback untuk: {{ $student->user->name }}</h3>
+                                                                    <div class="mt-1 text-xs text-slate-500">Nilai: <span class="font-bold text-slate-900">{{ $submission->score !== null ? $submission->score : 'Belum Dinilai' }}</span></div>
+                                                                    <div class="mt-3">
+                                                                        <label for="m-feedback-{{ $submission->id }}" class="block text-xs font-medium text-slate-700">Tulis feedback untuk siswa...</label>
+                                                                        <textarea name="feedback" id="m-feedback-{{ $submission->id }}" rows="4" class="mt-1 block w-full rounded-xl border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-purple-600 text-sm">{{ $submission->feedback }}</textarea>
+                                                                        <p class="mt-1 text-[11px] text-slate-500">Kosongkan isian ini lalu simpan jika ingin menghapus feedback.</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="bg-slate-50 px-5 py-3.5 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                                                            <button type="button" @click="openFeedbackModal = false" class="w-full sm:w-auto inline-flex justify-center items-center min-h-[44px] px-4 rounded-xl bg-white text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Batal</button>
+                                                            <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center min-h-[44px] px-4 rounded-xl bg-purple-600 text-sm font-semibold text-white shadow-sm hover:bg-purple-500">Simpan Feedback</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400 italic text-xs py-1">Belum Mengumpulkan</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="p-8 text-center text-slate-400 text-sm">
+                                Belum ada siswa pada kelas ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Desktop Table View -->
+                    <div class="hidden lg:block">
+                        <x-table :headers="['No', 'Nama Siswa', 'Status', 'Waktu Kumpul', 'Nilai', 'Aksi']">
                         @forelse($students as $index => $student)
                             @php
                                 $submission = $student->submissions->first();
@@ -177,7 +340,7 @@
                                                                 @csrf
                                                                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                                     <div class="sm:flex sm:items-start">
-                                                                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                                                                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
                                                                             <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                                                             </svg>
@@ -216,7 +379,7 @@
                                                                 @csrf
                                                                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                                                     <div class="sm:flex sm:items-start">
-                                                                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 sm:mx-0 sm:h-10 sm:w-10">
+                                                                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-purple-100 sm:mx-0 sm:h-10 sm:w-10">
                                                                             <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                                                                             </svg>
@@ -270,6 +433,7 @@
                             </tr>
                         @endforelse
                     </x-table>
+                    </div>
                     
                     @if($students->hasPages())
                         <div class="p-4 border-t border-slate-100">

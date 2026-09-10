@@ -1,183 +1,235 @@
 <x-layouts.app>
     <x-slot:title>Portal Orang Tua</x-slot:title>
 
-    <div class="w-full space-y-8">
+    <div class="w-full space-y-6">
         
-        <!-- Student Profile Snapshot Banner -->
-        <div class="bg-primary rounded-3xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
-            <!-- Decorative Elements -->
-            <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-            
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="flex items-center gap-6">
-                    <div class="w-20 h-20 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center backdrop-blur-sm overflow-hidden shrink-0">
-                        <!-- Placeholder Avatar -->
-                        <svg class="h-12 w-12 text-blue-100" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        <!-- Child Profile Snapshot Banner & Selector -->
+        @if(!$selectedStudent)
+        <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto shadow-2xs">
+            <div class="h-16 w-16 bg-blue-50 border border-blue-100 text-primary rounded-full flex items-center justify-center mb-4 shadow-2xs">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Anak Terdaftar</h3>
+            <p class="text-sm text-slate-500 font-medium">Anda belum memiliki anak yang terdaftar pada sistem sekolah ini.</p>
+        </div>
+        @else
+
+        <!-- 1. Child Context / Profile Header (With SinergiEdu Blue Accent) -->
+        <div class="bg-gradient-to-r from-blue-50/70 via-blue-50/30 to-white border border-blue-100 border-l-4 border-l-primary rounded-2xl px-4 sm:px-5 py-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
+            <!-- Profile Info -->
+            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xs shrink-0 font-bold text-base">
+                    {{ strtoupper(substr($selectedStudent->user->name, 0, 2)) }}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-[16px] sm:text-[17px] font-bold text-slate-900 leading-tight truncate" title="{{ $selectedStudent->user->name }}">{{ $selectedStudent->user->name }}</h1>
+                    <p class="text-slate-500 text-[12px] font-medium mt-0.5 truncate">
+                        @if($classroom)
+                            <span class="inline-flex items-center gap-1 text-primary font-bold">Kelas {{ $classroom->name }}</span>
+                        @else
+                            Belum Ada Kelas Aktif
+                        @endif
+                    </p>
+                </div>
+            </div>
+
+            <!-- Selector & Periode -->
+            <div class="flex flex-col sm:items-end gap-1.5 w-full sm:w-auto border-t sm:border-t-0 border-slate-100 pt-3 sm:pt-0 shrink-0">
+                @if($children->count() > 1)
+                <form action="{{ route('orangtua.dashboard') }}" method="GET" class="w-full sm:w-56">
+                    <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name])->toArray()" />
+                </form>
+                @endif
+                
+                <div class="inline-flex items-center gap-1.5 text-primary text-[11px] font-bold tracking-wide sm:self-end">
+                    @if($activeYear && $activeSemester)
+                        <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                         </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-tight mb-1">Budi Setiawan (Anak Anda)</h1>
-                        <p class="text-slate-300 text-sm mb-3">Kelas XI IPA 1 • NIS: 10293847</p>
-                        <div class="flex items-center gap-2">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-200 border border-green-500/30">
-                                Kehadiran Sempurna (100%)
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 shrink-0">
-                    <!-- Dropdown for multiple children if applicable -->
-                    <x-button variant="secondary" class="!bg-white/10 !border-white/20 !text-white hover:!bg-white/20">
-                        Profil Siswa Lainnya <svg class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                    </x-button>
+                        <span class="truncate">{{ $activeYear->year }} &bull; {{ $activeSemester->name }}</span>
+                    @else
+                        Tidak Ada Periode
+                    @endif
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        @if(!$classroom || !$activeYear || !$activeSemester)
+            <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto shadow-2xs">
+                <div class="h-16 w-16 bg-blue-50 border border-blue-100 text-primary rounded-full flex items-center justify-center mb-4 shadow-2xs">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Kelas Aktif</h3>
+                <p class="text-sm text-slate-500 font-medium">Anak Anda belum memiliki penempatan kelas pada periode akademik saat ini.</p>
+            </div>
+        @else
+
+        <!-- 2. Main Grid (70% Left / 30% Right with 24px gap) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- Left Column: Vitals & Activity -->
-            <div class="lg:col-span-2 space-y-8">
+            <!-- LEFT / PRIMARY CONTENT (≈70% -> col-span-8) -->
+            <div class="lg:col-span-8 space-y-6 min-w-0">
                 
-                <!-- Academic Vitals (Simple Trends) -->
+                <!-- 3. Ringkasan Perkembangan (Exactly 2 Cards with Blue Value Accent) -->
                 <section>
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">Perkembangan Akademik (Semester Ini)</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-card padding="md" class="relative overflow-hidden">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Rata-rata Nilai</p>
-                                    <h3 class="text-3xl font-bold text-slate-900">85.4</h3>
-                                </div>
-                                <div class="bg-green-50 text-success p-2 rounded-lg flex items-center text-sm font-bold gap-1">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
-                                    +2.1
-                                </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-1 h-3.5 bg-primary rounded-full"></span>
+                        <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider">Ringkasan Perkembangan</h2>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Card 1: Rata-Rata Nilai -->
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between h-full hover:border-blue-200/80 transition-colors">
+                            <div>
+                                <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Rata-Rata Nilai</h3>
+                                @if($stats['rata_nilai'] !== null)
+                                    <div class="text-3xl font-bold text-primary mb-1 leading-none">{{ $stats['rata_nilai'] }}</div>
+                                @else
+                                    <div class="text-2xl font-bold text-slate-400 mb-1 leading-none">N/A</div>
+                                @endif
                             </div>
-                            <!-- Mock Mini Line Chart -->
-                            <div class="h-10 w-full flex items-end gap-1 px-1">
-                                <div class="w-full bg-blue-100 rounded-t-md h-[40%]"></div>
-                                <div class="w-full bg-blue-100 rounded-t-md h-[45%]"></div>
-                                <div class="w-full bg-blue-100 rounded-t-md h-[60%]"></div>
-                                <div class="w-full bg-blue-100 rounded-t-md h-[55%]"></div>
-                                <div class="w-full bg-blue-100 rounded-t-md h-[70%]"></div>
-                                <div class="w-full bg-blue-500 rounded-t-md h-[85%]"></div>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-slate-400 mt-2">
-                                <span>Jul</span>
-                                <span>Ags</span>
-                                <span>Sep</span>
-                                <span>Okt</span>
-                                <span>Nov</span>
-                                <span class="text-primary font-bold">Des</span>
-                            </div>
-                        </x-card>
+                            <p class="text-[12px] text-slate-500 font-medium mt-3 pt-3 border-t border-slate-100">Dari seluruh mata pelajaran aktif.</p>
+                        </div>
 
-                        <x-card padding="md">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Penyelesaian Tugas</p>
-                                    <h3 class="text-3xl font-bold text-slate-900">12<span class="text-lg text-slate-400">/15</span></h3>
-                                </div>
-                                <div class="bg-orange-50 text-orange-600 p-2 rounded-lg text-sm font-bold">
-                                    80%
+                        <!-- Card 2: Penyelesaian Tugas -->
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between h-full hover:border-blue-200/80 transition-colors">
+                            <div>
+                                <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Penyelesaian Tugas</h3>
+                                <div class="flex items-baseline gap-1 mb-1 leading-none">
+                                    <span class="text-3xl font-bold text-primary">{{ $stats['tugas_selesai'] }}</span>
+                                    <span class="text-lg font-semibold text-slate-400">/ {{ $stats['tugas_selesai'] + $stats['tugas_aktif'] + $stats['menunggu_penilaian'] }}</span>
                                 </div>
                             </div>
-                            <p class="text-sm text-slate-600">Ada <span class="font-bold text-slate-900">3 tugas</span> yang belum dikerjakan minggu ini. Disarankan untuk memantau waktu belajar anak di rumah.</p>
-                            <a href="{{ route('orangtua.assignments.index') }}" class="mt-4 inline-block text-sm font-semibold text-accent hover:underline">Lihat Daftar Tugas &rarr;</a>
-                        </x-card>
+                            <p class="text-[12px] text-slate-500 font-medium mt-3 pt-3 border-t border-slate-100">
+                                @if($stats['tugas_aktif'] > 0)
+                                    <span class="text-amber-600 font-semibold">{{ $stats['tugas_aktif'] }} tugas</span> belum dikerjakan.
+                                @else
+                                    Semua tugas telah diselesaikan.
+                                @endif
+                            </p>
+                        </div>
                     </div>
                 </section>
 
-                <!-- Recent School Activity -->
+                <!-- 5. Tugas Terdekat -->
                 <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-slate-900">Aktivitas Sekolah Terbaru</h2>
-                        <a href="{{ route('orangtua.progress.index') }}" class="text-sm font-medium text-accent hover:text-accent-hover">Laporan Lengkap</a>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6">
-                        <div class="relative border-l-2 border-slate-100 ml-3 space-y-8">
-                            
-                            <!-- Activity Item 1 -->
-                            <div class="relative pl-6">
-                                <div class="absolute -left-3 top-1 h-6 w-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center ring-4 ring-white">
-                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                                </div>
-                                <p class="text-xs font-semibold text-slate-500 mb-1">Hari ini, 10:15 WIB</p>
-                                <h4 class="font-bold text-slate-900 text-sm">Menyelesaikan Tugas Matematika</h4>
-                                <p class="text-sm text-slate-600 mt-1">Budi telah mengumpulkan "Tugas Integral Substitusi" tepat waktu.</p>
-                            </div>
-
-                            <!-- Activity Item 2 -->
-                            <div class="relative pl-6">
-                                <div class="absolute -left-3 top-1 h-6 w-6 bg-blue-100 text-primary rounded-full flex items-center justify-center ring-4 ring-white">
-                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                                </div>
-                                <p class="text-xs font-semibold text-slate-500 mb-1">Kemarin, 08:00 WIB</p>
-                                <h4 class="font-bold text-slate-900 text-sm">Membaca Materi Baru</h4>
-                                <p class="text-sm text-slate-600 mt-1">Mengakses "Modul 4: Termodinamika Dasar" pada mata pelajaran Fisika.</p>
-                            </div>
-                            
-                            <!-- Activity Item 3 -->
-                            <div class="relative pl-6">
-                                <div class="absolute -left-3 top-1 h-6 w-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center ring-4 ring-white">
-                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                                </div>
-                                <p class="text-xs font-semibold text-slate-500 mb-1">Senin, 09:30 WIB</p>
-                                <h4 class="font-bold text-slate-900 text-sm">Tugas Terlewat</h4>
-                                <p class="text-sm text-slate-600 mt-1">Melewatkan pengumpulan "Laporan Praktikum Biologi".</p>
-                            </div>
-
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-1 h-3.5 bg-primary rounded-full shrink-0"></span>
+                            <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider truncate">Tugas Terdekat</h2>
                         </div>
+                        <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="text-[12px] font-bold text-primary hover:text-blue-700 transition shrink-0">Lihat Semua &rarr;</a>
                     </div>
+                    
+                    @if($upcomingAssignments->isEmpty())
+                        <div class="text-center py-8 bg-white rounded-2xl border border-slate-200/75 shadow-2xs">
+                            <p class="text-[12px] text-slate-500 font-medium">Saat ini tidak ada tugas mendatang.</p>
+                        </div>
+                    @else
+                        <div class="space-y-3">
+                            @foreach($upcomingAssignments->take(3) as $assignment)
+                                @php
+                                    $submission = $assignment->submissions->first();
+                                    $statusText = 'Belum Dikerjakan';
+                                    $statusClass = 'text-slate-600 bg-slate-50 border-slate-200/60';
+                                    
+                                    if ($submission) {
+                                        if ($submission->status === 'submitted' || $submission->status === 'late') {
+                                            $statusText = 'Menunggu Penilaian';
+                                            $statusClass = 'text-blue-700 bg-blue-50 border-blue-200/50';
+                                        } elseif ($submission->status === 'graded') {
+                                            $statusText = 'Dinilai: ' . $submission->score;
+                                            $statusClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/50';
+                                        }
+                                    } elseif ($assignment->due_date && $assignment->due_date < now()) {
+                                        $statusText = 'Terlambat';
+                                        $statusClass = 'text-red-700 bg-red-50 border-red-200/50';
+                                    }
+                                @endphp
+                                <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200/75 rounded-2xl p-4 shadow-2xs hover:border-blue-300 hover:bg-blue-50/20 transition group min-w-0">
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="font-bold text-slate-900 text-[14px] group-hover:text-primary transition-colors truncate mb-1" title="{{ $assignment->title }}">{{ $assignment->title }}</h4>
+                                        <p class="text-[12px] text-slate-500 font-medium flex flex-wrap items-center gap-1.5">
+                                            <span class="font-bold text-primary uppercase tracking-wide shrink-0">{{ $assignment->subject->name ?? '-' }}</span>
+                                            @if($assignment->due_date)
+                                                <span class="text-slate-300 shrink-0">&bull;</span>
+                                                <span class="truncate">Deadline: {{ \Carbon\Carbon::parse($assignment->due_date)->format('d M Y') }}</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                    <div class="self-start sm:self-center shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border {{ $statusClass }}">
+                                        {{ $statusText }}
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </section>
             </div>
 
-            <!-- Right Column: Teacher Communication -->
-            <div class="col-span-1 space-y-8">
+            <!-- RIGHT / SUPPORTING CONTENT (≈30% -> col-span-4) -->
+            <div class="lg:col-span-4 space-y-6 min-w-0">
                 
+                <!-- 4. Catatan Guru -->
                 <section>
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">Catatan Guru</h2>
-                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative">
-                        <div class="absolute -top-3 right-5">
-                            <span class="relative flex h-6 w-6">
-                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-6 w-6 bg-accent text-white items-center justify-center">
-                                  <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
-                              </span>
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
-                            <div class="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-500">
-                                SA
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-900 text-sm">Ibu Siti Aminah</h4>
-                                <p class="text-xs text-slate-500">Wali Kelas XI IPA 1</p>
-                            </div>
-                        </div>
-                        <p class="text-sm text-slate-700 italic mb-4">"Bapak/Ibu, Budi menunjukkan peningkatan luar biasa di mata pelajaran eksakta bulan ini. Namun mohon didorong untuk lebih aktif saat diskusi kelompok Bahasa Indonesia."</p>
-                        
-                        <x-button variant="primary" class="w-full justify-center">
-                            Balas Pesan Guru
-                        </x-button>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-1 h-3.5 bg-primary rounded-full shrink-0"></span>
+                        <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider">Catatan Guru</h2>
                     </div>
+                    
+                    @if($recentFeedbacks->isEmpty())
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs text-center py-6">
+                            <p class="text-[12px] text-slate-500 font-medium">Belum ada catatan atau masukan.</p>
+                        </div>
+                    @else
+                        <div>
+                            @foreach($recentFeedbacks->take(1) as $feedback)
+                                <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between min-w-0">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-3 mb-3 min-w-0">
+                                            <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[11px] font-bold text-primary shrink-0">
+                                                {{ strtoupper(substr($feedback->teacher->user->name ?? 'G', 0, 2)) }}
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="font-bold text-slate-900 text-[13px] leading-tight truncate">{{ $feedback->teacher->user->name ?? '-' }}</h4>
+                                                <p class="text-[11px] font-semibold text-primary/80 truncate">{{ $feedback->subject->name ?? 'Wali Kelas' }}</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-[13px] text-slate-700 italic line-clamp-4 leading-relaxed font-medium mb-3 break-words">"{{ $feedback->message }}"</p>
+                                    </div>
+                                    <div class="text-[11px] font-medium text-slate-400 border-t border-slate-100 pt-2.5">
+                                        {{ $feedback->created_at->diffForHumans() }}
+                                    </div>
+                                </div>
+                            @endforeach
+                            <div class="mt-3">
+                                <a href="{{ route('orangtua.feedbacks.index', ['student_id' => $selectedStudentId]) }}" class="inline-flex items-center text-[12px] font-bold text-primary hover:text-blue-700 transition">
+                                    Lihat Semua Feedback &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    @endif
                 </section>
 
-                <section>
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
-                        <div class="bg-white p-3 rounded-xl inline-block shadow-sm mb-3 text-accent">
-                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
-                        </div>
-                        <h3 class="font-bold text-slate-900 mb-2">Panduan Dukungan Belajar</h3>
-                        <p class="text-sm text-slate-600 mb-4">Dapatkan tips dari psikolog pendidikan tentang cara mendampingi anak belajar di rumah secara efektif.</p>
-                        <a href="{{ route('orangtua.support.index') }}" class="text-sm font-semibold text-accent hover:underline">Baca Panduan</a>
+                <!-- 6. Dukungan Belajar Anak -->
+                <section class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-1 h-3 bg-primary rounded-full shrink-0"></span>
+                        <h3 class="text-[12px] font-bold text-slate-900">Dukungan Belajar Anak</h3>
                     </div>
+                    <p class="text-[12px] text-slate-500 font-medium mb-3 leading-relaxed">Catat dukungan yang Anda berikan minggu ini.</p>
+                    <a href="{{ route('orangtua.support.index', ['student_id' => $selectedStudentId]) }}" class="inline-flex items-center text-[12px] font-bold text-primary hover:text-blue-700 transition">
+                        Tulis Dukungan &rarr;
+                    </a>
                 </section>
 
             </div>
         </div>
+        @endif
         
+        @endif
     </div>
 </x-layouts.app>

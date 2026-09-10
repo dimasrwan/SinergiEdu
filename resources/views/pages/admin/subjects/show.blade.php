@@ -51,12 +51,12 @@
                         @if(count($groupedTeachers) > 0)
                             <div class="space-y-4">
                                 @foreach($groupedTeachers as $teacherName => $classes)
-                                    <div class="flex flex-col sm:flex-row sm:items-start p-4 bg-slate-50 border border-slate-100 rounded-xl gap-3">
+                                    <div class="flex flex-col sm:flex-row sm:items-start p-4 bg-slate-50 border border-slate-100 rounded-lg gap-3">
                                         <div class="flex-1">
                                             <p class="text-sm font-bold text-slate-900 mb-2">{{ $teacherName }}</p>
                                             <div class="flex flex-wrap gap-1.5">
                                                 @foreach($classes as $className)
-                                                    <span class="inline-flex text-[10px] font-bold text-slate-600 bg-white px-2 py-1 rounded-md border border-slate-200">
+                                                    <span class="inline-flex text-[10px] font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-200">
                                                         {{ $className }}
                                                     </span>
                                                 @endforeach

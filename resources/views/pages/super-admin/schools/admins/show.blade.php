@@ -5,10 +5,10 @@
             <p class="text-sm text-slate-500 mt-1">Informasi lengkap profil Admin untuk {{ $school->name }}.</p>
         </div>
         <div class="flex gap-x-3">
-            <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
+            <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center justify-center rounded-lg-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 transition-colors">
                 Kembali
             </a>
-            <a href="{{ route('super_admin.schools.admins.edit', [$school, $admin]) }}" class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors">
+            <a href="{{ route('super_admin.schools.admins.edit', [$school, $admin]) }}" class="inline-flex items-center justify-center rounded-lg-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors">
                 Edit Admin
             </a>
         </div>
@@ -34,7 +34,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="hidden" name="is_active" value="1">
-                        <button type="submit" class="inline-flex rounded-md bg-red-50 px-2 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50">Aktifkan Akses</button>
+                        <button type="submit" class="inline-flex rounded-lg bg-red-50 px-2 py-1.5 text-sm font-medium text-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-red-50">Aktifkan Akses</button>
                     </form>
                 </div>
             </div>
@@ -45,7 +45,7 @@
         <div class="px-4 py-5 sm:px-6 flex items-center justify-between border-b border-slate-200">
             <h3 class="text-base font-semibold leading-6 text-slate-900">Profil Admin</h3>
             @if($admin->is_active)
-                <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Aktif</span>
+                <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Aktif</span>
             @endif
         </div>
         <div class="border-t border-slate-100">
@@ -82,7 +82,7 @@
                 @csrf
                 @method('PATCH')
                 <input type="hidden" name="is_active" value="0">
-                <button type="submit" class="inline-flex rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50 transition-colors">Nonaktifkan Akses Admin</button>
+                <button type="submit" class="inline-flex rounded-lg bg-white px-3 py-2 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-slate-50 transition-colors">Nonaktifkan Akses Admin</button>
             </form>
         </div>
         @endif

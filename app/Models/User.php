@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active'])]
+use Illuminate\Support\Facades\Storage;
+
+#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active', 'profile_photo_path'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -28,6 +30,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke Preferences.
+     */
+    public function preferences(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -41,6 +51,14 @@ class User extends Authenticatable
     }
 
 
+    public function profilePhotoUrl(): ?string
+    {
+        if ($this->profile_photo_path && Storage::disk('public')->exists($this->profile_photo_path)) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+        return null;
+    }
+
     public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\App\Models\School::class);
@@ -48,13 +66,10 @@ class User extends Authenticatable
 
     protected static function booted()
     {
-        static::saving(function ($user) {
-            // Load role if not loaded to check name safely
-            if ($user->role_id && !$user->relationLoaded('role')) {
-                $user->load('role');
-            }
+        $checkSchoolId = function ($user) {
+            $roleName = is_string($user->role) ? $user->role : ($user->role->name ?? null);
 
-            if ($user->role && $user->role->name === 'super_admin') {
+            if ($roleName === 'super_admin' || $roleName === 'superadmin') {
                 if ($user->school_id !== null) {
                     throw new \Exception('Super Admin must have school_id = NULL');
                 }
@@ -63,6 +78,9 @@ class User extends Authenticatable
                     throw new \Exception('Normal user must have a valid school_id');
                 }
             }
-        });
+        };
+
+        static::creating($checkSchoolId);
+        static::updating($checkSchoolId);
     }
 }

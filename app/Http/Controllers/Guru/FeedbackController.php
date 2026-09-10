@@ -42,8 +42,8 @@ class FeedbackController extends Controller
         if ($academicYear) {
             $classIds = $teacher->classes->pluck('id');
             $students = Student::whereHas('classes', function ($q) use ($classIds, $academicYear) {
-                $q->whereIn('class_id', $classIds)
-                  ->where('academic_year_id', $academicYear->id);
+                $q->whereIn('student_classes.class_id', $classIds)
+                  ->where('student_classes.academic_year_id', $academicYear->id);
             })->with('user')->get()->sortBy('user.name');
         }
 
@@ -83,8 +83,8 @@ class FeedbackController extends Controller
         if ($academicYear) {
             $classIds = $teacher->classes->pluck('id');
             $students = Student::whereHas('classes', function ($q) use ($classIds, $academicYear) {
-                $q->whereIn('class_id', $classIds)
-                  ->where('academic_year_id', $academicYear->id);
+                $q->whereIn('student_classes.class_id', $classIds)
+                  ->where('student_classes.academic_year_id', $academicYear->id);
             })->with('user')->get()->sortBy('user.name');
         }
 

@@ -5,64 +5,10 @@
     Dashboard
 </x-sidebar-link>
 
-<!-- PENGGUNA -->
-<li class="mt-4 mb-1">
-    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">Pengguna</span>
-</li>
-<x-sidebar-link href="{{ route('admin.teachers.index') }}" :active="request()->routeIs('admin.teachers.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
-    </x-slot:icon>
-    Manajemen Guru
-</x-sidebar-link>
-<x-sidebar-link href="{{ route('admin.students.index') }}" :active="request()->routeIs('admin.students.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-    </x-slot:icon>
-    Manajemen Siswa
-</x-sidebar-link>
-<x-sidebar-link href="{{ route('admin.parents.index') }}" :active="request()->routeIs('admin.parents.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
-    </x-slot:icon>
-    Manajemen Orang Tua
-</x-sidebar-link>
-<x-sidebar-link href="{{ route('admin.wakas.index') }}" :active="request()->routeIs('admin.wakas.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
-    </x-slot:icon>
-    Manajemen Waka Kurikulum
-</x-sidebar-link>
-<x-sidebar-link href="{{ route('admin.pengawas.index') }}" :active="request()->routeIs('admin.pengawas.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
-    </x-slot:icon>
-    Manajemen Pengawas
-</x-sidebar-link>
-<x-sidebar-link href="{{ route('admin.kepala-sekolah.index') }}" :active="request()->routeIs('admin.kepala-sekolah.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21a8 8 0 0 1 10.434-7.62"/><circle cx="10" cy="8" r="5"/><circle cx="18" cy="18" r="3"/><path d="m19.5 14.3-.4.9"/><path d="m16.9 20.8-.4.9"/><path d="m21.7 19.5-.9-.4"/><path d="m15.2 16.9-.9-.4"/><path d="m21.7 16.5-.9.4"/><path d="m15.2 19.1-.9.4"/><path d="m19.5 21.7-.4-.9"/><path d="m16.9 15.2-.4-.9"/></svg>
-    </x-slot:icon>
-    Manajemen Kepala Sekolah/Madrasah
-</x-sidebar-link>
-
 <!-- AKADEMIK -->
 <li class="mt-4 mb-1">
     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">Akademik</span>
 </li>
-<x-sidebar-link href="{{ route('admin.classes.index') }}" :active="request()->routeIs('admin.classes.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg>
-    </x-slot:icon>
-    Kelas
-</x-sidebar-link>
-
-<x-sidebar-link href="{{ route('admin.subjects.index') }}" :active="request()->routeIs('admin.subjects.*')">
-    <x-slot:icon>
-        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-    </x-slot:icon>
-    Mata Pelajaran
-</x-sidebar-link>
 <x-sidebar-link href="{{ route('admin.academic-years.index') }}" :active="request()->routeIs('admin.academic-years.*')">
     <x-slot:icon>
         <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
@@ -74,6 +20,76 @@
         <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M8 2v4"/><path d="M17 14h-6"/><path d="M13 18H7"/><path d="M7 14h.01"/><path d="M17 18h.01"/></svg>
     </x-slot:icon>
     Semester
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.subjects.index') }}" :active="request()->routeIs('admin.subjects.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </x-slot:icon>
+    Mata Pelajaran
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.classes.index') }}" :active="request()->routeIs('admin.classes.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg>
+    </x-slot:icon>
+    Kelas
+</x-sidebar-link>
+
+<!-- PENGGUNA -->
+<li class="mt-4 mb-1">
+    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">Pengguna</span>
+</li>
+<x-sidebar-link href="{{ route('admin.teachers.index') }}" :active="request()->routeIs('admin.teachers.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+    </x-slot:icon>
+    Guru
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.students.index') }}" :active="request()->routeIs('admin.students.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    </x-slot:icon>
+    Siswa
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.parents.index') }}" :active="request()->routeIs('admin.parents.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+    </x-slot:icon>
+    Orang Tua/Wali
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.wakas.index') }}" :active="request()->routeIs('admin.wakas.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+    </x-slot:icon>
+    Waka Kurikulum
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.pengawas.index') }}" :active="request()->routeIs('admin.pengawas.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+    </x-slot:icon>
+    Pengawas
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.kepala-sekolah.index') }}" :active="request()->routeIs('admin.kepala-sekolah.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 21a8 8 0 0 1 10.434-7.62"/><circle cx="10" cy="8" r="5"/><circle cx="18" cy="18" r="3"/><path d="m19.5 14.3-.4.9"/><path d="m16.9 20.8-.4.9"/><path d="m21.7 19.5-.9-.4"/><path d="m15.2 16.9-.9-.4"/><path d="m21.7 16.5-.9.4"/><path d="m15.2 19.1-.9.4"/><path d="m19.5 21.7-.4-.9"/><path d="m16.9 15.2-.4-.9"/></svg>
+    </x-slot:icon>
+    Kepala Sekolah
+</x-sidebar-link>
+
+<!-- PENUGASAN -->
+<li class="mt-4 mb-1">
+    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3">Penugasan</span>
+</li>
+<x-sidebar-link href="{{ route('admin.student-placements.create') }}" :active="request()->routeIs('admin.student-placements.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </x-slot:icon>
+    Penempatan Siswa
+</x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.teacher-assignments.create') }}" :active="request()->routeIs('admin.teacher-assignments.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </x-slot:icon>
+    Penugasan Guru
 </x-sidebar-link>
 
 <!-- SISTEM -->

@@ -41,11 +41,23 @@ class StudentProgressController extends Controller
         $teacherSubjects = TeacherSubject::with(['classroom', 'subject'])
             ->where('teacher_id', $teacher->id)
             ->where('academic_year_id', $activeAcademicYear->id)
-            ->where('semester_id', $activeSemester->id)
+            ->when($activeSemester, function($q) use ($activeSemester) {
+                $q->where(function($q2) use ($activeSemester) {
+                    $q2->where('semester_id', $activeSemester->id)
+                       ->orWhereNull('semester_id');
+                });
+            })
             ->get();
+
+        if ($teacherSubjects->isEmpty()) {
+            $teacherSubjects = TeacherSubject::with(['classroom', 'subject'])
+                ->where('teacher_id', $teacher->id)
+                ->where('academic_year_id', $activeAcademicYear->id)
+                ->get();
+        }
             
-        $availableClasses = $teacherSubjects->pluck('classroom')->unique('id')->values();
-        $availableSubjects = $teacherSubjects->pluck('subject')->unique('id')->values();
+        $availableClasses = $teacherSubjects->pluck('classroom')->filter()->unique('id')->values();
+        $availableSubjects = $teacherSubjects->pluck('subject')->filter()->unique('id')->values();
 
         $filterClassId = $request->input('class_id');
         $filterSubjectId = $request->input('subject_id');
@@ -53,10 +65,10 @@ class StudentProgressController extends Controller
 
         $combinationsQuery = clone $teacherSubjects;
         if ($filterClassId) {
-            $combinationsQuery = $combinationsQuery->where('class_id', $filterClassId);
+            $combinationsQuery = $combinationsQuery->where('class_id', (int)$filterClassId);
         }
         if ($filterSubjectId) {
-            $combinationsQuery = $combinationsQuery->where('subject_id', $filterSubjectId);
+            $combinationsQuery = $combinationsQuery->where('subject_id', (int)$filterSubjectId);
         }
 
         $studentList = collect();
@@ -209,6 +221,16 @@ class StudentProgressController extends Controller
             
         $avgScore = $studentGrade ? $studentGrade->assignment_score : null;
 
-        return view('pages.guru.student-progress.show', compact('student', 'subject', 'classroom', 'assignments', 'avgScore'));
+        $reflections = \App\Models\StudentReflection::where('student_id', $student->id)
+            ->whereHas('learningMeeting', function ($q) use ($classId, $subjectId, $activeAcademicYear, $activeSemester) {
+                $q->where('class_id', $classId)
+                  ->where('subject_id', $subjectId)
+                  ->where('academic_year_id', $activeAcademicYear->id)
+                  ->where('semester_id', $activeSemester->id);
+            })
+            ->with(['learningMeeting'])
+            ->get();
+
+        return view('pages.guru.student-progress.show', compact('student', 'subject', 'classroom', 'assignments', 'avgScore', 'reflections'));
     }
 }

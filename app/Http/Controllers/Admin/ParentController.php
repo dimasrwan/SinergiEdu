@@ -69,7 +69,11 @@ class ParentController extends Controller
 
             // 3. Hubungkan Siswa
             if ($request->filled('students')) {
-                Student::whereIn('id', $request->students)->update(['parent_id' => $parent->id]);
+                // Validasi eksplisit ID yang berhak diakses oleh admin saat ini (TenantScope otomatis teraplikasi)
+                $validStudentIds = Student::whereIn('id', $request->students)->pluck('id');
+                if ($validStudentIds->isNotEmpty()) {
+                    Student::whereIn('id', $validStudentIds)->update(['parent_id' => $parent->id]);
+                }
             }
         });
 
@@ -125,7 +129,11 @@ class ParentController extends Controller
             Student::where('parent_id', $parent->id)->update(['parent_id' => null]);
             // Set relasi baru
             if ($request->filled('students')) {
-                Student::whereIn('id', $request->students)->update(['parent_id' => $parent->id]);
+                // Validasi eksplisit ID yang berhak diakses oleh admin saat ini (TenantScope otomatis teraplikasi)
+                $validStudentIds = Student::whereIn('id', $request->students)->pluck('id');
+                if ($validStudentIds->isNotEmpty()) {
+                    Student::whereIn('id', $validStudentIds)->update(['parent_id' => $parent->id]);
+                }
             }
         });
 

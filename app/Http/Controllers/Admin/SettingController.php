@@ -31,17 +31,30 @@ class SettingController extends Controller
         $school->phone = $request->school_phone;
         $school->email = $request->school_email;
 
+        $oldLogo = $school->logo;
+        $newLogoPath = null;
         if ($request->hasFile('school_logo')) {
-            // Delete old logo if exists
-            if ($school->logo && Storage::disk('public')->exists($school->logo)) {
-                Storage::disk('public')->delete($school->logo);
-            }
+            $file = $request->file('school_logo');
+            $filename = \Illuminate\Support\Str::random(40) . '.' . $file->getClientOriginalExtension();
+            $newLogoPath = $file->storeAs('schools/logos', $filename, 'public');
             
-            $path = $request->file('school_logo')->store('logos', 'public');
-            $school->logo = $path;
+            if ($newLogoPath) {
+                $school->logo = $newLogoPath;
+            }
         }
 
-        $school->save();
+        try {
+            $school->save();
+            
+            if ($request->hasFile('school_logo') && $oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+        } catch (\Exception $e) {
+            if ($newLogoPath && Storage::disk('public')->exists($newLogoPath)) {
+                Storage::disk('public')->delete($newLogoPath);
+            }
+            throw $e;
+        }
 
         return redirect()->route('admin.settings.index')->with('success', 'Profil Sekolah berhasil diperbarui.');
     }

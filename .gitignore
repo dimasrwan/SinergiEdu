@@ -24,3 +24,12 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# File bantu lokal / debris (jangan di-push)
+/debug_update.php
+/test_scope.php
+/add_tenant_scope.py
+/update_models.py
+/update_policies.py
+/skills-lock.json
+/.npmrc

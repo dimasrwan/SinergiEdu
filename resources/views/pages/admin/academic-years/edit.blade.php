@@ -48,7 +48,7 @@
                         <div class="p-4 {{ $academicYear->is_active ? 'bg-green-50/50 border border-green-100' : 'bg-blue-50/50 border border-blue-100' }} rounded-xl">
                             <label class="flex items-start gap-3 cursor-pointer group">
                                 <div class="flex items-center h-5 mt-0.5">
-                                    <input id="is_active" name="is_active" type="checkbox" value="1" class="w-4 h-4 text-primary bg-white border-slate-300 rounded focus:ring-accent focus:ring-2" {{ old('is_active', $academicYear->is_active) ? 'checked' : '' }}>
+                                    <input id="is_active" name="is_active" type="checkbox" value="1" class="w-4 h-4 text-primary bg-white border-slate-300 rounded-lg focus:ring-accent focus:ring-2" {{ old('is_active', $academicYear->is_active) ? 'checked' : '' }}>
                                 </div>
                                 <div class="flex-1">
                                     <span class="block text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">

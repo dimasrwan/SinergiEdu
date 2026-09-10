@@ -1,100 +1,89 @@
 <x-layouts.app>
-    <x-slot:title>Nilai Akademik Anak</x-slot:title>
+    <x-slot:title>Nilai Anak</x-slot:title>
 
     <div class="space-y-8">
-        <x-page-header title="Nilai Akademik Anak" description="Pantau rekapitulasi nilai akhir semester anak-anak Anda di sini." />
+        <x-page-header 
+            title="Nilai Anak" 
+            description="Pantau ringkasan nilai dan pencapaian akademik anak Anda." 
+        />
 
-        <x-card padding="lg" class="mb-8">
-            <!-- Filter -->
-            <form action="{{ route('orangtua.grades.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <x-input-label for="academic_year_id" :value="__('Tahun Ajaran')" />
-                    <x-select id="academic_year_id" name="academic_year_id" onchange="this.form.submit()">
-                        @foreach($academicYears as $year)
-                            <option value="{{ $year->id }}" {{ $selectedAcademicYearId == $year->id ? 'selected' : '' }}>
-                                {{ $year->year }} {{ $year->is_active ? '(Aktif)' : '' }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                </div>
-                <div>
-                    <x-input-label for="semester_id" :value="__('Semester')" />
-                    <x-select id="semester_id" name="semester_id" onchange="this.form.submit()">
-                        @foreach($semesters as $sem)
-                            <option value="{{ $sem->id }}" {{ $selectedSemesterId == $sem->id ? 'selected' : '' }}>
-                                {{ $sem->name }} {{ $sem->is_active ? '(Aktif)' : '' }}
-                            </option>
-                        @endforeach
-                    </x-select>
-                </div>
+        <!-- Child Selector -->
+        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-sm">
+            <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Anak yang Dipantau</h2>
+            <form action="{{ route('orangtua.grades.index') }}" method="GET" class="w-full md:max-w-md">
+                <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name ?? 'Anak'])->toArray()" />
             </form>
-        </x-card>
+        </div>
 
-        @forelse($children as $child)
-            @php
-                $grades = $childrenGrades[$child->id] ?? collect();
-            @endphp
-            <div class="mb-10 last:mb-0">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg border border-blue-200">
-                        {{ substr($child->user->name ?? 'A', 0, 1) }}
+        @if($selectedStudent)
+            @if($grades->isEmpty())
+                <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-8 text-center shadow-sm max-w-3xl mx-auto w-full">
+                    <div class="h-16 w-16 bg-white border border-slate-200 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>
                     </div>
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">{{ $child->user->name ?? 'Anak Tidak Diketahui' }}</h2>
-                        <p class="text-xs text-slate-500">Kelas Aktif: <span class="font-medium text-slate-700">{{ $child->activeClassroom()->name ?? 'Belum Terdaftar' }}</span></p>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Nilai</h3>
+                    <p class="text-sm text-slate-500 font-medium">Guru belum mengunggah rekapitulasi nilai untuk anak Anda pada periode yang dipilih.</p>
+                </div>
+            @else
+                <div class="space-y-6 min-w-0">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                        <x-card padding="sm" class="border border-slate-200 min-w-0">
+                            <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Rata-rata Nilai</div>
+                            <div class="text-xl sm:text-2xl font-bold {{ $stats['rata_rata'] >= 80 ? 'text-emerald-600' : ($stats['rata_rata'] >= 60 ? 'text-amber-600' : 'text-slate-800') }} mt-1">
+                                {{ $stats['rata_rata'] ?? '-' }}
+                            </div>
+                        </x-card>
+                        <x-card padding="sm" class="border border-slate-200 min-w-0">
+                            <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Mata Pelajaran</div>
+                            <div class="text-xl sm:text-2xl font-bold text-blue-600 mt-1">{{ $stats['jumlah_mapel'] }}</div>
+                        </x-card>
+                        <x-card padding="sm" class="border border-slate-200 min-w-0">
+                            <div class="text-xs sm:text-sm text-slate-500 font-medium truncate">Tugas Dinilai</div>
+                            <div class="text-xl sm:text-2xl font-bold text-slate-800 mt-1">{{ $stats['tugas_dinilai'] }}</div>
+                        </x-card>
+                    </div>
+
+                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Nilai Mata Pelajaran</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
+                        @foreach($grades as $grade)
+                            @php
+                                $avg = $grade->average_score;
+                            @endphp
+                            <x-card padding="none" class="overflow-hidden border border-slate-200 hover:shadow-md transition-shadow min-w-0">
+                                <div class="p-5 sm:p-6 min-w-0">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 min-w-0">
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="text-base sm:text-lg font-bold text-slate-900 break-words">{{ $grade->subject->name ?? '-' }}</h3>
+                                            <p class="text-xs sm:text-sm text-slate-500 truncate">Guru: {{ $grade->teacher->user->name ?? '-' }}</p>
+                                        </div>
+                                        <div class="self-start sm:self-center shrink-0 flex flex-col items-center justify-center p-3 {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : ($avg >= 60 ? 'bg-amber-50 text-amber-700 border-amber-100' : ($avg > 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-slate-50 text-slate-500 border-slate-100')) }} rounded-xl min-w-[80px] border">
+                                            <span class="text-[10px] font-bold uppercase opacity-70">Rata-rata</span>
+                                            <span class="text-xl font-black">{{ $avg > 0 ? $avg : '-' }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-100 min-w-0">
+                                        <div class="text-xs sm:text-sm text-slate-500 truncate">
+                                            Tugas Dinilai: <span class="font-bold text-slate-700">{{ $grade->tugas_dinilai_text }}</span>
+                                        </div>
+                                        <a href="{{ route('orangtua.grades.show', $grade->id) }}" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-white border border-slate-300 rounded-xl font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-2xs hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition shrink-0">
+                                            Detail
+                                        </a>
+                                    </div>
+                                </div>
+                            </x-card>
+                        @endforeach
                     </div>
                 </div>
-
-                @if($grades->isEmpty())
-                    <x-card padding="lg" class="bg-slate-50/50 border-slate-200 border-dashed text-center">
-                        <p class="text-sm text-slate-500">Belum ada data nilai untuk semester ini.</p>
-                    </x-card>
-                @else
-                    <x-card padding="none">
-                        <x-table>
-                            <x-slot:head>
-                                <tr>
-                                    <th class="px-6 py-4 text-left">Mata Pelajaran</th>
-                                    <th class="px-4 py-4 w-24 text-center">Tes Awal</th>
-                                    <th class="px-4 py-4 w-24 text-center">Tugas</th>
-                                    <th class="px-4 py-4 w-24 text-center">Tes Akhir</th>
-                                    <th class="px-4 py-4 w-24 text-center">Karakter</th>
-                                    <th class="px-4 py-4 w-24 text-center">Hafalan</th>
-                                    <th class="px-6 py-4 w-32 text-center">Rata-Rata</th>
-                                </tr>
-                            </x-slot:head>
-                            <x-slot:body>
-                                @foreach($grades as $grade)
-                                    <tr class="hover:bg-slate-50/50 transition-colors text-center group">
-                                        <td class="px-6 py-4 text-left">
-                                            <div class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{{ $grade->subject->name ?? '-' }}</div>
-                                        </td>
-                                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->pre_test_score ?? '-' }}</td>
-                                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->assignment_score ?? '-' }}</td>
-                                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->post_test_score ?? '-' }}</td>
-                                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->character_score ?? '-' }}</td>
-                                        <td class="px-4 py-4 font-semibold text-slate-700">{{ $grade->memorization_score ?? '-' }}</td>
-                                        <td class="px-6 py-4">
-                                            @php
-                                                $avg = $grade->average_score;
-                                            @endphp
-                                            <div class="flex items-center justify-center gap-2">
-                                                <span class="inline-flex items-center justify-center h-10 w-12 rounded-xl {{ $avg >= 80 ? 'bg-emerald-100 text-emerald-700 shadow-sm shadow-emerald-200' : ($avg >= 60 ? 'bg-amber-100 text-amber-700 shadow-sm shadow-amber-200' : ($avg > 0 ? 'bg-red-100 text-red-700 shadow-sm shadow-red-200' : 'bg-slate-100 text-slate-600')) }} font-bold text-base border border-white">
-                                                    {{ $avg > 0 ? $avg : '-' }}
-                                                </span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </x-slot:body>
-                        </x-table>
-                    </x-card>
-                @endif
+            @endif
+        @else
+            <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-8 text-center shadow-sm max-w-3xl mx-auto w-full">
+                <div class="h-16 w-16 bg-white border border-slate-200 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Anak Terdaftar</h3>
+                <p class="text-sm text-slate-500 font-medium">Anda belum memiliki anak yang terdaftar pada sistem sekolah ini.</p>
             </div>
-        @empty
-            <x-card padding="lg" class="text-center py-16">
-                <p class="text-sm text-slate-500">Anda belum ditautkan dengan data anak (Siswa) mana pun.</p>
-            </x-card>
-        @endforelse
+        @endif
     </div>
 </x-layouts.app>

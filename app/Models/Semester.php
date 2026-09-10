@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\TenantScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,9 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Semester extends Model
 {
-    use \App\Traits\TenantScoped;
-
     use HasFactory;
+    use TenantScoped;
 
     protected $fillable = [
         'school_id',
@@ -39,9 +39,21 @@ class Semester extends Model
         return $this->hasMany(StudentGrade::class);
     }
 
-
-    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function school(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\School::class);
+        return $this->belongsTo(School::class);
+    }
+
+    /**
+     * Label tampilan konsisten seluruh fitur: "Semester Ganjil 2026".
+     * Tahun diambil dari academic_year (mis. "2026/2027" -> Ganjil=2026, Genap=2027).
+     */
+    public function getLabelAttribute(): string
+    {
+        $years = explode('/', (string) $this->academicYear?->year);
+        $isGenap = strtolower((string) $this->name) === 'genap';
+        $calendarYear = $years[$isGenap ? 1 : 0] ?? null;
+
+        return 'Semester '.$this->name.($calendarYear ? ' '.$calendarYear : '');
     }
 }

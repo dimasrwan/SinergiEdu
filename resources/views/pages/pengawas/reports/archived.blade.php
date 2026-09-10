@@ -20,31 +20,31 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">
-                            <th class="px-6 py-3 text-left font-semibold text-slate-700">Siswa</th>
-                            <th class="px-6 py-3 text-left font-semibold text-slate-700">Mata Pelajaran</th>
-                            <th class="px-6 py-3 text-center font-semibold text-slate-700">Rata-rata</th>
-                            <th class="px-6 py-3 text-left font-semibold text-slate-700">Feedback</th>
-                            <th class="px-6 py-3 text-center font-semibold text-slate-700">Tanggal</th>
+                            <th class="px-4 py-4 text-left font-semibold text-slate-700">Siswa</th>
+                            <th class="px-4 py-4 text-left font-semibold text-slate-700">Mata Pelajaran</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Rata-rata</th>
+                            <th class="px-4 py-4 text-left font-semibold text-slate-700">Feedback</th>
+                            <th class="px-4 py-4 text-center font-semibold text-slate-700">Tanggal</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse($archivedGrades as $grade)
                             <tr class="hover:bg-slate-50/50 transition">
-                                <td class="px-6 py-3">
+                                <td class="px-4 py-4">
                                     <div class="font-medium text-slate-900">{{ $grade->student?->user?->name }}</div>
                                     <div class="text-xs text-slate-500">{{ $grade->student?->nis }}</div>
                                 </td>
-                                <td class="px-6 py-3 text-slate-600">{{ $grade->subject?->name ?? '-' }}</td>
-                                <td class="px-6 py-3 text-center">
-                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold
+                                <td class="px-4 py-4 text-slate-600">{{ $grade->subject?->name ?? '-' }}</td>
+                                <td class="px-4 py-4 text-center">
+                                    <span class="inline-flex items-center justify-center px-3 py-1 rounded-lg text-sm font-semibold
                                         {{ $grade->average_score >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
                                         {{ number_format($grade->average_score, 1) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-3 text-sm text-slate-600 truncate max-w-xs">
+                                <td class="px-4 py-4 text-sm text-slate-600 truncate max-w-xs">
                                     {{ $grade->supervisor_feedback ?? '-' }}
                                 </td>
-                                <td class="px-6 py-3 text-center text-slate-500">
+                                <td class="px-4 py-4 text-center text-slate-500">
                                     {{ $grade->updated_at?->format('d M Y') ?? '-' }}
                                 </td>
                             </tr>

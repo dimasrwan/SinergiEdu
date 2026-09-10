@@ -33,7 +33,7 @@
                         <p class="text-sm text-orange-800">
                             Email Anda belum diverifikasi.
 
-                            <button form="send-verification" class="mt-1 font-semibold underline text-orange-600 hover:text-orange-900 rounded-md focus:outline-none transition">
+                            <button form="send-verification" class="mt-1 font-semibold underline text-orange-600 hover:text-orange-900 rounded-lg focus:outline-none transition">
                                 Klik di sini untuk mengirim ulang tautan verifikasi.
                             </button>
                         </p>
@@ -48,9 +48,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
-            <x-button type="submit" variant="primary">Simpan Perubahan</x-button>
-
+        <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-100">
             @if (session('status') === 'profile-updated')
                 <p
                     x-data="{ show: true }"
@@ -60,6 +58,8 @@
                     class="text-sm font-medium text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100"
                 >Berhasil disimpan.</p>
             @endif
+
+            <x-button type="submit" variant="primary">Simpan Perubahan</x-button>
         </div>
     </form>
 </section>

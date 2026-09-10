@@ -14,7 +14,7 @@ class TeacherSubjectPolicy
     public function before(User $user, string $ability, $model = null): bool|null
     {
         if ($user->role && $user->role->name === 'admin') {
-            if ($model) {
+            if (! is_string($model) && $model !== null) {
                 $modelSchoolId = null;
                 if ($model instanceof \App\Models\Teacher || $model instanceof \App\Models\Student || $model instanceof \App\Models\StudentParent) {
                     $relatedUser = \App\Models\User::find($model->user_id);
@@ -22,7 +22,7 @@ class TeacherSubjectPolicy
                 } else if (isset($model->school_id)) {
                     $modelSchoolId = $model->school_id;
                 }
-                
+
                 if ($modelSchoolId === null || $user->school_id !== $modelSchoolId) {
                     return false;
                 }

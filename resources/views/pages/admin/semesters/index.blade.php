@@ -1,20 +1,22 @@
 <x-layouts.app>
     <x-slot:title>Manajemen Semester</x-slot:title>
 
-    <div class="w-full">
+    <div class="w-full space-y-5 sm:space-y-6">
         <!-- Header -->
-        <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Manajemen Semester</h1>
-                <p class="mt-1 text-sm text-slate-500">
-                    Kelola semester akademik yang digunakan sebagai konteks waktu dalam penilaian dan pembelajaran.
-                    <span class="inline-flex items-center ml-2 px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Manajemen Semester</h1>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200/80">
                         {{ $semesters->total() }} semester
                     </span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+                    Kelola semester akademik yang digunakan sebagai konteks waktu dalam penilaian dan pembelajaran.
                 </p>
             </div>
-            <div class="flex gap-2 w-full sm:w-auto shrink-0">
-                <x-button variant="primary" href="{{ route('admin.semesters.create') }}" class="flex-1 sm:flex-none justify-center">
+            <div class="w-full sm:w-auto shrink-0 pt-1 sm:pt-0">
+                <x-button variant="primary" href="{{ route('admin.semesters.create') }}" class="w-full sm:w-auto justify-center min-h-[44px]">
                     <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -24,48 +26,45 @@
         </div>
 
         @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-100 rounded-xl flex items-start gap-3 shadow-sm">
+            <div class="p-4 bg-green-50 border border-green-100 rounded-xl flex items-start gap-3 shadow-2xs">
                 <svg class="h-5 w-5 text-green-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 <div>
-                    <h3 class="text-sm font-bold text-green-800">Berhasil</h3>
-                    <p class="text-sm text-green-700 mt-0.5">{{ session('success') }}</p>
+                    <h3 class="text-xs sm:text-sm font-bold text-emerald-700">Berhasil</h3>
+                    <p class="text-xs sm:text-sm text-green-700 mt-0.5 leading-snug">{{ session('success') }}</p>
                 </div>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 shadow-sm">
+            <div class="p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 shadow-2xs">
                 <svg class="h-5 w-5 text-danger mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 <div>
-                    <h3 class="text-sm font-bold text-red-800">Gagal Menghapus</h3>
-                    <p class="text-sm text-red-700 mt-0.5">{{ session('error') }}</p>
+                    <h3 class="text-xs sm:text-sm font-bold text-red-800">Gagal Menghapus</h3>
+                    <p class="text-xs sm:text-sm text-red-700 mt-0.5 leading-snug">{{ session('error') }}</p>
                 </div>
             </div>
         @endif
 
         <x-card padding="none" class="overflow-hidden">
             <!-- Filter Bar -->
-            <div class="p-4 md:p-5 border-b border-slate-100 bg-slate-50/50">
+            <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50">
                 <form action="{{ route('admin.semesters.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
                     <div class="flex-1 flex gap-3 flex-col sm:flex-row">
                         <div class="w-full sm:w-64">
-                            <select name="academic_year_id" class="block w-full pl-3 pr-10 py-2 text-sm border border-slate-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent">
-                                <option value="">Semua Tahun Ajaran</option>
-                                @foreach($academicYears as $year)
-                                    <option value="{{ $year->id }}" {{ request('academic_year_id') == $year->id ? 'selected' : '' }}>
-                                        Tahun Ajaran {{ $year->year }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <x-select name="academic_year_id" 
+                                      placeholder="Semua Tahun Ajaran" 
+                                      :selected="request('academic_year_id')" 
+                                      :options="$academicYears->map(fn($y) => ['value' => $y->id, 'label' => 'Tahun Ajaran ' . $y->year])->toArray()"
+                                      class="min-h-[44px]" />
                         </div>
                     </div>
                     
                     <div class="flex gap-2 shrink-0">
-                        <button type="submit" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 transition-colors w-full sm:w-auto text-center">
+                        <button type="submit" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold rounded-xl border border-slate-200/80 transition-colors w-full sm:w-auto text-center min-h-[44px]">
                             Filter
                         </button>
                         @if(request('academic_year_id'))
-                            <a href="{{ route('admin.semesters.index') }}" class="px-4 py-2 bg-white hover:bg-red-50 text-slate-500 hover:text-danger text-sm font-semibold rounded-xl border border-slate-200 transition-colors w-full sm:w-auto text-center">
+                            <a href="{{ route('admin.semesters.index') }}" class="px-4 py-2.5 bg-white hover:bg-red-50 text-slate-500 hover:text-danger text-xs sm:text-sm font-bold rounded-xl border border-slate-200/80 transition-colors w-full sm:w-auto text-center min-h-[44px] inline-flex items-center justify-center">
                                 Reset
                             </a>
                         @endif
@@ -73,9 +72,9 @@
                 </form>
             </div>
 
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <!-- Desktop View Table (hidden lg:block) -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-max">
                     <thead>
                         <tr class="bg-white border-b border-slate-100">
                             <th class="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider w-10">NO</th>
@@ -95,6 +94,9 @@
                                     <p class="text-sm font-bold text-slate-900">
                                         {{ $semester->academicYear->year }}
                                     </p>
+                                    @if(Auth::user()->school)
+                                        <p class="text-xs text-slate-500 font-medium mt-0.5">{{ Auth::user()->school->name }}</p>
+                                    @endif
                                 </td>
                                 <td class="py-4 px-6">
                                     <p class="text-sm font-bold {{ $semester->is_active ? 'text-primary' : 'text-slate-900' }}">
@@ -103,13 +105,17 @@
                                 </td>
                                 <td class="py-4 px-6">
                                     @if($semester->is_active)
-                                        <span class="inline-flex items-center text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded border border-green-200">AKTIF</span>
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-green-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> AKTIF
+                                        </span>
                                     @else
-                                        <span class="inline-flex items-center text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">TIDAK AKTIF</span>
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> TIDAK AKTIF
+                                        </span>
                                     @endif
                                 </td>
                                 <td class="py-4 px-6 text-right">
-                                    <div class="flex items-center justify-end gap-2 ">
+                                    <div class="flex items-center justify-end gap-2">
                                         <a href="{{ route('admin.semesters.show', $semester) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat Detail" aria-label="Lihat detail semester">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                         </a>
@@ -156,6 +162,81 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile List Card View (block lg:hidden) -->
+            <div class="block lg:hidden divide-y divide-slate-100 p-3.5 sm:p-4 space-y-3">
+                @forelse($semesters as $semester)
+                    <div class="rounded-xl p-4 transition-all duration-150 border {{ $semester->is_active ? 'bg-blue-50/40 border-blue-200/80 shadow-2xs' : 'bg-white border-slate-200/80' }} space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between gap-2">
+                                <h2 class="text-lg font-bold {{ $semester->is_active ? 'text-primary' : 'text-slate-900' }} leading-tight">
+                                    {{ $semester->name }}
+                                </h2>
+                                @if($semester->is_active)
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-green-50 px-2 py-0.5 rounded-md border border-green-200/80 shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> AKTIF
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> TIDAK AKTIF
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <p class="text-xs font-semibold text-slate-700 mt-1">
+                                {{ $semester->academicYear->year }}
+                            </p>
+
+                            @if(Auth::user()->school)
+                                <p class="text-xs font-medium text-slate-500 mt-0.5 break-words whitespace-normal leading-snug">
+                                    {{ Auth::user()->school->name }}
+                                </p>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-end text-xs pt-2.5 border-t border-slate-100/80 gap-2">
+                            <a href="{{ route('admin.semesters.show', $semester) }}" class="px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                Lihat
+                            </a>
+                            <a href="{{ route('admin.semesters.edit', $semester) }}" class="px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                                Edit
+                            </a>
+                            <form action="{{ route('admin.semesters.destroy', $semester) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus Semester ini?\n\nPENTING: Jika Semester ini sedang dipakai oleh sistem penilaian siswa, sistem akan menolak penghapusan demi keamanan data.');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-2.5 py-1.5 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="bg-white border border-slate-100 rounded-xl p-6 text-center">
+                        <div class="mx-auto w-12 h-12 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-3">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-900">
+                            @if(request('academic_year_id'))
+                                Semester tidak ditemukan.
+                            @else
+                                Belum ada semester
+                            @endif
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1 mb-3">
+                            @if(request('academic_year_id'))
+                                Tidak ada semester yang terdaftar pada Tahun Ajaran tersebut.
+                            @else
+                                Belum terdapat data semester yang terdaftar dalam sistem.
+                            @endif
+                        </p>
+                        @if(!request('academic_year_id'))
+                            <x-button variant="primary" href="{{ route('admin.semesters.create') }}" class="!py-2 !text-xs w-full justify-center">
+                                Tambah Semester
+                            </x-button>
+                        @endif
+                    </div>
+                @endforelse
             </div>
             
             @if($semesters->hasPages())

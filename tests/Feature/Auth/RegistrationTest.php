@@ -9,16 +9,18 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_screen_is_disabled(): void
     {
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
 
-    public function test_new_users_can_register(): void
+    public function test_public_users_cannot_self_register(): void
     {
         $role = \App\Models\Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
+
+        $userCountBefore = \App\Models\User::count();
 
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -28,7 +30,8 @@ class RegistrationTest extends TestCase
             'role_id' => $role->id,
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect('/siswa/dashboard');
+        $response->assertStatus(404);
+        $this->assertGuest();
+        $this->assertEquals($userCountBefore, \App\Models\User::count());
     }
 }

@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-            <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg bg-white p-2 text-slate-400 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 hover:text-slate-500">
+            <a href="{{ route('guru.student-progress.index') }}" class="inline-flex items-center justify-center rounded-lg-lg bg-white p-2 text-slate-400 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 hover:text-slate-500">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
@@ -20,7 +20,7 @@
         <!-- Student Profile Card -->
         <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="flex items-center gap-4">
-                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-700">
+                <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-blue-100 text-xl font-bold text-blue-700">
                     {{ strtoupper(substr($student->user->name, 0, 1)) }}
                 </div>
                 <div>
@@ -93,7 +93,7 @@
                 </script>
                 @endpush
             @else
-                <div class="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50">
+                <div class="flex h-64 items-center justify-center rounded-lg-lg border-2 border-dashed border-slate-200 bg-slate-50">
                     <div class="text-center">
                         <svg class="mx-auto h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -111,7 +111,59 @@
         <div class="border-b border-slate-200 p-4 sm:p-6">
             <h3 class="text-base font-semibold leading-6 text-slate-900">Riwayat Penugasan</h3>
         </div>
-        <div class="overflow-x-auto">
+        <!-- Mobile Assignments History Card View -->
+        <div class="block lg:hidden divide-y divide-slate-100">
+            @forelse($assignments as $assignment)
+                @php
+                    $submission = $assignment->submissions->first();
+                @endphp
+                <div class="p-4 sm:p-5 space-y-2">
+                    <div class="flex items-start justify-between gap-3">
+                        <h4 class="font-bold text-slate-950 text-sm break-words flex-1 min-w-0">{{ $assignment->title }}</h4>
+                        <div class="shrink-0">
+                            @if($submission)
+                                <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Selesai</span>
+                            @else
+                                @if(now()->gt($assignment->deadline))
+                                    <span class="inline-flex items-center rounded-lg bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Terlewat</span>
+                                @else
+                                    <span class="inline-flex items-center rounded-lg bg-yellow-50 px-2 py-0.5 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Belum</span>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 rounded-xl p-3 my-2">
+                        <div>
+                            <span class="text-slate-400 block mb-0.5">Batas Waktu</span>
+                            <span class="font-medium text-slate-700 block break-words">{{ $assignment->deadline->format('d M Y, H:i') }}</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block mb-0.5">Nilai Siswa</span>
+                            @if($submission && $submission->score !== null)
+                                <span class="font-bold text-sm text-slate-900">{{ $submission->score }}</span>
+                            @else
+                                <span class="text-slate-400 font-medium">-</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if($submission && $submission->feedback)
+                        <div class="text-xs text-slate-600 bg-purple-50/60 border border-purple-100 rounded-xl p-2.5 break-words">
+                            <span class="font-semibold text-purple-900 block mb-0.5">Feedback Guru:</span>
+                            {{ $submission->feedback }}
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="p-8 text-center text-slate-500 text-sm">
+                    Belum ada tugas untuk dianalisis.
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Desktop Assignments History Table View -->
+        <div class="hidden lg:block overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50">
                     <tr>
@@ -136,12 +188,12 @@
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm">
                                 @if($submission)
-                                    <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Selesai</span>
+                                    <span class="inline-flex items-center rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Selesai</span>
                                 @else
                                     @if(now()->gt($assignment->deadline))
-                                        <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Terlewat</span>
+                                        <span class="inline-flex items-center rounded-lg bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Terlewat</span>
                                     @else
-                                        <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Belum</span>
+                                        <span class="inline-flex items-center rounded-lg bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Belum</span>
                                     @endif
                                 @endif
                             </td>
@@ -170,6 +222,28 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- Section Refleksi Siswa -->
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 class="text-base font-bold text-slate-900 mb-4">Refleksi Pembelajaran Siswa</h3>
+        @if(isset($reflections) && $reflections->isNotEmpty())
+            <div class="space-y-3">
+                @foreach($reflections as $ref)
+                    <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
+                        <div class="flex items-center justify-between font-bold text-slate-800 text-sm">
+                            <span>Pertemuan {{ $ref->learningMeeting->meeting_number ?? '-' }} ({{ $ref->learningMeeting->topic ?? '' }})</span>
+                            <span class="text-xs text-slate-400 font-semibold">{{ $ref->created_at->format('d/m/Y') }}</span>
+                        </div>
+                        <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-line">"{{ $ref->content }}"</p>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="p-6 text-center bg-slate-50 rounded-xl border border-slate-200/75">
+                <p class="text-sm text-slate-500 font-medium">Belum ada refleksi yang ditulis oleh siswa untuk mata pelajaran ini.</p>
+            </div>
+        @endif
     </div>
 </div>
 </x-layouts.app>

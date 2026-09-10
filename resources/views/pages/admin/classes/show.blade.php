@@ -43,7 +43,7 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tahun Ajaran</p>
-                            <span class="inline-flex items-center text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md">
+                            <span class="inline-flex items-center text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">
                                 {{ $class->academicYear->year ?? 'Belum Ditentukan' }}
                             </span>
                         </div>
@@ -56,13 +56,13 @@
                                     </div>
                                     <p class="text-sm font-semibold text-slate-900">{{ $class->homeroomTeacher->user->name ?? 'Tanpa Nama' }}</p>
                                 @else
-                                    <span class="inline-flex text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">BELUM DITENTUKAN</span>
+                                    <span class="inline-flex text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">BELUM DITENTUKAN</span>
                                 @endif
                             </div>
                         </div>
                         <div class="flex justify-between items-center">
                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Siswa</p>
-                            <span class="inline-flex items-center justify-center bg-blue-50 text-primary text-xs font-bold px-2.5 py-1 rounded-full border border-blue-100 min-w-[2.5rem]">
+                            <span class="inline-flex items-center justify-center bg-blue-50 text-primary text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100 min-w-[2.5rem]">
                                 {{ $class->students->count() }}
                             </span>
                         </div>
@@ -76,17 +76,17 @@
                             <svg class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
                             Guru & Mata Pelajaran
                         </h3>
-                        <span class="inline-flex text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{{ $teacherSubjects->count() }} Mapel</span>
+                        <span class="inline-flex text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">{{ $teacherSubjects->count() }} Mapel</span>
                     </div>
 
                     @if($teacherSubjects->count() > 0)
                         <div class="space-y-4">
                             @foreach($teacherSubjects as $ts)
-                                <div class="flex flex-col sm:flex-row justify-between sm:items-center p-3 bg-slate-50 border border-slate-100 rounded-xl gap-2">
+                                <div class="flex flex-col sm:flex-row justify-between sm:items-center p-3 bg-slate-50 border border-slate-100 rounded-lg gap-2">
                                     <p class="text-sm font-bold text-slate-900">{{ $ts->subject_name }}</p>
                                     <div class="flex items-center gap-2">
                                         <svg class="h-3.5 w-3.5 text-slate-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" /></svg>
-                                        <span class="inline-flex text-[11px] font-bold text-slate-700 bg-white px-2 py-1 rounded-md border border-slate-200">
+                                        <span class="inline-flex text-[11px] font-bold text-slate-700 bg-white px-2 py-1 rounded-lg border border-slate-200">
                                             {{ $ts->teacher_name }}
                                         </span>
                                     </div>
@@ -135,9 +135,9 @@
                                             </td>
                                             <td class="py-3 px-5 text-right">
                                                 @if($student->gender === 'L')
-                                                    <span class="inline-flex text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">Laki-Laki</span>
+                                                    <span class="inline-flex text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-lg">Laki-Laki</span>
                                                 @elseif($student->gender === 'P')
-                                                    <span class="inline-flex text-[10px] font-bold text-pink-700 bg-pink-50 border border-pink-100 px-2 py-0.5 rounded-md">Perempuan</span>
+                                                    <span class="inline-flex text-[10px] font-bold text-pink-700 bg-pink-50 border border-pink-100 px-2 py-0.5 rounded-lg">Perempuan</span>
                                                 @else
                                                     <span class="text-xs text-slate-400">-</span>
                                                 @endif

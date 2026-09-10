@@ -8,6 +8,37 @@
             </x-slot:actions>
         </x-page-header>
 
+        @php
+            $currentActiveYear = \App\Models\AcademicYear::where('is_active', true)->first();
+            $currentActiveSemester = \App\Models\Semester::where('is_active', true)->first();
+        @endphp
+        @if($currentActiveYear)
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-500">Konteks Akademik Aktif</p>
+                        <p class="text-base font-bold text-slate-900">
+                            {{ $currentActiveYear->year }} &middot; {{ $currentActiveSemester ? $currentActiveSemester->name : 'Belum Set Semester' }} &middot; <span class="text-emerald-600">Aktif</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-800 flex items-center gap-3">
+                <svg class="h-5 w-5 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
         @if(session('success'))
             <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-sm text-emerald-800 flex items-center gap-3">
                 <svg class="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
@@ -17,54 +48,134 @@
             </div>
         @endif
 
-        <x-card padding="none">
-            <x-table :headers="['Tahun Ajaran', 'Status', 'Aksi']">
+        <x-card padding="none" class="overflow-hidden border border-slate-200/75 min-w-0">
+            <!-- Desktop Table (hidden lg:block) -->
+            <div class="hidden lg:block">
+                <x-table :headers="['Tahun Ajaran', 'Status', 'Aksi']">
+                    @forelse($academicYears as $year)
+                        <tr>
+                            <td class="px-6 py-4 font-semibold text-slate-900">{{ $year->year }}</td>
+                            <td class="px-6 py-4">
+                                @if($year->is_active)
+                                    <x-badge variant="success">Aktif</x-badge>
+                                @else
+                                    <x-badge variant="secondary">Nonaktif</x-badge>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-1.5">
+                                    @if(!$year->is_active)
+                                        <div x-data="{ loading: false }" class="inline-block">
+                                            <button type="button" 
+                                                    x-on:click.prevent="$dispatch('open-modal', 'activate-year-{{ $year->id }}')" 
+                                                    class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" 
+                                                    title="Set Aktif" 
+                                                    aria-label="Set Aktif">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </button>
+                                            
+                                            <x-modal name="activate-year-{{ $year->id }}" maxWidth="sm">
+                                                <div class="p-6">
+                                                    <h2 class="text-lg font-bold text-slate-900">Ubah periode aktif?</h2>
+                                                    <p class="mt-2 text-sm text-slate-600">Perubahan ini akan memengaruhi konteks akademik seluruh warga sekolah.</p>
+                                                    <div class="mt-6 flex justify-end gap-3">
+                                                        <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'activate-year-{{ $year->id }}')" x-bind:disabled="loading">Batal</x-button>
+                                                        <form action="{{ route('waka.academic-years.toggle', $year) }}" method="POST" class="inline" x-on:submit="loading = true">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <x-button variant="primary" type="submit" x-bind:disabled="loading">Ya, Ubah</x-button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </x-modal>
+                                        </div>
+                                    @endif
+
+                                    <a href="{{ route('waka.academic-years.edit', $year) }}" 
+                                       class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                                       title="Edit" 
+                                       aria-label="Edit">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                                        </svg>
+                                    </a>
+                                    
+                                    <div x-data class="inline-block">
+                                        <button type="button" 
+                                                x-on:click.prevent="$dispatch('open-modal', 'delete-year-{{ $year->id }}')" 
+                                                class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                                                title="Hapus" 
+                                                aria-label="Hapus">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                            </svg>
+                                        </button>
+                                        
+                                        <x-modal name="delete-year-{{ $year->id }}" maxWidth="sm">
+                                            <div class="p-6">
+                                                <h2 class="text-lg font-bold text-slate-900">Konfirmasi Penghapusan</h2>
+                                                <p class="mt-2 text-sm text-slate-600">Apakah Anda yakin ingin menghapus tahun ajaran ini? Tindakan ini tidak dapat dibatalkan.</p>
+                                                <div class="mt-6 flex justify-end gap-3">
+                                                    <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'delete-year-{{ $year->id }}')">Batal</x-button>
+                                                    <form action="{{ route('waka.academic-years.destroy', $year) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <x-button variant="danger" type="submit">Hapus</x-button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </x-modal>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="3" class="px-6 py-10 text-center text-slate-400">Belum ada data tahun ajaran.</td>
+                        </tr>
+                    @endforelse
+                </x-table>
+            </div>
+
+            <!-- Mobile Card View (lg:hidden) -->
+            <div class="lg:hidden p-4 space-y-3 divide-y divide-slate-100">
                 @forelse($academicYears as $year)
-                    <tr>
-                        <td class="px-6 py-4 font-semibold text-slate-900">{{ $year->year }}</td>
-                        <td class="px-6 py-4">
+                    <div class="pt-3 first:pt-0 space-y-3 min-w-0">
+                        <div class="flex items-center justify-between min-w-0">
+                            <h3 class="font-bold text-slate-900 text-base truncate">{{ $year->year }}</h3>
                             @if($year->is_active)
                                 <x-badge variant="success">Aktif</x-badge>
                             @else
                                 <x-badge variant="secondary">Nonaktif</x-badge>
                             @endif
-                        </td>
-                        <td class="px-6 py-4 flex items-center gap-3">
+                        </div>
+                        <div class="flex items-center gap-2 pt-1 border-t border-slate-100 justify-end">
                             @if(!$year->is_active)
-                                <form action="{{ route('waka.academic-years.toggle', $year) }}" method="POST">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="text-xs font-semibold text-accent hover:text-accent-hover transition">Set Aktif</button>
-                                </form>
+                                <button type="button" 
+                                        x-on:click.prevent="$dispatch('open-modal', 'activate-year-{{ $year->id }}')" 
+                                        class="inline-flex items-center gap-1 min-h-[44px] px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-100">
+                                    Set Aktif
+                                </button>
                             @endif
-                            <a href="{{ route('waka.academic-years.edit', $year) }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition">Edit</a>
-                            
-                            <div x-data class="inline-block">
-                                <button type="button" x-on:click.prevent="$dispatch('open-modal', 'delete-year-{{ $year->id }}')" class="text-xs font-semibold text-danger hover:text-red-800 transition">Hapus</button>
-                                
-                                <x-modal name="delete-year-{{ $year->id }}" maxWidth="sm">
-                                    <div class="p-6">
-                                        <h2 class="text-lg font-bold text-slate-900">Konfirmasi Penghapusan</h2>
-                                        <p class="mt-2 text-sm text-slate-600">Apakah Anda yakin ingin menghapus tahun ajaran ini? Tindakan ini tidak dapat dibatalkan.</p>
-                                        <div class="mt-6 flex justify-end gap-3">
-                                            <x-button variant="secondary" x-on:click="$dispatch('close-modal', 'delete-year-{{ $year->id }}')">Batal</x-button>
-                                            <form action="{{ route('waka.academic-years.destroy', $year) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <x-button variant="danger" type="submit">Hapus</x-button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </x-modal>
-                            </div>
-                        </td>
-                    </tr>
+                            <a href="{{ route('waka.academic-years.edit', $year) }}" 
+                               class="inline-flex items-center gap-1 min-h-[44px] px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 rounded-xl border border-blue-100">
+                                Edit
+                            </a>
+                            <button type="button" 
+                                    x-on:click.prevent="$dispatch('open-modal', 'delete-year-{{ $year->id }}')" 
+                                    class="inline-flex items-center gap-1 min-h-[44px] px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 rounded-xl border border-red-100">
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
                 @empty
-                    <tr>
-                        <td colspan="3" class="px-6 py-10 text-center text-slate-400">Belum ada data tahun ajaran.</td>
-                    </tr>
+                    <div class="py-12 text-center text-slate-400 text-sm">
+                        Belum ada data tahun ajaran.
+                    </div>
                 @endforelse
-            </x-table>
+            </div>
 
             @if($academicYears->hasPages())
                 <div class="p-4 border-t border-slate-100">

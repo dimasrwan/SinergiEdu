@@ -9,6 +9,8 @@ use App\Models\AcademicYear;
 use App\Http\Requests\WakaKurikulum\AcademicYearRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AcademicYearController extends Controller
 {
@@ -27,14 +29,18 @@ class AcademicYearController extends Controller
     {
         $data = $request->validated();
         
-        // Jika diset aktif, nonaktifkan tahun ajaran lainnya terlebih dahulu
-        if (isset($data['is_active']) && $data['is_active']) {
-            AcademicYear::query()->update(['is_active' => false]);
+        try {
+            DB::transaction(function () use ($data) {
+                if (isset($data['is_active']) && $data['is_active']) {
+                    AcademicYear::query()->update(['is_active' => false]);
+                }
+                AcademicYear::create($data);
+            });
+            return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            Log::error('Gagal menambahkan tahun ajaran: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menambahkan tahun ajaran. Silakan coba lagi.')->withInput();
         }
-
-        AcademicYear::create($data);
-
-        return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran berhasil ditambahkan.');
     }
 
     public function edit(AcademicYear $academicYear): View
@@ -46,13 +52,18 @@ class AcademicYearController extends Controller
     {
         $data = $request->validated();
 
-        if (isset($data['is_active']) && $data['is_active']) {
-            AcademicYear::query()->update(['is_active' => false]);
+        try {
+            DB::transaction(function () use ($data, $academicYear) {
+                if (isset($data['is_active']) && $data['is_active']) {
+                    AcademicYear::query()->update(['is_active' => false]);
+                }
+                $academicYear->update($data);
+            });
+            return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran berhasil diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Gagal memperbarui tahun ajaran: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui tahun ajaran. Silakan coba lagi.')->withInput();
         }
-
-        $academicYear->update($data);
-
-        return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran berhasil diperbarui.');
     }
 
     public function destroy(AcademicYear $academicYear): RedirectResponse
@@ -66,9 +77,15 @@ class AcademicYearController extends Controller
      */
     public function toggleActive(AcademicYear $academicYear): RedirectResponse
     {
-        AcademicYear::query()->update(['is_active' => false]);
-        $academicYear->update(['is_active' => true]);
-
-        return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran aktif berhasil diubah.');
+        try {
+            DB::transaction(function () use ($academicYear) {
+                AcademicYear::query()->update(['is_active' => false]);
+                $academicYear->update(['is_active' => true]);
+            });
+            return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran aktif berhasil diubah.');
+        } catch (\Exception $e) {
+            Log::error('Gagal mengubah tahun ajaran aktif: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengubah periode aktif. Silakan coba lagi.');
+        }
     }
 }
