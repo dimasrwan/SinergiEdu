@@ -6,19 +6,15 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
-use App\Models\Student;
 use Illuminate\View\View;
 
 class FeedbackController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
 
         $feedbacks = Feedback::where('student_id', $student->id)
             ->with(['teacher.user', 'subject'])
@@ -30,7 +26,7 @@ class FeedbackController extends Controller
 
     public function show(Feedback $feedback): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         abort_if($feedback->student_id !== $student->id, 403, 'Akses ditolak.');
 
         $feedback->load(['teacher.user', 'subject']);

@@ -48,12 +48,14 @@
                                 </td>
                                 <td class="px-6 py-3 text-center">
                                     <div class="flex items-center justify-center gap-2">
+                                        @if($grade->student)
                                         <form action="{{ route('pengawas.feedback.unarchive', $grade->student) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="px-3 py-1.5 text-xs font-semibold text-emerald-600 hover:text-emerald-800 transition" onclick="return confirm('Batalkan arsip feedback ini?')">Buka Arsip</button>
                                         </form>
                                         <a href="{{ route('pengawas.students.show', $grade->student->id) }}" class="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">Lihat</a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

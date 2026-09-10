@@ -7,21 +7,17 @@ namespace App\Http\Controllers\Siswa;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Semester;
-use App\Models\Student;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class GradeController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
     public function index(Request $request): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         
         $academicYears = AcademicYear::orderByDesc('year')->get();
         $semesters = Semester::orderBy('id')->get();
@@ -48,7 +44,7 @@ class GradeController extends Controller
 
     public function show(StudentGrade $grade): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         
         abort_if($grade->student_id !== $student->id, 403, 'Anda tidak berhak melihat nilai ini.');
         

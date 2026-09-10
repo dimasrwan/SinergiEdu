@@ -29,7 +29,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        $redirectRoute = match ($user->role->name ?? null) {
+        $redirectRoute = match ($user->role?->name) {
+            'super_admin' => 'super_admin.dashboard',
             'admin' => 'admin.dashboard',
             'waka' => 'waka.dashboard',
             'guru' => 'guru.dashboard',

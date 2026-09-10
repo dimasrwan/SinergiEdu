@@ -4,9 +4,15 @@
     <div class="space-y-6">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <x-page-header title="Evaluasi Sekolah" description="Kelola dan terbitkan catatan evaluasi, supervisi akademis, dan masukan sekolah." />
-            <x-button href="{{ route('pengawas.evaluations.create') }}" variant="primary">
-                Tulis Evaluasi Baru
-            </x-button>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('pengawas.evaluations.archived') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                    Arsip
+                </a>
+                <x-button href="{{ route('pengawas.evaluations.create') }}" variant="primary">
+                    Tulis Evaluasi Baru
+                </x-button>
+            </div>
         </div>
 
         @if(session('success'))

@@ -6,19 +6,15 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Material;
-use App\Models\Student;
 use Illuminate\View\View;
 
 class MaterialController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         $materials = collect();
@@ -34,7 +30,7 @@ class MaterialController extends Controller
 
     public function show(Material $material): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         // Pastikan materi ditujukan untuk kelas siswa tersebut

@@ -173,7 +173,7 @@
                         <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6">{{ $title ?? 'Dashboard' }}</h2>
                     </div>
                     <div class="flex items-center gap-x-4 lg:gap-x-6">
-                        @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')
+                        @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin']))
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
