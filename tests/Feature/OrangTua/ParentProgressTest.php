@@ -114,8 +114,9 @@ class ParentProgressTest extends TestCase
         $response = $this->actingAs($this->parentUser)->get(route('orangtua.progress.index', ['student_id' => $otherChild->id]));
         
         // Should fallback to own child
-        $response->assertSee($ownChildUser->name);
-        $response->assertDontSee($otherChildUser->name);
+        $response->assertSee(e($ownChildUser->name));
+        $response->assertDontSee(e($otherChildUser->name));
+
     }
 
     public function test_progress_shows_active_classroom_assignments_and_grades(): void

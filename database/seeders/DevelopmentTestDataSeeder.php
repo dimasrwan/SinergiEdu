@@ -171,14 +171,17 @@ class DevelopmentTestDataSeeder extends Seeder
         ]);
 
         // ==================================================
-        // 7 & 8. GURU
-
+        // 7 & 8. GURU (Expanded to 4 teachers per school)
         // ==================================================
         $teacherUsers = [];
         $teachers = [];
-        for ($i = 1; $i <= 2; $i++) {
+        $teacherNames = $level === 'SMP' 
+            ? ['Guru SMP 01 (Matematika & TIK)', 'Guru SMP 02 (IPA & B.Inggris)', 'Guru SMP 03 (B.Indonesia & PKN)', 'Guru SMP 04 (IPS & PAI)']
+            : ['Guru SMA 01 (Matematika & Fisika)', 'Guru SMA 02 (B.Inggris & TIK)', 'Guru SMA 03 (Kimia & Biologi)', 'Guru SMA 04 (Ekonomi & Geografi)'];
+
+        for ($i = 1; $i <= 4; $i++) {
             $user = User::create([
-                'name' => "Guru {$level} 0{$i}",
+                'name' => $teacherNames[$i - 1],
                 'email' => "guru.{$adminPrefix}.{$i}@sinergiedu.test",
                 'password' => $password,
                 'role_id' => $roles['guru'],
@@ -197,13 +200,15 @@ class DevelopmentTestDataSeeder extends Seeder
         }
 
         // ==================================================
-        // 11 & 12. ORANG TUA (Expanded to 3 parents per school)
+        // 11 & 12. ORANG TUA (Expanded to 4 parents per school)
         // ==================================================
         $parentUsers = [];
         $parents = [];
-        for ($i = 1; $i <= 3; $i++) {
+        $parentNames = ['Bpk. Rahmad Hidayat', 'Ibu Nurhayati', 'Bpk. Hendra Wijaya', 'Ibu Cut Sarah'];
+
+        for ($i = 1; $i <= 4; $i++) {
             $user = User::create([
-                'name' => "Orang Tua {$level} 0{$i}",
+                'name' => $parentNames[$i - 1] . " ({$level})",
                 'email' => "ortu.{$adminPrefix}.{$i}@sinergiedu.test",
                 'password' => $password,
                 'role_id' => $roles['orangtua'],
@@ -221,13 +226,18 @@ class DevelopmentTestDataSeeder extends Seeder
         }
 
         // ==================================================
-        // 9 & 10. SISWA (Expanded to 5 students per school)
+        // 9 & 10. SISWA (Expanded to 8 students per school)
         // ==================================================
         $studentUsers = [];
         $students = [];
-        for ($i = 1; $i <= 5; $i++) {
+        $studentNames = [
+            'Ahmad Fauzi', 'Siti Aminah', 'Rizky Pratama', 'Dian Lestari',
+            'Bintang Ramadhan', 'Putri Ayu', 'Muhammad Aris', 'Zahra Amelia'
+        ];
+
+        for ($i = 1; $i <= 8; $i++) {
             $user = User::create([
-                'name' => "Siswa {$level} 0{$i}",
+                'name' => $studentNames[$i - 1] . " ({$level})",
                 'email' => "siswa.{$adminPrefix}.{$i}@sinergiedu.test",
                 'password' => $password,
                 'role_id' => $roles['siswa'],
@@ -239,8 +249,9 @@ class DevelopmentTestDataSeeder extends Seeder
             // Relationships mapping:
             // Parent 1 -> Siswa 1 & 2
             // Parent 2 -> Siswa 3 & 4
-            // Parent 3 -> Siswa 5
-            $parentId = ($i <= 2) ? $parents[0]->id : (($i <= 4) ? $parents[1]->id : $parents[2]->id);
+            // Parent 3 -> Siswa 5 & 6
+            // Parent 4 -> Siswa 7 & 8
+            $parentId = $parents[(int) floor(($i - 1) / 2)]->id;
 
             $students[] = Student::create([
                 'school_id' => $school->id,
@@ -275,8 +286,8 @@ class DevelopmentTestDataSeeder extends Seeder
             'is_active' => true,
         ]);
         
-        $semesterActiveGanjil = Semester::firstOrCreate(['academic_year_id' => $yearActive->id, 'name' => 'Ganjil (' . $school->name . ')'], ['school_id' => $school->id, 'is_active' => false]);
-        $semesterActiveGenap = Semester::firstOrCreate(['academic_year_id' => $yearActive->id, 'name' => 'Genap (' . $school->name . ')'], ['school_id' => $school->id, 'is_active' => true]);
+        $semesterActiveGanjil = Semester::firstOrCreate(['academic_year_id' => $yearActive->id, 'name' => 'Ganjil (' . $school->name . ')'], ['school_id' => $school->id, 'is_active' => true]);
+        $semesterActiveGenap = Semester::firstOrCreate(['academic_year_id' => $yearActive->id, 'name' => 'Genap (' . $school->name . ')'], ['school_id' => $school->id, 'is_active' => false]);
 
         // ==================================================
         // 15 & 16. CLASSROOMS
@@ -306,7 +317,7 @@ class DevelopmentTestDataSeeder extends Seeder
                 'name' => $cl['name'],
                 'grade_level' => $cl['grade'],
                 'academic_year_id' => $yearActive->id,
-                'homeroom_teacher_id' => null,
+                'homeroom_teacher_id' => $teachers[0]->id,
             ]);
         }
 
@@ -325,19 +336,17 @@ class DevelopmentTestDataSeeder extends Seeder
         // ==================================================
         if ($level === 'SMP') {
             $placements = [
-                0 => 'VII A',
-                1 => 'VIII A',
-                2 => 'IX A',
-                3 => 'VII B',
-                4 => 'VIII B',
+                0 => 'VII A', 1 => 'VII A',
+                2 => 'VII B', 3 => 'VII B',
+                4 => 'VIII A', 5 => 'VIII B',
+                6 => 'IX A', 7 => 'IX B',
             ];
         } else {
             $placements = [
-                0 => 'X IPA 1',
-                1 => 'XI IPA 1',
-                2 => 'XII IPA 1',
-                3 => 'X IPS 1',
-                4 => 'XI IPS 1',
+                0 => 'X IPA 1', 1 => 'X IPA 1',
+                2 => 'X IPA 2', 3 => 'X IPA 2',
+                4 => 'XI IPA 1', 5 => 'XI IPA 2',
+                6 => 'XII IPA 1', 7 => 'XII IPS 1',
             ];
         }
 
@@ -367,23 +376,11 @@ class DevelopmentTestDataSeeder extends Seeder
 
         $subjects = [];
         $codeMap = [
-            'Bahasa Indonesia' => 'BIND',
-            'Matematika' => 'MTK',
-            'IPA' => 'IPA',
-            'IPS' => 'IPS',
-            'Bahasa Inggris' => 'BING',
-            'Pendidikan Agama Islam' => 'PAI',
-            'PPKn' => 'PKN',
-            'Informatika' => 'TIK',
-            'PJOK' => 'PJK',
-            'Seni Budaya' => 'SNI',
-            'Fisika' => 'FIS',
-            'Kimia' => 'KIM',
-            'Biologi' => 'BIO',
-            'Sejarah' => 'SJH',
-            'Geografi' => 'GEO',
-            'Ekonomi' => 'EKO',
-            'Sosiologi' => 'SOS'
+            'Bahasa Indonesia' => 'BIND', 'Matematika' => 'MTK', 'IPA' => 'IPA', 'IPS' => 'IPS',
+            'Bahasa Inggris' => 'BING', 'Pendidikan Agama Islam' => 'PAI', 'PPKn' => 'PKN',
+            'Informatika' => 'TIK', 'PJOK' => 'PJK', 'Seni Budaya' => 'SNI', 'Fisika' => 'FIS',
+            'Kimia' => 'KIM', 'Biologi' => 'BIO', 'Sejarah' => 'SJH', 'Geografi' => 'GEO',
+            'Ekonomi' => 'EKO', 'Sosiologi' => 'SOS'
         ];
         
         foreach ($subjectNames as $sn) {
@@ -396,30 +393,44 @@ class DevelopmentTestDataSeeder extends Seeder
         }
 
         // ==================================================
-        // 20 & 21. TEACHER ASSIGNMENT
+        // 20 & 21. TEACHER ASSIGNMENT (FOR BOTH GANJIL & GENAP)
         // ==================================================
         $teacherAssignments = [];
         if ($level === 'SMP') {
             $teacherAssignments = [
                 0 => ['Matematika', 'Informatika'],
-                1 => ['IPA', 'Bahasa Inggris']
+                1 => ['IPA', 'Bahasa Inggris'],
+                2 => ['Bahasa Indonesia', 'PPKn'],
+                3 => ['IPS', 'Pendidikan Agama Islam']
             ];
         } else {
             $teacherAssignments = [
                 0 => ['Matematika', 'Fisika'],
-                1 => ['Bahasa Inggris', 'Informatika']
+                1 => ['Bahasa Inggris', 'Informatika'],
+                2 => ['Kimia', 'Biologi'],
+                3 => ['Ekonomi', 'Geografi']
             ];
         }
 
+        // Map teacher assignments to ALL classrooms for both Ganjil (Active) & Genap
         foreach ($teacherAssignments as $teacherIdx => $subNames) {
             foreach ($subNames as $subName) {
-                // Assign to the classes the students are in to make testing viable
-                foreach ($placements as $className) {
+                foreach ($classrooms as $className => $clsModel) {
+                    // Create for active Semester Ganjil
                     TeacherSubject::create([
                         'school_id' => $school->id,
                         'teacher_id' => $teachers[$teacherIdx]->id,
                         'subject_id' => $subjects[$subName]->id,
-                        'class_id' => $classrooms[$className]->id,
+                        'class_id' => $clsModel->id,
+                        'academic_year_id' => $yearActive->id,
+                        'semester_id' => $semesterActiveGanjil->id,
+                    ]);
+                    // Create for Semester Genap
+                    TeacherSubject::create([
+                        'school_id' => $school->id,
+                        'teacher_id' => $teachers[$teacherIdx]->id,
+                        'subject_id' => $subjects[$subName]->id,
+                        'class_id' => $clsModel->id,
                         'academic_year_id' => $yearActive->id,
                         'semester_id' => $semesterActiveGenap->id,
                     ]);
@@ -432,17 +443,19 @@ class DevelopmentTestDataSeeder extends Seeder
         // ==================================================
         if ($level === 'SMP') {
             $materialsData = [
-                ['title' => 'Modul Matematika — Persamaan Linear', 'teacher_idx' => 0, 'subject' => 'Matematika'],
-                ['title' => 'Modul Informatika — Dasar Algoritma', 'teacher_idx' => 0, 'subject' => 'Informatika'],
-                ['title' => 'Modul IPA — Sistem Pernapasan', 'teacher_idx' => 1, 'subject' => 'IPA'],
-                ['title' => 'Modul Bahasa Inggris — Descriptive Text', 'teacher_idx' => 1, 'subject' => 'Bahasa Inggris'],
+                ['title' => 'Modul 1: Persamaan Linear & Aljabar', 'teacher_idx' => 0, 'subject' => 'Matematika'],
+                ['title' => 'Modul 2: Berpikir Komputasional & Algoritma', 'teacher_idx' => 0, 'subject' => 'Informatika'],
+                ['title' => 'Modul 1: Sistem Organ Manusia & Pernapasan', 'teacher_idx' => 1, 'subject' => 'IPA'],
+                ['title' => 'Modul 2: Grammar & Descriptive Text', 'teacher_idx' => 1, 'subject' => 'Bahasa Inggris'],
+                ['title' => 'Modul 1: Teks Laporan Hasil Observasi', 'teacher_idx' => 2, 'subject' => 'Bahasa Indonesia'],
+                ['title' => 'Modul 1: Keragaman Budaya & Ekonomi', 'teacher_idx' => 3, 'subject' => 'IPS'],
             ];
         } else {
             $materialsData = [
-                ['title' => 'Modul Matematika — Integral', 'teacher_idx' => 0, 'subject' => 'Matematika'],
-                ['title' => 'Modul Fisika — Gerak Lurus', 'teacher_idx' => 0, 'subject' => 'Fisika'],
-                ['title' => 'Modul Bahasa Inggris — Analytical Exposition', 'teacher_idx' => 1, 'subject' => 'Bahasa Inggris'],
-                ['title' => 'Modul Informatika — Algoritma Dasar', 'teacher_idx' => 1, 'subject' => 'Informatika'],
+                ['title' => 'Modul 1: Kalkulus & Integral Parsial', 'teacher_idx' => 0, 'subject' => 'Matematika'],
+                ['title' => 'Modul 1: Hukum Newton & Dinamika Gerak', 'teacher_idx' => 0, 'subject' => 'Fisika'],
+                ['title' => 'Modul 1: Analytical Exposition Essay', 'teacher_idx' => 1, 'subject' => 'Bahasa Inggris'],
+                ['title' => 'Modul 1: Ikatan Kimia & Tata Nama Senyawa', 'teacher_idx' => 2, 'subject' => 'Kimia'],
             ];
         }
 
@@ -450,63 +463,141 @@ class DevelopmentTestDataSeeder extends Seeder
             Material::create([
                 'teacher_id' => $teachers[$md['teacher_idx']]->id,
                 'subject_id' => $subjects[$md['subject']]->id,
-                'class_id' => $classrooms[$placements[0]]->id, // assign to the first class
+                'class_id' => $classrooms['VII A']?->id ?? $classrooms['X IPA 1']->id,
                 'title' => $md['title'],
-                'description' => 'Isi deskripsi dari ' . $md['title'],
-                'file_path' => null, // don't leak physical storage
+                'description' => 'Materi pembelajaran resmi untuk ' . $md['title'],
+                'file_path' => null,
             ]);
         }
 
         // ==================================================
-        // 23, 24, 25, 26. ASSIGNMENTS, SUBMISSIONS, GRADES, FEEDBACK
+        // 23, 24, 25, 26. RICH ASSIGNMENTS & SUBMISSIONS (ALL STATES)
         // ==================================================
         $assignmentStatuses = [
-            ['title' => 'Tugas 1: Normal + Score', 'due' => now()->addDays(7), 'sub' => 'normal', 'score' => 85, 'student_idx' => 0],
-            ['title' => 'Tugas 2: Normal + Score NULL', 'due' => now()->addDays(7), 'sub' => 'normal', 'score' => null, 'student_idx' => 0],
-            ['title' => 'Tugas 3: Terlambat + Score', 'due' => now()->subDays(2), 'sub' => 'late', 'score' => 78, 'student_idx' => 0],
-            ['title' => 'Tugas 4: Terlambat + Score NULL', 'due' => now()->subDays(2), 'sub' => 'late', 'score' => null, 'student_idx' => 1],
-            ['title' => 'Tugas 5: Belum Submit (Due Later)', 'due' => now()->addDays(2), 'sub' => 'none', 'score' => null, 'student_idx' => 1],
-            ['title' => 'Tugas 6: Sudah Dinilai + Feedback', 'due' => now()->addDays(1), 'sub' => 'normal', 'score' => 92, 'student_idx' => 2],
+            // Status A: Belum Dikerjakan (Deadline Masih Lama)
+            [
+                'title' => 'Tugas 1: Latihan Soal Persamaan Linear',
+                'due' => now()->addDays(5),
+                'sub' => 'none',
+                'score' => null,
+                'student_idx' => 0,
+                'teacher_idx' => 0,
+                'subject' => 'Matematika'
+            ],
+            // Status B: Belum Dikerjakan (Mendekati Deadline / Terlambat)
+            [
+                'title' => 'Tugas 2: Tugas Algoritma Dasar',
+                'due' => now()->subDays(1),
+                'sub' => 'none',
+                'score' => null,
+                'student_idx' => 0,
+                'teacher_idx' => 0,
+                'subject' => 'Informatika'
+            ],
+            // Status C: Sudah Dikerjakan tapi BELUM DINILAI
+            [
+                'title' => 'Tugas 3: Laporan Praktikum Organ Manusia',
+                'due' => now()->addDays(2),
+                'sub' => 'normal',
+                'score' => null,
+                'student_idx' => 0,
+                'teacher_idx' => 1,
+                'subject' => 'IPA'
+            ],
+            // Status D: Sudah Dikerjakan & SUDAH DINILAI (Sangat Baik)
+            [
+                'title' => 'Tugas 4: Writing Descriptive Text',
+                'due' => now()->subDays(3),
+                'sub' => 'normal',
+                'score' => 95,
+                'feedback' => 'Sangat mengagumkan! Tata bahasa dan kosa kata sangat tepat.',
+                'student_idx' => 0,
+                'teacher_idx' => 1,
+                'subject' => 'Bahasa Inggris'
+            ],
+            // Status E: Sudah Dikerjakan & SUDAH DINILAI (Perlu Perbaikan)
+            [
+                'title' => 'Tugas 5: Analisis Teks Laporan Observasi',
+                'due' => now()->subDays(4),
+                'sub' => 'normal',
+                'score' => 70,
+                'feedback' => 'Penjelasan struktur teks masih kurang lengkap. Pelajari modul 1 kembali.',
+                'student_idx' => 1,
+                'teacher_idx' => 2,
+                'subject' => 'Bahasa Indonesia'
+            ],
+            // Status F: Submit Terlambat + Sudah Dinilai
+            [
+                'title' => 'Tugas 6: Ringkasan Keragaman Budaya Indonesia',
+                'due' => now()->subDays(5),
+                'sub' => 'late',
+                'score' => 80,
+                'feedback' => 'Tugas bagus, namun ada pengurangan poin karena terlambat 1 hari.',
+                'student_idx' => 1,
+                'teacher_idx' => 3,
+                'subject' => 'IPS'
+            ],
+            // Status G: Siswa 2 - Belum dikerjakan
+            [
+                'title' => 'Tugas 7: Latihan Soal Aljabar Lanjutan',
+                'due' => now()->addDays(4),
+                'sub' => 'none',
+                'score' => null,
+                'student_idx' => 1,
+                'teacher_idx' => 0,
+                'subject' => 'Matematika'
+            ],
+            // Status H: Siswa 3 - Sudah dikerjakan & Sudah Dinilai 88
+            [
+                'title' => 'Tugas 8: Projek Coding Sederhana',
+                'due' => now()->subDays(2),
+                'sub' => 'normal',
+                'score' => 88,
+                'feedback' => 'Logika pemrograman runtut dan rapi.',
+                'student_idx' => 2,
+                'teacher_idx' => 0,
+                'subject' => 'Informatika'
+            ]
         ];
 
-        foreach ($assignmentStatuses as $index => $asData) {
-            // Assign sequentially across teachers for variety
-            $teacherIdx = $index % 2;
-            $subjectName = $teacherAssignments[$teacherIdx][0]; // Pick first subject of teacher
-            $targetClass = $placements[$asData['student_idx']];
+        foreach ($assignmentStatuses as $asData) {
+            $tIdx = $asData['teacher_idx'];
+            $sName = isset($subjects[$asData['subject']]) ? $asData['subject'] : $teacherAssignments[$tIdx][0];
+            $stIdx = $asData['student_idx'];
+            $targetClass = $placements[$stIdx];
 
             $assignment = Assignment::create([
-                'teacher_id' => $teachers[$teacherIdx]->id,
-                'subject_id' => $subjects[$subjectName]->id,
+                'teacher_id' => $teachers[$tIdx]->id,
+                'subject_id' => $subjects[$sName]->id,
                 'class_id' => $classrooms[$targetClass]->id,
                 'title' => $asData['title'],
-                'description' => 'Instruksi untuk ' . $asData['title'],
+                'description' => 'Instruksi tugas pembelajaran untuk ' . $asData['title'] . '. Harap dikerjakan dengan jujur dan teliti.',
                 'deadline' => $asData['due'],
             ]);
 
+
             if ($asData['sub'] !== 'none') {
-                $submitTime = $asData['sub'] === 'late' ? now()->subDay(1) : now()->subDays(3);
-                
                 $submission = AssignmentSubmission::create([
                     'assignment_id' => $assignment->id,
-                    'student_id' => $students[$asData['student_idx']]->id,
-                    'file_path' => 'submissions/dummy.pdf',
-                    'notes' => 'Ini jawaban saya.',
+                    'student_id' => $students[$stIdx]->id,
+                    'file_path' => 'submissions/jawaban_siswa_' . ($stIdx + 1) . '.pdf',
+                    'notes' => 'Berikut adalah hasil pengerjaan tugas saya.',
                     'score' => $asData['score'],
-                    'feedback' => $asData['score'] === 92 ? 'Kerja bagus, sangat teliti!' : null,
+                    'feedback' => $asData['feedback'] ?? null,
+                    'created_at' => $asData['sub'] === 'late' ? $asData['due']->addHours(6) : $asData['due']->subHours(12),
                 ]);
 
                 if ($asData['score'] !== null) {
                     StudentGrade::updateOrCreate(
                         [
-                            'student_id' => $students[$asData['student_idx']]->id,
-                            'subject_id' => $subjects[$subjectName]->id,
+                            'student_id' => $students[$stIdx]->id,
+                            'subject_id' => $subjects[$sName]->id,
                             'academic_year_id' => $yearActive->id,
-                            'semester_id' => $semesterActiveGenap->id,
+                            'semester_id' => $semesterActiveGanjil->id,
                         ],
                         [
                             'class_id' => $classrooms[$targetClass]->id,
-                            'teacher_id' => $teachers[$teacherIdx]->id,
+                            'teacher_id' => $teachers[$tIdx]->id,
                             'assignment_score' => $asData['score'],
                         ]
                     );
@@ -515,51 +606,53 @@ class DevelopmentTestDataSeeder extends Seeder
         }
 
         // ==================================================
-        // 26. FEEDBACK UMUM
+        // 27. FEEDBACK AKADEMIK & SIKAP
         // ==================================================
+        $secondSubName = isset($subjects['IPA']) ? 'IPA' : 'Bahasa Inggris';
         Feedback::create([
             'student_id' => $students[0]->id,
             'teacher_id' => $teachers[0]->id,
-            'subject_id' => $subjects[$subjectNames[0]]->id,
-            'title' => 'Evaluasi Sikap Belajar',
+            'subject_id' => $subjects['Matematika']->id,
+            'title' => 'Apresiasi Pemahaman Matematika',
             'type' => 'positive',
-            'message' => 'Menunjukkan pemahaman konsep yang baik, namun partisipasi masih kurang.',
+            'message' => 'Ahmad Fauzi menunjukkan perkembangan luar biasa pada materi aljabar.',
         ]);
         
         Feedback::create([
-            'student_id' => $students[1]->id,
+            'student_id' => $students[0]->id,
             'teacher_id' => $teachers[1]->id,
-            'subject_id' => $subjects[$subjectNames[0]]->id,
-            'title' => 'Catatan Tambahan',
+            'subject_id' => $subjects[$secondSubName]->id,
+            'title' => 'Pengingat Ketepatan Waktu',
             'type' => 'negative',
-            'message' => 'Perlu meningkatkan ketelitian dalam menyelesaikan soal.',
+            'message' => 'Mohon tingkatkan kedisiplinan mengumpulkan tugas tepat waktu.',
         ]);
 
+
         // ==================================================
-        // 27. PARENT SUPPORT
+        // 28. PARENT SUPPORT
         // ==================================================
         ParentSupport::create([
             'school_id' => $school->id,
             'student_id' => $students[0]->id,
             'academic_year_id' => $yearActive->id,
-            'semester_id' => $semesterActiveGenap->id,
+            'semester_id' => $semesterActiveGanjil->id,
             'week_number' => 1,
-            'support_description' => 'Anak terlihat antusias belajar matematika.',
-            'general_feedback' => 'Sehat dan aktif.',
-            'action_plan' => 'Lanjutkan tingkat belajar.',
-            'created_at' => now()->subDays(5),
-            'updated_at' => now()->subDays(5),
+            'support_description' => 'Mendampingi anak belajar matematika di rumah setiap malam pukul 19.30.',
+            'general_feedback' => 'Anak lebih fokus dan bersemangat.',
+            'action_plan' => 'Membuat jadwal rutin belajar dan membatasi gadget.',
+            'created_at' => now()->subDays(3),
+            'updated_at' => now()->subDays(3),
         ]);
 
         // ==================================================
-        // 28. HISTORICAL DATA (2025/2026)
+        // 29. HISTORICAL DATA (2025/2026)
         // ==================================================
         $historicalAssignment = Assignment::create([
             'teacher_id' => $teachers[0]->id,
             'subject_id' => $subjects[$subjectNames[0]]->id,
             'class_id' => $historicalClass->id,
-            'title' => 'Tugas Masa Lalu',
-            'description' => 'Historical Assignment',
+            'title' => 'Tugas Portofolio Semester Lalu',
+            'description' => 'Historical Assignment 2025/2026',
             'deadline' => now()->subMonths(8),
         ]);
         
@@ -574,3 +667,4 @@ class DevelopmentTestDataSeeder extends Seeder
         ]);
     }
 }
+
