@@ -454,12 +454,12 @@
             @if(isset($availablePengawas) && count($availablePengawas) > 0)
                 <div class="mb-4">
                     <label for="user_id" class="block text-xs font-semibold text-slate-700 mb-1">Pilih Pengawas <span class="text-red-500">*</span></label>
-                    <select id="user_id" name="user_id" required class="block w-full text-xs border-slate-300 rounded-lg focus:ring-primary focus:border-primary">
+                    <x-searchable-select name="user_id" id="user_id" placeholder="-- Pilih Pengawas --" required>
                         <option value="">-- Pilih Pengawas --</option>
                         @foreach($availablePengawas as $ap)
                             <option value="{{ $ap->id }}">{{ $ap->name }} ({{ $ap->email }})</option>
                         @endforeach
-                    </select>
+                    </x-searchable-select>
                 </div>
                 <div class="flex justify-end gap-2">
                     <x-button variant="secondary" type="button" x-on:click="$dispatch('close-modal', 'connect-pengawas-modal')">Batal</x-button>

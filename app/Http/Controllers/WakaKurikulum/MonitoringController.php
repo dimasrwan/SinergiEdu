@@ -82,7 +82,7 @@ class MonitoringController extends Controller
         $assignment->load(['teacher.user', 'classroom', 'subject', 'learningMeeting', 'material', 'submissions.student.user']);
 
         $activeYear = AcademicYear::where('is_active', true)->first();
-        $enrolledStudents = $activeYear
+        $enrolledStudents = ($activeYear && $assignment->classroom)
             ? $assignment->classroom->students()->wherePivot('academic_year_id', $activeYear->id)->with('user')->get()
             : collect();
 

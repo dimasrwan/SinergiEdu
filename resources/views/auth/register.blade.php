@@ -24,7 +24,7 @@
         <!-- Role -->
         <div>
             <x-input-label for="role" value="Daftar Sebagai" class="mb-1.5" />
-            <select id="role" name="role" class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" required>
+            <x-select id="role" name="role" selected="{{ old('role', 'siswa') }}" required>
                 @forelse($roles as $role)
                     <option value="{{ $role->name }}" @selected(old('role', 'siswa') === $role->name)>
                         {{ $role->display_name }}
@@ -32,7 +32,7 @@
                 @empty
                     <option value="siswa">Siswa</option>
                 @endforelse
-            </select>
+            </x-select>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
         </div>
 

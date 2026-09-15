@@ -30,12 +30,31 @@
                     @endif
                 </x-card>
 
-                <x-card padding="lg" class="bg-blue-700 text-white">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-blue-100">Partisipasi Pengumpulan</p>
-                    <p class="mt-2 text-2xl font-bold">{{ $assignment->submissions->count() }} / {{ $enrolledStudents->count() }}</p>
-                    <p class="mt-1 text-sm text-blue-100">siswa sudah mengumpulkan.</p>
+                <x-card padding="lg">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Partisipasi Pengumpulan</p>
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </span>
+                    </div>
+
+                    @php($submissionRate = $enrolledStudents->isNotEmpty() ? min(100, round(($assignment->submissions->count() / $enrolledStudents->count()) * 100)) : 0)
+
+                    <div class="mt-3 flex items-baseline gap-2">
+                        <span class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ $assignment->submissions->count() }}</span>
+                        <span class="text-sm font-semibold text-slate-400">/ {{ $enrolledStudents->count() }} siswa</span>
+                    </div>
+
+                    <p class="mt-1 text-sm font-medium text-slate-600">
+                        <span class="font-bold text-slate-800">{{ $submissionRate }}%</span> siswa sudah mengumpulkan.
+                    </p>
+
                     @if ($enrolledStudents->isNotEmpty())
-                        <div class="mt-4 h-2 overflow-hidden rounded-full bg-blue-950/30"><div class="h-full rounded-full bg-white" style="width: {{ min(100, round(($assignment->submissions->count() / $enrolledStudents->count()) * 100)) }}%"></div></div>
+                        <div class="mt-4 w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200/60">
+                            <div class="bg-primary h-full rounded-full transition-all duration-300" style="width: {{ $submissionRate }}%"></div>
+                        </div>
                     @endif
                 </x-card>
             </div>

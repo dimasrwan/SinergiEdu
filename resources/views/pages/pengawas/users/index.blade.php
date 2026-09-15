@@ -23,13 +23,13 @@
                     <div class="flex-1">
                         <x-text-input name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." class="w-full" />
                     </div>
-                    <div class="w-full md:w-48">
-                        <select name="role" onchange="this.form.submit()" class="block w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm">
+                    <div class="w-full md:w-56">
+                        <x-select name="role" selected="{{ request('role') }}" placeholder="Semua Role" onchange="this.form.submit()">
                             <option value="">Semua Role</option>
                             @foreach($allowedRoles as $role)
                                 <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>{{ $role->display_name }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
                     <x-button variant="primary" type="submit">Filter</x-button>
                     @if(request()->anyFilled(['search', 'role']))
