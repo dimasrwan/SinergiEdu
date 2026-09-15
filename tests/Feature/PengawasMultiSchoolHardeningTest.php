@@ -502,8 +502,8 @@ class PengawasMultiSchoolHardeningTest extends TestCase
         $this->assertNotNull(\App\Models\Pengawas::find($pengawasModel->id));
     }
 
-    /** Test 32: Super Admin attempting to uncheck all schools triggers validation error */
-    public function test_32_super_admin_unchecking_all_schools_triggers_validation_error()
+    /** Test 32: Super Admin can remove ALL school assignments */
+    public function test_32_super_admin_can_remove_all_school_assignments()
     {
         $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
         $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
@@ -513,9 +513,9 @@ class PengawasMultiSchoolHardeningTest extends TestCase
             'nip' => '77766655',
         ]);
 
-        $this->pengawas->assignedSchools()->sync([$this->schoolA->id]);
+        $this->pengawas->assignedSchools()->sync([$this->schoolA->id, $this->schoolB->id]);
 
-        // Submit empty schools array
+        // Submit empty schools array (or no schools field)
         $response = $this->actingAs($superAdmin)->put(route('admin.pengawas.update', $pengawasModel), [
             'name' => $this->pengawas->name,
             'email' => $this->pengawas->email,
@@ -523,7 +523,108 @@ class PengawasMultiSchoolHardeningTest extends TestCase
             'schools' => [],
         ]);
 
-        $response->assertSessionHasErrors(['schools']);
-        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        $response->assertRedirect(route('admin.pengawas.index'));
+        $response->assertSessionHas('success');
+
+        // Zero assignments in pivot
+        $this->assertCount(0, $this->pengawas->fresh()->assignedSchools);
+
+        // Account & Profile intact
+        $this->assertNotNull(User::find($this->pengawas->id));
+        $this->assertNotNull(\App\Models\Pengawas::find($pengawasModel->id));
+        $this->assertNull($this->pengawas->fresh()->school_id);
+        $this->assertEquals('pengawas', $this->pengawas->fresh()->role->name);
+    }
+
+    /** Test 33: Zero school Pengawas gets zero-school state on login and clears stale active school session */
+    public function test_33_zero_school_pengawas_gets_zero_school_state_and_clears_stale_session()
+    {
+        // Detach all schools from pengawas
+        $this->pengawas->assignedSchools()->detach();
+
+        // Attempting to visit dashboard with stale active school session
+        $response = $this->actingAs($this->pengawas)
+            ->withSession(['pengawas_school_id' => $this->schoolA->id])
+            ->get(route('pengawas.dashboard'));
+
+        $response->assertRedirect(route('pengawas.select-school'));
+        $this->assertNull(session('pengawas_school_id'));
+
+        // Visiting select-school displays zero-school message
+        $response = $this->actingAs($this->pengawas)->get(route('pengawas.select-school'));
+        $response->assertStatus(200);
+        $response->assertSee('Belum Ada Sekolah Binaan');
+    }
+
+    /** Test 34: Super Admin reassignment works after zero-assignment state */
+    public function test_34_super_admin_reassignment_works_after_zero_assignment()
+    {
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '77766655',
+        ]);
+
+        // Clear all assignments first
+        $this->pengawas->assignedSchools()->detach();
+        $this->assertCount(0, $this->pengawas->fresh()->assignedSchools);
+
+        // Reassign School C
+        $response = $this->actingAs($superAdmin)->put(route('admin.pengawas.update', $pengawasModel), [
+            'name' => $this->pengawas->name,
+            'email' => $this->pengawas->email,
+            'nip' => '77766655',
+            'schools' => [$this->schoolC->id],
+        ]);
+
+        $response->assertRedirect(route('admin.pengawas.index'));
+        $this->assertCount(1, $this->pengawas->fresh()->assignedSchools);
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolC));
+    }
+
+    /** Test 35: Super Admin dashboard returns accurate Pengawas monitoring and coverage metrics */
+    public function test_35_super_admin_dashboard_returns_accurate_pengawas_monitoring_and_coverage()
+    {
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
+
+        // Create an unassigned active Pengawas
+        $unassignedPengawas = User::factory()->create([
+            'role_id' => $this->pengawasRole->id,
+            'school_id' => null,
+            'is_active' => true,
+        ]);
+
+        // Create an inactive Pengawas
+        $inactivePengawas = User::factory()->create([
+            'role_id' => $this->pengawasRole->id,
+            'school_id' => null,
+            'is_active' => false,
+        ]);
+
+        $response = $this->actingAs($superAdmin)->get(route('super_admin.dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Monitoring Pengawasan');
+        $response->assertSee('Total Pengawas');
+
+        // Total Pengawas = 3 ($this->pengawas, $unassignedPengawas, $inactivePengawas)
+        $response->assertViewHas('totalPengawas', 3);
+        // Active Pengawas = 2 ($this->pengawas, $unassignedPengawas)
+        $response->assertViewHas('activePengawas', 2);
+        // Unassigned Pengawas = 1 ($unassignedPengawas)
+        $response->assertViewHas('unassignedPengawas', 1);
+        // Total Assignments = 2 (School A & School B attached to $this->pengawas)
+        $response->assertViewHas('totalAssignments', 2);
+        // Covered Schools Count = 2 (School A & School B)
+        $response->assertViewHas('coveredSchoolsCount', 2);
+        // Uncovered Schools Count = activeSchools - 2
+        $totalActiveSchools = $response->viewData('activeSchools');
+        $response->assertViewHas('uncoveredSchoolsCount', $totalActiveSchools - 2);
+        // Coverage Percentage = round((2 / totalActiveSchools) * 100, 1)
+        $expectedCoverage = round((2 / $totalActiveSchools) * 100, 1);
+        $response->assertViewHas('coveragePercentage', $expectedCoverage);
     }
 }

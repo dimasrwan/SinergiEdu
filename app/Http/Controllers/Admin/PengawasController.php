@@ -242,8 +242,8 @@ class PengawasController extends Controller
         $pengawas = Pengawas::findOrFail(request('pengawas_id'));
         $targetUser = $pengawas->user;
 
-        if (!$targetUser) {
-            return redirect()->back()->withErrors(['pengawas_id' => 'User Pengawas tidak ditemukan.']);
+        if (!$targetUser || !$targetUser->role || $targetUser->role->name !== 'pengawas') {
+            return redirect()->back()->withErrors(['pengawas_id' => 'Pengguna yang dipilih bukan Pengawas yang valid.']);
         }
 
         $alreadyConnected = $targetUser->assignedSchools()->where('schools.id', $user->school_id)->exists();
@@ -269,10 +269,12 @@ class PengawasController extends Controller
         }
 
         $targetUser = $pengawas->user;
-        if ($targetUser) {
-            $targetUser->assignedSchools()->detach($user->school_id);
+        if (!$targetUser || !$targetUser->assignedSchools()->where('schools.id', $user->school_id)->exists()) {
+            abort(403, 'Pengawas ini tidak terhubung dengan sekolah Anda.');
         }
 
-        return redirect()->route('admin.pengawas.index')->with('success', 'Pengawas berhasil dilepas dari sekolah Anda.');
+        $targetUser->assignedSchools()->detach($user->school_id);
+
+        return redirect()->route('admin.pengawas.index')->with('success', 'Pengawas berhasil dilepas dari sekolah.');
     }
 }

@@ -97,8 +97,8 @@
 
                     <!-- Sekolah yang Diawasi -->
                     <div class="space-y-4">
-                        <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Sekolah yang Diawasi <span class="text-danger">*</span></h2>
-                        <p class="text-sm text-slate-500">Pilih minimal satu sekolah yang akan diawasi oleh pengawas ini. Pengawas hanya dapat mengakses data sekolah yang dipilih.</p>
+                        <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Sekolah yang Diawasi</h2>
+                        <p class="text-sm text-slate-500">Pilih sekolah binaan yang akan diawasi oleh pengawas ini. Pengawas hanya dapat mengakses data sekolah yang dipilih.</p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             @foreach($schools as $school)
@@ -141,18 +141,28 @@
                                 </svg>
                             </div>
                             <h3 class="text-lg font-bold text-slate-900">Perubahan Penugasan</h3>
-                            <p class="mt-2 text-sm text-slate-600">Pengawas akan dilepas dari sekolah berikut:</p>
                             
-                            <ul class="mt-3 space-y-1.5 bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-xs font-semibold text-amber-800">
-                                <template x-for="name in removedSchoolNames" :key="name">
-                                    <li class="flex items-center gap-2">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                        <span x-text="name"></span>
-                                    </li>
-                                </template>
-                            </ul>
-
-                            <p class="mt-3 text-xs text-slate-500">Penugasan ke sekolah lain, profil, serta akun Pengawas tidak akan terhapus.</p>
+                            <template x-if="selectedSchools.length === 0">
+                                <div class="mt-2 text-sm text-slate-600 space-y-2">
+                                    <p class="font-bold text-amber-800">Pengawas ini tidak akan memiliki sekolah binaan.</p>
+                                    <p class="text-xs text-slate-500">Akunnya tetap aktif, tetapi tidak dapat mengakses dashboard sekolah sampai mendapatkan penugasan baru.</p>
+                                </div>
+                            </template>
+                            
+                            <template x-if="selectedSchools.length > 0">
+                                <div>
+                                    <p class="mt-2 text-sm text-slate-600">Pengawas akan dilepas dari sekolah berikut:</p>
+                                    <ul class="mt-3 space-y-1.5 bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-xs font-semibold text-amber-800">
+                                        <template x-for="name in removedSchoolNames" :key="name">
+                                            <li class="flex items-center gap-2">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                <span x-text="name"></span>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                    <p class="mt-3 text-xs text-slate-500">Penugasan ke sekolah lain, profil, serta akun Pengawas tidak akan terhapus.</p>
+                                </div>
+                            </template>
 
                             <div class="mt-6 flex justify-end gap-3">
                                 <x-button variant="secondary" type="button" @click="showConfirmModal = false">Batal</x-button>

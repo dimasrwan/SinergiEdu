@@ -15,11 +15,16 @@
                     <p class="text-sm text-slate-500">Detail informasi kepegawaian dan akun sistem.</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <x-button variant="secondary" href="{{ route('admin.pengawas.edit', $pengawas) }}">
-                    Edit Profil
-                </x-button>
-            </div>
+            @php
+                $isSuperAdmin = auth()->user() && auth()->user()->role && in_array(auth()->user()->role->name, ['super_admin', 'superadmin']);
+            @endphp
+            @if($isSuperAdmin)
+                <div class="flex gap-2">
+                    <x-button variant="secondary" href="{{ route('admin.pengawas.edit', $pengawas) }}">
+                        Edit Profil
+                    </x-button>
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
