@@ -16,6 +16,7 @@ Route::prefix('schools')->name('schools.')->group(function () {
     Route::get('/{school}/edit', [SchoolController::class, 'edit'])->name('edit');
     Route::put('/{school}', [SchoolController::class, 'update'])->name('update');
     Route::patch('/{school}/toggle-status', [SchoolController::class, 'toggleStatus'])->name('toggle-status');
+    Route::delete('/{school}', [SchoolController::class, 'destroy'])->name('destroy');
 
     // Supervisor assignment endpoints
     Route::post('/{school}/supervisors', [SchoolController::class, 'attachSupervisor'])->name('supervisors.attach');

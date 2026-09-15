@@ -1,5 +1,5 @@
 <x-layouts.app title="Detail Sekolah">
-    <div class="max-w-5xl space-y-6 mx-auto px-0 sm:px-4 pt-2 sm:pt-4" x-data="{}">
+    <div class="w-full space-y-6 pt-2 sm:pt-4" x-data="{}">
         <!-- Back Navigation -->
         <div class="mb-2 px-1">
             <a href="{{ route('super_admin.schools.index') }}" class="inline-flex items-center text-xs sm:text-sm font-semibold text-slate-500 hover:text-blue-600 gap-1.5 transition-colors">
@@ -40,7 +40,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
+                <div class="flex items-center gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0" x-data="{ deleteModalOpen: false, confirmName: '' }">
                     <form action="{{ route('super_admin.schools.toggle-status', $school) }}" method="POST" class="flex-1 sm:flex-initial" onsubmit="return confirm('Yakin ingin {{ $school->is_active ? 'menonaktifkan' : 'mengaktifkan' }} sekolah ini?')">
                         @csrf
                         @method('PATCH')
@@ -55,6 +55,101 @@
                         </svg>
                         Edit Profil
                     </a>
+                    <button type="button" @click="confirmName = ''; deleteModalOpen = true" class="px-3 py-2 text-xs sm:text-sm font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-xl transition duration-150 inline-flex items-center justify-center gap-1">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        Hapus
+                    </button>
+
+                    <!-- Delete Modal in Show View -->
+                    <div x-show="deleteModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center text-left">
+                        <div x-show="deleteModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/60" @click="deleteModalOpen = false"></div>
+                        <div x-show="deleteModalOpen" x-transition class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl max-w-lg w-full relative z-10 space-y-5">
+                            @if($deletionEligibility['eligible'])
+                                <div class="space-y-4">
+                                    <div class="flex items-center gap-3 text-red-600">
+                                        <div class="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-slate-900">Hapus Sekolah Permanen?</h3>
+                                            <p class="text-xs text-slate-500">Tindakan ini destruktif dan tidak dapat dibatalkan.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs sm:text-sm text-slate-700">
+                                        Sekolah: <strong class="text-slate-900">{{ $school->name }}</strong>
+                                    </div>
+
+                                    <div class="text-xs text-slate-600 leading-relaxed">
+                                        <p class="font-semibold text-slate-800">Tindakan ini akan menghapus data sekolah secara permanen.</p>
+                                        <p class="mt-1">Ketik nama sekolah persis di bawah ini untuk mengonfirmasi penghapusan:</p>
+                                    </div>
+
+                                    <form action="{{ route('super_admin.schools.destroy', $school) }}" method="POST" class="space-y-4 pt-1">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="text" name="confirm_school_name" x-model="confirmName" placeholder="{{ $school->name }}" required class="block w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-red-500 focus:border-red-500">
+                                        
+                                        <div class="flex items-center justify-end gap-3 pt-2">
+                                            <button type="button" @click="deleteModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                                                Batal
+                                            </button>
+                                            <button type="submit" :disabled="confirmName.trim() !== @js($school->name).trim()" :class="confirmName.trim() === @js($school->name).trim() ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-colors">
+                                                Hapus Permanen
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @else
+                                <div class="space-y-4">
+                                    <div class="flex items-center gap-3 text-amber-600">
+                                        <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-slate-900">Penghapusan Permanen Tidak Tersedia</h3>
+                                            <p class="text-xs text-amber-700 font-medium">Sekolah masih memiliki data terkait di sistem.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-700">
+                                        Sekolah: <strong class="text-slate-900">{{ $school->name }}</strong>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        <p class="text-xs font-semibold text-slate-700">Rincian dependency yang memblokir penghapusan:</p>
+                                        <div class="max-h-48 overflow-y-auto p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1.5">
+                                            @foreach($deletionEligibility['reasons'] as $reason)
+                                                <div class="flex items-start gap-2 text-xs text-slate-600">
+                                                    <span class="text-amber-500 font-bold">•</span>
+                                                    <span>{{ $reason }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-800 flex items-start gap-2.5">
+                                        <svg class="h-4 w-4 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Gunakan fitur <strong>Nonaktifkan Sekolah</strong> untuk membatasi akses tanpa menghapus riwayat data.</span>
+                                    </div>
+
+                                    <div class="flex items-center justify-end gap-3 pt-2">
+                                        <button type="button" @click="deleteModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                                            Tutup
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
 

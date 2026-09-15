@@ -15,7 +15,7 @@ class SchoolController extends Controller
     /**
      * Tampilkan daftar sekolah.
      */
-    public function index(Request $request)
+    public function index(Request $request, \App\Services\SchoolDeletionEligibilityService $eligibilityService)
     {
         $query = School::withCount('users');
 
@@ -40,7 +40,13 @@ class SchoolController extends Controller
 
         $schools = $query->latest()->paginate(10)->withQueryString();
 
-        return view('pages.super-admin.schools.index', compact('schools'));
+        // Calculate deletion eligibility for each school on current page
+        $eligibilityMap = [];
+        foreach ($schools as $schoolItem) {
+            $eligibilityMap[$schoolItem->id] = $eligibilityService->check($schoolItem);
+        }
+
+        return view('pages.super-admin.schools.index', compact('schools', 'eligibilityMap'));
     }
 
     /**
@@ -84,7 +90,7 @@ class SchoolController extends Controller
     /**
      * Tampilkan detail sekolah tertentu.
      */
-    public function show(School $school)
+    public function show(School $school, \App\Services\SchoolDeletionEligibilityService $eligibilityService)
     {
         $school->loadCount([
             'users', 
@@ -107,7 +113,9 @@ class SchoolController extends Controller
             $q->where('name', 'admin');
         })->get();
 
-        return view('pages.super-admin.schools.show', compact('school', 'admins', 'availablePengawas'));
+        $deletionEligibility = $eligibilityService->check($school);
+
+        return view('pages.super-admin.schools.show', compact('school', 'admins', 'availablePengawas', 'deletionEligibility'));
     }
 
     /**
@@ -219,5 +227,44 @@ class SchoolController extends Controller
         $school->supervisors()->detach($user->id);
 
         return redirect()->back()->with('success', 'Pengawas berhasil dilepas dari sekolah ini.');
+    }
+
+    /**
+     * Hapus permanen sekolah jika eligible (0 dependency data penting).
+     */
+    public function destroy(Request $request, School $school, \App\Services\SchoolDeletionEligibilityService $eligibilityService)
+    {
+        $check = $eligibilityService->check($school);
+
+        if (!$check['eligible']) {
+            return redirect()->back()->with('error', 'Sekolah tidak dapat dihapus permanen karena masih memiliki data terkait: ' . implode(', ', $check['reasons']));
+        }
+
+        // Type-to-confirm verification
+        $request->validate([
+            'confirm_school_name' => 'required|string',
+        ]);
+
+        if (trim($request->input('confirm_school_name')) !== trim($school->name)) {
+            return redirect()->back()->with('error', 'Konfirmasi nama sekolah tidak cocok. Penghapusan dibatalkan.');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($school) {
+            // 1. Detach all supervisor pivot relations (pengawas_school) - leaves Pengawas users intact!
+            $school->supervisors()->detach();
+
+            // 2. Clean logo storage file if exists
+            if ($school->logo && Storage::disk('public')->exists($school->logo)) {
+                Storage::disk('public')->delete($school->logo);
+            }
+
+            // 3. Delete settings if any
+            $school->settings()->delete();
+
+            // 4. Delete the school record
+            $school->delete();
+        });
+
+        return redirect()->route('super_admin.schools.index')->with('success', "Sekolah '{$school->name}' berhasil dihapus permanen.");
     }
 }
