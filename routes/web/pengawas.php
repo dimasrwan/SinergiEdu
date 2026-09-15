@@ -8,9 +8,19 @@ use App\Http\Controllers\Pengawas\FeedbackController;
 use App\Http\Controllers\Pengawas\InspectionController;
 use App\Http\Controllers\Pengawas\ReportController;
 use App\Http\Controllers\Pengawas\StudentMonitoringController;
+use App\Http\Controllers\Pengawas\SchoolSelectorController;
+use App\Http\Controllers\Pengawas\UserMonitoringController;
 use Illuminate\Support\Facades\Route;
 
+// Pemilihan Sekolah (Tidak dibatasi scope karena ini tempat memilihnya)
+Route::get('/select-school', [SchoolSelectorController::class, 'index'])->name('select-school');
+Route::post('/select-school', [SchoolSelectorController::class, 'setSchool'])->name('set-school');
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Monitoring User Lintas Role
+Route::get('/users', [UserMonitoringController::class, 'index'])->name('users.index');
+Route::get('/users/{user}', [UserMonitoringController::class, 'show'])->name('users.show');
 
 // Monitoring Siswa & Hasil Belajar
 Route::get('/students', [StudentMonitoringController::class, 'index'])->name('students.index');

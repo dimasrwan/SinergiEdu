@@ -107,7 +107,10 @@ class SchoolController extends Controller
      */
     public function edit(School $school)
     {
-        return view('pages.super-admin.schools.edit', compact('school'));
+        $pengawas = \App\Models\User::whereHas('role', function($q) {
+            $q->where('name', 'pengawas');
+        })->get();
+        return view('pages.super-admin.schools.edit', compact('school', 'pengawas'));
     }
 
     /**
@@ -123,6 +126,8 @@ class SchoolController extends Controller
             'address' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'is_active' => 'required|boolean',
+            'pengawas_ids' => 'nullable|array',
+            'pengawas_ids.*' => 'exists:users,id',
         ]);
 
         $data = $request->only(['name', 'npsn', 'email', 'phone', 'address', 'is_active']);
@@ -140,6 +145,12 @@ class SchoolController extends Controller
 
         try {
             $school->update($data);
+            
+            if ($request->has('pengawas_ids')) {
+                $school->supervisors()->sync($request->pengawas_ids);
+            } else {
+                $school->supervisors()->sync([]);
+            }
             
             if ($request->hasFile('logo') && $oldLogo && Storage::disk('public')->exists($oldLogo)) {
                 Storage::disk('public')->delete($oldLogo);

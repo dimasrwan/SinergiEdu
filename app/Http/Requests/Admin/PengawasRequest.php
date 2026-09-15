@@ -25,6 +25,8 @@ class PengawasRequest extends FormRequest
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'password' => $pengawasModel ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
+            'schools' => 'required|array|min:1',
+            'schools.*' => 'exists:schools,id',
         ];
     }
 

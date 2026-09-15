@@ -26,7 +26,7 @@ class FeedbackController extends Controller
 
         // Dapatkan feedback dari pengawas
         $feedbacks = Student::query()
-            ->with(['user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
+            ->with(['user', 'classes', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
                 $q->where('academic_year_id', $activeYear?->id)
                   ->where('semester_id', $activeSemester?->id)
                   ->whereNotNull('supervisor_feedback');

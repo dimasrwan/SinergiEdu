@@ -8,20 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Siswa\SubmissionRequest;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
-use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class AssignmentController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         $assignments = collect();
@@ -39,7 +35,7 @@ class AssignmentController extends Controller
 
     public function show(Assignment $assignment): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
@@ -55,7 +51,7 @@ class AssignmentController extends Controller
 
     public function submit(SubmissionRequest $request, Assignment $assignment): RedirectResponse
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
@@ -89,7 +85,7 @@ class AssignmentController extends Controller
 
     public function download(Assignment $assignment)
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
@@ -105,7 +101,7 @@ class AssignmentController extends Controller
 
     public function downloadSubmission(Assignment $assignment)
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');

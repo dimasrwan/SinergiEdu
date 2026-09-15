@@ -177,7 +177,7 @@
                         </div>
                         <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-0 flex-1">{{ $title ?? 'Dashboard' }}</h2>
                     </div>
-                    <div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
+<div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
                         @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
