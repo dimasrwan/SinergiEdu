@@ -17,6 +17,10 @@ Route::prefix('schools')->name('schools.')->group(function () {
     Route::put('/{school}', [SchoolController::class, 'update'])->name('update');
     Route::patch('/{school}/toggle-status', [SchoolController::class, 'toggleStatus'])->name('toggle-status');
 
+    // Supervisor assignment endpoints
+    Route::post('/{school}/supervisors', [SchoolController::class, 'attachSupervisor'])->name('supervisors.attach');
+    Route::delete('/{school}/supervisors/{user}', [SchoolController::class, 'detachSupervisor'])->name('supervisors.detach');
+
     // Nested resources for School Admins
     Route::prefix('{school}/admins')->name('admins.')->group(function () {
         Route::get('/create', [\App\Http\Controllers\SuperAdmin\SchoolAdminController::class, 'create'])->name('create');

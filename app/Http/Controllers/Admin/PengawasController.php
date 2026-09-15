@@ -25,7 +25,7 @@ class PengawasController extends Controller
         $user = auth()->user();
         $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
 
-        $pengawas = Pengawas::with(['user'])
+        $pengawas = Pengawas::with(['user.assignedSchools'])
             ->when($isSchoolAdmin, function ($query) use ($user) {
                 $query->whereHas('user.assignedSchools', function ($q) use ($user) {
                     $q->where('schools.id', $user->school_id);
@@ -94,7 +94,7 @@ class PengawasController extends Controller
     public function show(Pengawas $pengawas): View
     {
         Gate::authorize('view', $pengawas);
-        $pengawas->load(['user']);
+        $pengawas->load(['user.assignedSchools']);
         return view('pages.admin.pengawas.show', compact('pengawas'));
     }
 
@@ -130,13 +130,17 @@ class PengawasController extends Controller
                 $userData['password'] = Hash::make($request->password);
             }
 
-            $pengawas->user->update($userData);
+            $targetUser = User::findOrFail($pengawas->user_id);
+            $targetUser->update($userData);
 
-            $pengawas->update([
-                'nip' => $request->nip,
-                'phone' => $request->phone,
-                'address' => $request->address,
-            ]);
+            Pengawas::updateOrCreate(
+                ['user_id' => $pengawas->user_id],
+                [
+                    'nip' => $request->nip,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
+                ]
+            );
 
             // Sync sekolah yang di-assign
             $currentUser = auth()->user();
@@ -144,15 +148,15 @@ class PengawasController extends Controller
 
             if ($isSchoolAdmin) {
                 // Admin Sekolah can only change their own school's assignment, preserving other schools
-                $otherAssignedSchools = $pengawas->user->assignedSchools()
+                $otherAssignedSchools = $targetUser->assignedSchools()
                     ->where('schools.id', '!=', $currentUser->school_id)
                     ->pluck('schools.id')
                     ->toArray();
 
                 $newSchools = array_unique(array_merge($otherAssignedSchools, $request->schools ?? []));
-                $pengawas->user->assignedSchools()->sync($newSchools);
+                $targetUser->assignedSchools()->sync($newSchools);
             } else {
-                $pengawas->user->assignedSchools()->sync($request->schools ?? []);
+                $targetUser->assignedSchools()->sync($request->schools ?? []);
             }
         });
 

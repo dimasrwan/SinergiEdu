@@ -25,3 +25,15 @@
         Sekolah
     </x-sidebar-link>
 </li>
+
+<li class="pt-3 pb-1 px-3">
+    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">MANAJEMEN AKUN</span>
+</li>
+<li>
+    <x-sidebar-link href="{{ route('admin.pengawas.index') }}" :active="request()->routeIs('admin.pengawas.*')">
+        <x-slot:icon>
+            <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+        </x-slot:icon>
+        Manajemen Pengawas
+    </x-sidebar-link>
+</li>

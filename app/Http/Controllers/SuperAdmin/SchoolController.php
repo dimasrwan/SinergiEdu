@@ -93,13 +93,21 @@ class SchoolController extends Controller
             'classrooms'
         ]);
 
-        // Daftar admin untuk sekolah ini (dengan menggunakan with('role') untuk efisiensi, 
-        // tapi kita filter user yang punya role 'admin' & 'school_id' = ini.
+        $school->load(['supervisors.pengawas']);
+
+        // Available pengawas for connect modal (pengawas users not yet attached to this school)
+        $attachedUserIds = $school->supervisors->pluck('id')->toArray();
+        $availablePengawas = \App\Models\User::whereHas('role', fn($q) => $q->where('name', 'pengawas'))
+            ->whereNotIn('id', $attachedUserIds)
+            ->where('is_active', true)
+            ->get();
+
+        // Daftar admin untuk sekolah ini
         $admins = $school->users()->whereHas('role', function($q) {
             $q->where('name', 'admin');
         })->get();
 
-        return view('pages.super-admin.schools.show', compact('school', 'admins'));
+        return view('pages.super-admin.schools.show', compact('school', 'admins', 'availablePengawas'));
     }
 
     /**
@@ -181,7 +189,35 @@ class SchoolController extends Controller
         ]);
 
         $statusText = $school->is_active ? 'diaktifkan' : 'dinonaktifkan';
-
         return redirect()->back()->with('success', "Sekolah berhasil $statusText.");
+    }
+
+    /**
+     * Hubungkan Pengawas ke Sekolah (tanpa merusak assignment sekolah lain).
+     */
+    public function attachSupervisor(Request $request, School $school)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = \App\Models\User::where('id', $request->user_id)
+            ->whereHas('role', fn($q) => $q->where('name', 'pengawas'))
+            ->firstOrFail();
+
+        // Attach safely without detaching existing schools
+        $school->supervisors()->syncWithoutDetaching([$user->id]);
+
+        return redirect()->back()->with('success', 'Pengawas berhasil dihubungkan ke sekolah ini.');
+    }
+
+    /**
+     * Lepas Pengawas dari Sekolah (hanya menghapus pivot sekolah ini).
+     */
+    public function detachSupervisor(School $school, \App\Models\User $user)
+    {
+        $school->supervisors()->detach($user->id);
+
+        return redirect()->back()->with('success', 'Pengawas berhasil dilepas dari sekolah ini.');
     }
 }

@@ -72,6 +72,14 @@ class User extends Authenticatable
         return $this->belongsToMany(\App\Models\School::class, 'pengawas_school', 'user_id', 'school_id');
     }
 
+    /**
+     * Relasi ke profil Pengawas.
+     */
+    public function pengawas(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Pengawas::class);
+    }
+
     protected static function booted()
     {
         $checkSchoolId = function ($user) {

@@ -246,9 +246,140 @@
                         @endforelse
                     </div>
                 </div>
+
+                <!-- Pengawas Sekolah Section -->
+                <div class="space-y-4 pt-4 border-t border-slate-100">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded-full"></span>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                Pengawas Sekolah
+                                <span class="inline-flex items-center rounded-md bg-blue-50 text-blue-700 px-2 py-0.5 text-xs font-bold border border-blue-100">{{ $school->supervisors->count() }}</span>
+                            </h2>
+                        </div>
+                        <button type="button" x-on:click="$dispatch('open-modal', 'connect-pengawas-modal')" class="text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            Hubungkan Pengawas
+                        </button>
+                    </div>
+
+                    <!-- Desktop Pengawas Table (md:block) -->
+                    <div class="hidden md:block overflow-x-auto border border-slate-200/80 rounded-2xl shadow-2xs">
+                        <table class="w-full text-left border-collapse min-w-max">
+                            <thead>
+                                <tr class="bg-slate-50/80 border-b border-slate-200/80">
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Pengawas</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">NIP</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($school->supervisors as $supervisor)
+                                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                                        <td class="py-3.5 px-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                                                    {{ strtoupper(substr($supervisor->name, 0, 2)) }}
+                                                </div>
+                                                <p class="text-sm font-bold text-slate-900 break-words whitespace-normal">{{ $supervisor->name }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            <p class="text-sm font-mono text-slate-600">{{ $supervisor->pengawas?->nip ?? '-' }}</p>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            <p class="text-sm font-medium text-slate-600 break-all">{{ $supervisor->email }}</p>
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right">
+                                            <form action="{{ route('super_admin.schools.supervisors.detach', [$school, $supervisor]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin melepas pengawas ini dari {{ $school->name }}?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                                                    Lepas
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="py-8 text-center text-sm text-slate-500">
+                                            Belum ada Pengawas Sekolah yang terhubung ke tenant ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Pengawas Card List (block md:hidden) -->
+                    <div class="block md:hidden space-y-3">
+                        @forelse($school->supervisors as $supervisor)
+                            <div class="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                                            {{ strtoupper(substr($supervisor->name, 0, 2)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900 leading-snug break-words whitespace-normal">{{ $supervisor->name }}</p>
+                                            <p class="text-xs text-slate-500 font-medium break-all mt-0.5">{{ $supervisor->email }}</p>
+                                            @if($supervisor->pengawas?->nip)
+                                                <p class="text-xs text-slate-400 font-mono mt-0.5">NIP: {{ $supervisor->pengawas->nip }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <form action="{{ route('super_admin.schools.supervisors.detach', [$school, $supervisor]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin melepas pengawas ini dari {{ $school->name }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                                            Lepas
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="bg-white border border-slate-100 rounded-xl p-6 text-center text-xs text-slate-500">
+                                Belum ada Pengawas Sekolah yang terhubung ke tenant ini.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal Hubungkan Pengawas -->
+    <x-modal name="connect-pengawas-modal" maxWidth="md">
+        <form action="{{ route('super_admin.schools.supervisors.attach', $school) }}" method="POST" class="p-6">
+            @csrf
+            <h2 class="text-lg font-bold text-slate-900 mb-2">Hubungkan Pengawas Sekolah</h2>
+            <p class="text-xs text-slate-500 mb-4">Pilih Pengawas yang ingin ditugaskan ke sekolah <strong>{{ $school->name }}</strong>.</p>
+
+            @if(isset($availablePengawas) && count($availablePengawas) > 0)
+                <div class="mb-4">
+                    <label for="user_id" class="block text-xs font-semibold text-slate-700 mb-1">Pilih Pengawas <span class="text-red-500">*</span></label>
+                    <select id="user_id" name="user_id" required class="block w-full text-xs border-slate-300 rounded-lg focus:ring-primary focus:border-primary">
+                        <option value="">-- Pilih Pengawas --</option>
+                        @foreach($availablePengawas as $ap)
+                            <option value="{{ $ap->id }}">{{ $ap->name }} ({{ $ap->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <x-button variant="secondary" type="button" x-on:click="$dispatch('close-modal', 'connect-pengawas-modal')">Batal</x-button>
+                    <x-button variant="primary" type="submit">Hubungkan</x-button>
+                </div>
+            @else
+                <div class="p-4 bg-slate-50 rounded-xl text-center text-xs text-slate-500 mb-4">
+                    Semua Pengawas yang terdaftar di sistem sudah terhubung ke sekolah ini atau belum ada akun Pengawas yang tersedia.
+                </div>
+                <div class="flex justify-end">
+                    <x-button variant="secondary" type="button" x-on:click="$dispatch('close-modal', 'connect-pengawas-modal')">Tutup</x-button>
+                </div>
+            @endif
+        </form>
+    </x-modal>
 </x-layouts.app>
 
 

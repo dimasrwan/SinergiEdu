@@ -249,4 +249,67 @@ class PengawasMultiSchoolHardeningTest extends TestCase
             ->get(route('pengawas.inspections.show', $inspectionC->id))
             ->assertStatus(403);
     }
+
+    /** Test 21: Super Admin attach supervisor via school detail maintains existing schools */
+    public function test_21_super_admin_attach_supervisor_via_school_detail_maintains_existing_schools()
+    {
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
+
+        // Attach School C to $this->pengawas who already has School A & B
+        $response = $this->actingAs($superAdmin)->post(route('super_admin.schools.supervisors.attach', $this->schoolC), [
+            'user_id' => $this->pengawas->id,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertCount(3, $this->pengawas->fresh()->assignedSchools);
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolC));
+    }
+
+    /** Test 22: Super Admin detach supervisor removes only target school pivot */
+    public function test_22_super_admin_detach_supervisor_removes_only_target_school_pivot()
+    {
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
+
+        // Detach School A from $this->pengawas
+        $response = $this->actingAs($superAdmin)->delete(route('super_admin.schools.supervisors.detach', [$this->schoolA, $this->pengawas]));
+
+        $response->assertRedirect();
+        $this->assertCount(1, $this->pengawas->fresh()->assignedSchools);
+        $this->assertFalse($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
+        $this->assertNotNull(User::find($this->pengawas->id));
+    }
+
+    /** Test 23: Admin School update preserves foreign school assignments */
+    public function test_23_admin_school_update_preserves_foreign_school_assignments()
+    {
+        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin Sekolah']);
+        $schoolAdminA = User::factory()->create(['role_id' => $adminRole->id, 'school_id' => $this->schoolA->id]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '12345678',
+        ]);
+
+        // Ensure pivot is populated
+        $this->pengawas->assignedSchools()->sync([$this->schoolA->id, $this->schoolB->id]);
+
+        // Admin School A updates Pengawas with schools = [School A]
+        $response = $this->actingAs($schoolAdminA)->put(route('admin.pengawas.update', $pengawasModel), [
+            'name' => $this->pengawas->name,
+            'email' => $this->pengawas->email,
+            'nip' => '12345678',
+            'schools' => [$this->schoolA->id],
+        ]);
+
+        $response->assertRedirect(route('admin.pengawas.index'));
+        // School B assignment should remain intact!
+        $this->assertCount(2, $this->pengawas->fresh()->assignedSchools);
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
+    }
 }

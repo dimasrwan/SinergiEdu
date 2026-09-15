@@ -13,8 +13,8 @@ class PengawasRequest extends FormRequest
 
     public function rules(): array
     {
-        $pengawas = $this->route('pengawa'); // Wait, default resource parameter for 'pengawas' is 'pengawa' because Laravel singularizes 'pengawas' to 'pengawa' or 'pengawas'. Let me check. Actually it usually singularizes 'pengawas' to 'pengawa'. Let's explicitly check the parameter name or use `$this->route('pengawas') ?? $this->route('pengawa')`. Let's just use `$this->route('pengawa') ?? $this->route('pengawas')`.
-        $pengawasModel = $this->route('pengawa') ?? $this->route('pengawas');
+        $param = $this->route('pengawas') ?? $this->route('pengawa');
+        $pengawasModel = $param instanceof \App\Models\Pengawas ? $param : ($param ? \App\Models\Pengawas::find($param) : null);
         $userId = $pengawasModel ? $pengawasModel->user_id : null;
         $pengawasId = $pengawasModel ? $pengawasModel->id : null;
 
