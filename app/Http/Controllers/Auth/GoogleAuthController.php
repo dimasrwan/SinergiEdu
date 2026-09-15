@@ -79,12 +79,14 @@ class GoogleAuthController extends Controller
         }
 
         $roleName = strtolower($user->role->name);
-        if ($roleName === 'super_admin' || $roleName === 'superadmin') {
+        if (in_array($roleName, ['super_admin', 'superadmin'])) {
             if ($user->school_id !== null) {
                 return redirect()->route('login')->withErrors([
                     'email' => 'Konfigurasi akun tidak valid. Silakan hubungi Administrator.',
                 ]);
             }
+        } elseif ($roleName === 'pengawas') {
+            // Pengawas accounts can have users.school_id = null (multi-school) or assigned school
         } else {
             if ($user->school_id === null) {
                 return redirect()->route('login')->withErrors([

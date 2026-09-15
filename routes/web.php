@@ -39,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('super-admin')->name('super_admin.')->middleware('role:super_admin')->group(base_path('routes/web/super_admin.php'));
 
     // Admin
-    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(base_path('routes/web/admin.php'));
+    Route::prefix('admin')->name('admin.')->middleware('role:admin,super_admin')->group(base_path('routes/web/admin.php'));
     
     // Waka Kurikulum
     Route::prefix('waka')->name('waka.')->middleware('role:waka')->group(base_path('routes/web/waka.php'));

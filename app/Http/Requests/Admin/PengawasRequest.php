@@ -18,6 +18,9 @@ class PengawasRequest extends FormRequest
         $userId = $pengawasModel ? $pengawasModel->user_id : null;
         $pengawasId = $pengawasModel ? $pengawasModel->id : null;
 
+        $user = auth()->user();
+        $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
+
         return [
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:100|unique:users,email,' . $userId,
@@ -25,7 +28,20 @@ class PengawasRequest extends FormRequest
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'password' => $pengawasModel ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
-            'schools' => 'required|array|min:1',
+            'schools' => [
+                'required',
+                'array',
+                'min:1',
+                function ($attribute, $value, $fail) use ($isSchoolAdmin, $user) {
+                    if ($isSchoolAdmin && is_array($value)) {
+                        foreach ($value as $schoolId) {
+                            if ((int) $schoolId !== (int) $user->school_id) {
+                                $fail('Admin Sekolah tidak diperbolehkan memberikan akses sekolah lain.');
+                            }
+                        }
+                    }
+                }
+            ],
             'schools.*' => 'exists:schools,id',
         ];
     }

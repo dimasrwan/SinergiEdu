@@ -176,6 +176,51 @@
                             <span class="text-white font-bold text-sm">S</span>
                         </div>
                         <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-0 flex-1">{{ $title ?? 'Dashboard' }}</h2>
+                        @if(strtolower(Auth::user()->role->name ?? '') === 'pengawas')
+                            @php
+                                $activePengawasSchoolId = session('pengawas_school_id');
+                                $activePengawasSchool = $activePengawasSchoolId ? \App\Models\School::find($activePengawasSchoolId) : null;
+                                $assignedPengawasSchools = Auth::user()->assignedSchools()->where('is_active', true)->orderBy('name')->get();
+                            @endphp
+                            <div class="relative shrink-0" x-data="{ openSchoolDropdown: false }">
+                                <button type="button" @click="openSchoolDropdown = !openSchoolDropdown" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs font-semibold text-primary hover:bg-blue-100 transition-colors">
+                                    <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                    <span class="max-w-[130px] sm:max-w-[200px] truncate">{{ $activePengawasSchool?->name ?? 'Pilih Sekolah' }}</span>
+                                    <svg class="w-3.5 h-3.5 text-primary/70 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+
+                                <div x-show="openSchoolDropdown" @click.away="openSchoolDropdown = false" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-64 bg-white rounded-xl shadow-xl ring-1 ring-slate-900/10 py-2 z-50 overflow-hidden" style="display: none;">
+                                    <div class="px-3 py-1.5 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        Sekolah Pengawasan
+                                    </div>
+                                    <div class="max-h-56 overflow-y-auto py-1">
+                                        @foreach($assignedPengawasSchools as $pSchool)
+                                            <form action="{{ route('pengawas.set-school') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="school_id" value="{{ $pSchool->id }}">
+                                                <button type="submit" class="w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition-colors {{ $activePengawasSchoolId == $pSchool->id ? 'font-bold text-primary bg-blue-50/50' : 'text-slate-700' }}">
+                                                    <span class="truncate">{{ $pSchool->name }}</span>
+                                                    @if($activePengawasSchoolId == $pSchool->id)
+                                                        <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                        </svg>
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        @endforeach
+                                    </div>
+                                    <div class="border-t border-slate-100 pt-1 mt-1 px-1">
+                                        <a href="{{ route('pengawas.select-school') }}" class="block px-3 py-1.5 text-center text-xs font-semibold text-primary hover:bg-blue-50 rounded-lg transition-colors">
+                                            Kelola Pemilihan Sekolah
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
 <div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
                         @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')

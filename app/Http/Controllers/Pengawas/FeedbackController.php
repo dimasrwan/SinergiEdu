@@ -44,9 +44,10 @@ class FeedbackController extends Controller
     public function create(Request $request): View
     {
         $student = Student::findOrFail($request->student_id);
+        $activeSchoolId = session('pengawas_school_id');
         
         // Cek akses
-        if ($student->school_id !== auth()->user()->school_id) {
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 
@@ -77,9 +78,10 @@ class FeedbackController extends Controller
         ]);
 
         $student = Student::findOrFail($validated['student_id']);
+        $activeSchoolId = session('pengawas_school_id');
 
         // Cek akses
-        if ($student->school_id !== auth()->user()->school_id) {
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 
@@ -107,7 +109,8 @@ class FeedbackController extends Controller
      */
     public function edit(Student $student): View
     {
-        if ($student->school_id !== auth()->user()->school_id) {
+        $activeSchoolId = session('pengawas_school_id');
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 
@@ -132,7 +135,8 @@ class FeedbackController extends Controller
      */
     public function update(Request $request, Student $student): RedirectResponse
     {
-        if ($student->school_id !== auth()->user()->school_id) {
+        $activeSchoolId = session('pengawas_school_id');
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 
@@ -165,7 +169,8 @@ class FeedbackController extends Controller
      */
     public function archive(Request $request, Student $student): RedirectResponse
     {
-        if ($student->school_id !== auth()->user()->school_id) {
+        $activeSchoolId = session('pengawas_school_id');
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 
@@ -186,7 +191,8 @@ class FeedbackController extends Controller
      */
     public function unarchive(Request $request, Student $student): RedirectResponse
     {
-        if ($student->school_id !== auth()->user()->school_id) {
+        $activeSchoolId = session('pengawas_school_id');
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 

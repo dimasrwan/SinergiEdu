@@ -22,14 +22,22 @@ class PengawasController extends Controller
         Gate::authorize('viewAny', \App\Models\Pengawas::class);
         $search = request('search');
         
+        $user = auth()->user();
+        $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
+
         $pengawas = Pengawas::with(['user'])
+            ->when($isSchoolAdmin, function ($query) use ($user) {
+                $query->whereHas('user.assignedSchools', function ($q) use ($user) {
+                    $q->where('schools.id', $user->school_id);
+                });
+            })
             ->when($search, function ($query) use ($search) {
                 $query->where(function($query) use ($search) {
-                $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
-                })->orWhere('nip', 'like', "%{$search}%");
-            });
+                    $query->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhere('nip', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->paginate(10)
@@ -41,7 +49,16 @@ class PengawasController extends Controller
     public function create(): View
     {
         Gate::authorize('create', \App\Models\Pengawas::class);
-        $schools = \App\Models\School::where('is_active', true)->orderBy('name')->get();
+        $currentUser = auth()->user();
+        $isSchoolAdmin = $currentUser && $currentUser->role && $currentUser->role->name === 'admin';
+
+        $schools = \App\Models\School::where('is_active', true)
+            ->when($isSchoolAdmin, function ($q) use ($currentUser) {
+                $q->where('id', $currentUser->school_id);
+            })
+            ->orderBy('name')
+            ->get();
+
         return view('pages.admin.pengawas.create', compact('schools'));
     }
 
@@ -85,7 +102,17 @@ class PengawasController extends Controller
     {
         Gate::authorize('update', $pengawas);
         $pengawas->load(['user']);
-        $schools = \App\Models\School::where('is_active', true)->orderBy('name')->get();
+
+        $currentUser = auth()->user();
+        $isSchoolAdmin = $currentUser && $currentUser->role && $currentUser->role->name === 'admin';
+
+        $schools = \App\Models\School::where('is_active', true)
+            ->when($isSchoolAdmin, function ($q) use ($currentUser) {
+                $q->where('id', $currentUser->school_id);
+            })
+            ->orderBy('name')
+            ->get();
+
         $assignedSchoolIds = $pengawas->user->assignedSchools()->pluck('schools.id')->toArray();
         return view('pages.admin.pengawas.edit', compact('pengawas', 'schools', 'assignedSchoolIds'));
     }
@@ -112,7 +139,21 @@ class PengawasController extends Controller
             ]);
 
             // Sync sekolah yang di-assign
-            $pengawas->user->assignedSchools()->sync($request->schools ?? []);
+            $currentUser = auth()->user();
+            $isSchoolAdmin = $currentUser && $currentUser->role && $currentUser->role->name === 'admin';
+
+            if ($isSchoolAdmin) {
+                // Admin Sekolah can only change their own school's assignment, preserving other schools
+                $otherAssignedSchools = $pengawas->user->assignedSchools()
+                    ->where('schools.id', '!=', $currentUser->school_id)
+                    ->pluck('schools.id')
+                    ->toArray();
+
+                $newSchools = array_unique(array_merge($otherAssignedSchools, $request->schools ?? []));
+                $pengawas->user->assignedSchools()->sync($newSchools);
+            } else {
+                $pengawas->user->assignedSchools()->sync($request->schools ?? []);
+            }
         });
 
         return redirect()->route('admin.pengawas.index')->with('success', 'Data Pengawas berhasil diperbarui.');

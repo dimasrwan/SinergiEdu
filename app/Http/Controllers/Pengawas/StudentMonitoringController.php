@@ -25,10 +25,12 @@ class StudentMonitoringController extends Controller
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
 
-        if (!$activeYear || !$activeSemester) {
+        $activeSchoolId = session('pengawas_school_id');
+
+        if (!$activeYear || !$activeSemester || !$activeSchoolId) {
             $students = collect();
             $classes = Classroom::query()
-                ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+                ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
                 ->get();
             $selectedClassId = request('class_id');
             return view('pages.pengawas.students.index', compact(
@@ -36,15 +38,15 @@ class StudentMonitoringController extends Controller
             ));
         }
 
-        // Dapatkan semua kelas di sekolah (hanya kelas dari sekolah user yang login)
+        // Dapatkan semua kelas di sekolah (hanya kelas dari sekolah aktif)
         $classes = Classroom::query()
-            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->get();
         $selectedClassId = request('class_id', $classes->first()?->id);
 
         // Dapatkan siswa dengan hasil belajar
         $students = Student::query()
-            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
@@ -65,13 +67,15 @@ class StudentMonitoringController extends Controller
     /**
      * Tampilkan detail siswa dengan riwayat hasil belajar.
      */
-    public function show(Student $student): View
+    public function show($studentId): View
     {
+        $student = Student::withoutGlobalScopes()->findOrFail($studentId);
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
+        $activeSchoolId = session('pengawas_school_id');
 
-        // Cek akses - hanya pengawas dari sekolah yang sama
-        if ($student->school_id !== auth()->user()->school_id) {
+        // Cek akses - hanya siswa dari sekolah pengawasan aktif
+        if (!$activeSchoolId || $student->school_id !== (int) $activeSchoolId) {
             abort(403, 'Unauthorized');
         }
 
@@ -128,12 +132,14 @@ class StudentMonitoringController extends Controller
         $activeSemester = Semester::where('is_active', true)->first();
         $selectedClassId = request('class_id');
 
-        if (!$activeYear || !$activeSemester) {
-            abort(404, 'Tahun ajaran atau semester aktif tidak ditemukan.');
+        $activeSchoolId = session('pengawas_school_id');
+
+        if (!$activeYear || !$activeSemester || !$activeSchoolId) {
+            abort(404, 'Tahun ajaran, semester aktif, atau sekolah pengawasan tidak ditemukan.');
         }
 
         $students = Student::query()
-            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
