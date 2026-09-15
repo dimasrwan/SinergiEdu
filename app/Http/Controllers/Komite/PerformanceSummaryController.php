@@ -28,8 +28,9 @@ class PerformanceSummaryController extends Controller
         $totalClasses = Classroom::count();
         $totalSubjects = Subject::count();
 
-        // Calculate aggregate average score safely
-        $averageScore = StudentAssessment::avg('average_score') ?? 0;
+        // Calculate aggregate average score safely via collection (average_score is an Eloquent accessor)
+        $assessments = StudentAssessment::get();
+        $averageScore = $assessments->isEmpty() ? 0 : round($assessments->avg('average_score'), 2);
 
         return view('pages.komite.performance-summary.index', compact(
             'school',
