@@ -31,4 +31,14 @@ Route::prefix('schools')->name('schools.')->group(function () {
         Route::put('/{admin}', [\App\Http\Controllers\SuperAdmin\SchoolAdminController::class, 'update'])->name('update');
         Route::patch('/{admin}/toggle-status', [\App\Http\Controllers\SuperAdmin\SchoolAdminController::class, 'toggleStatus'])->name('toggle-status');
     });
+
+    // Nested resources for Komite Sekolah
+    Route::prefix('{school}/komite')->name('komite.')->group(function () {
+        Route::get('/create', [\App\Http\Controllers\SuperAdmin\SchoolKomiteController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\SuperAdmin\SchoolKomiteController::class, 'store'])->name('store');
+        Route::get('/{komite}', [\App\Http\Controllers\SuperAdmin\SchoolKomiteController::class, 'show'])->name('show');
+        Route::get('/{komite}/edit', [\App\Http\Controllers\SuperAdmin\SchoolKomiteController::class, 'edit'])->name('edit');
+        Route::put('/{komite}', [\App\Http\Controllers\SuperAdmin\SchoolKomiteController::class, 'update'])->name('update');
+        Route::patch('/{komite}/toggle-status', [\App\Http\Controllers\SuperAdmin\SchoolKomiteController::class, 'toggleStatus'])->name('toggle-status');
+    });
 });

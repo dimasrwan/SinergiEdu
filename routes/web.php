@@ -58,4 +58,7 @@ Route::middleware(['auth'])->group(function () {
     
     // Kepala Sekolah
     Route::prefix('kepala-sekolah')->name('kepala-sekolah.')->middleware('role:kepala_sekolah')->group(base_path('routes/web/kepala_sekolah.php'));
+
+    // Komite Sekolah
+    Route::prefix('komite')->name('komite.')->middleware('role:komite')->group(base_path('routes/web/komite.php'));
 });

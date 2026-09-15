@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         Role::firstOrCreate(['name' => 'orangtua'], ['display_name' => 'Orang Tua']);
         Role::firstOrCreate(['name' => 'pengawas'], ['display_name' => 'Pengawas']);
         Role::firstOrCreate(['name' => 'kepala_sekolah'], ['display_name' => 'Kepala Sekolah/Madrasah']);
+        Role::firstOrCreate(['name' => 'komite'], ['display_name' => 'Komite Sekolah']);
 
         if (app()->environment('local', 'testing')) {
             $this->call(DevelopmentTestDataSeeder::class);

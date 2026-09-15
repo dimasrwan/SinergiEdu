@@ -41,6 +41,7 @@ Route::resource('/pengawas', PengawasController::class)->parameters([
 Route::resource('/kepala-sekolah', KepalaSekolahController::class)->parameters([
     'kepala-sekolah' => 'kepala_sekolah'
 ]);
+Route::resource('/komite', \App\Http\Controllers\Admin\KomiteController::class);
 
 Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
 Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');

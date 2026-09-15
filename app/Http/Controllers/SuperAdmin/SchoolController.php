@@ -113,9 +113,14 @@ class SchoolController extends Controller
             $q->where('name', 'admin');
         })->get();
 
+        // Daftar komite untuk sekolah ini
+        $komites = $school->users()->whereHas('role', function($q) {
+            $q->where('name', 'komite');
+        })->get();
+
         $deletionEligibility = $eligibilityService->check($school);
 
-        return view('pages.super-admin.schools.show', compact('school', 'admins', 'availablePengawas', 'deletionEligibility'));
+        return view('pages.super-admin.schools.show', compact('school', 'admins', 'komites', 'availablePengawas', 'deletionEligibility'));
     }
 
     /**

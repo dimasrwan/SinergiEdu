@@ -74,6 +74,12 @@
     </x-slot:icon>
     Kepala Sekolah
 </x-sidebar-link>
+<x-sidebar-link href="{{ route('admin.komite.index') }}" :active="request()->routeIs('admin.komite.*')">
+    <x-slot:icon>
+        <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/></svg>
+    </x-slot:icon>
+    Komite Sekolah
+</x-sidebar-link>
 
 <!-- PENUGASAN -->
 <li class="mt-4 mb-1">

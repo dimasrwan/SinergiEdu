@@ -342,6 +342,128 @@
                     </div>
                 </div>
 
+                <!-- Komite Sekolah Section -->
+                <div class="space-y-4 pt-4 border-t border-slate-100">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded-full"></span>
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                                Komite Sekolah 
+                                <span class="inline-flex items-center rounded-md bg-blue-50 text-blue-700 px-2 py-0.5 text-xs font-bold border border-blue-100">{{ count($komites) }}</span>
+                            </h2>
+                        </div>
+                        <a href="{{ route('super_admin.schools.komite.create', $school) }}" class="text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                            + Tambah Komite
+                        </a>
+                    </div>
+
+                    <!-- Desktop Komite Table (md:block) -->
+                    <div class="hidden md:block overflow-x-auto border border-slate-200/80 rounded-2xl shadow-2xs">
+                        <table class="w-full text-left border-collapse min-w-max">
+                            <thead>
+                                <tr class="bg-slate-50/80 border-b border-slate-200/80">
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Komite</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th class="py-3.5 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($komites as $komiteItem)
+                                    <tr class="hover:bg-slate-50/50 transition-colors group">
+                                        <td class="py-3.5 px-4">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                                                    {{ strtoupper(substr($komiteItem->name, 0, 2)) }}
+                                                </div>
+                                                <p class="text-sm font-bold text-slate-900 break-words whitespace-normal">{{ $komiteItem->name }}</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            <p class="text-sm font-medium text-slate-600 break-all">{{ $komiteItem->email }}</p>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            @if($komiteItem->is_active)
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3.5 px-4 text-right">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <a href="{{ route('super_admin.schools.komite.edit', [$school, $komiteItem]) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                                </a>
+                                                <form action="{{ route('super_admin.schools.komite.toggle-status', [$school, $komiteItem]) }}" method="POST" class="inline" onsubmit="return confirm('{{ $komiteItem->is_active ? 'Nonaktifkan' : 'Aktifkan' }} Komite ini?')">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <input type="hidden" name="is_active" value="{{ $komiteItem->is_active ? 0 : 1 }}">
+                                                    <button type="submit" class="p-1.5 {{ $komiteItem->is_active ? 'text-slate-400 hover:text-red-600 hover:bg-red-50' : 'text-slate-400 hover:text-green-600 hover:bg-green-50' }} rounded-lg transition-colors" title="{{ $komiteItem->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                                        @if($komiteItem->is_active)
+                                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                                        @else
+                                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        @endif
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="py-8 text-center text-sm text-slate-500">
+                                            Belum ada Komite Sekolah untuk tenant ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Komite Card List (block md:hidden) -->
+                    <div class="block md:hidden space-y-3">
+                        @forelse($komites as $komiteItem)
+                            <div class="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs space-y-3">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                                            {{ strtoupper(substr($komiteItem->name, 0, 2)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900 leading-snug break-words whitespace-normal">{{ $komiteItem->name }}</p>
+                                            <p class="text-xs text-slate-500 font-medium break-all mt-0.5">{{ $komiteItem->email }}</p>
+                                        </div>
+                                    </div>
+                                    @if($komiteItem->is_active)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider shrink-0">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200 shrink-0">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                                    <a href="{{ route('super_admin.schools.komite.edit', [$school, $komiteItem]) }}" class="px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                        Edit
+                                    </a>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="bg-white border border-slate-100 rounded-xl p-6 text-center text-xs text-slate-500">
+                                Belum ada Komite Sekolah untuk tenant ini.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
                 <!-- Pengawas Sekolah Section -->
                 <div class="space-y-4 pt-4 border-t border-slate-100">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
