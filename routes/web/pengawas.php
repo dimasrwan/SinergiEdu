@@ -28,6 +28,7 @@ Route::get('/students/{student}', [StudentMonitoringController::class, 'show'])-
 Route::get('/students/download/report', [StudentMonitoringController::class, 'downloadReport'])->name('students.downloadReport');
 
 // Feedback & Rencana Aksi
+Route::get('/feedback/archived', [FeedbackController::class, 'archived'])->name('feedback.archived');
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
 Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
@@ -35,20 +36,19 @@ Route::get('/feedback/{student}/edit', [FeedbackController::class, 'edit'])->nam
 Route::put('/feedback/{student}', [FeedbackController::class, 'update'])->name('feedback.update');
 Route::put('/feedback/{student}/archive', [FeedbackController::class, 'archive'])->name('feedback.archive');
 Route::put('/feedback/{student}/unarchive', [FeedbackController::class, 'unarchive'])->name('feedback.unarchive');
-Route::get('/feedback/archived', [FeedbackController::class, 'archived'])->name('feedback.archived');
 
 // Evaluasi
+Route::get('/evaluations/archived', [EvaluationController::class, 'archived'])->name('evaluations.archived');
 Route::resource('/evaluations', EvaluationController::class);
 Route::put('/evaluations/{evaluation}/archive', [EvaluationController::class, 'archive'])->name('evaluations.archive');
 Route::put('/evaluations/{evaluation}/unarchive', [EvaluationController::class, 'unarchive'])->name('evaluations.unarchive');
-Route::get('/evaluations/archived', [EvaluationController::class, 'archived'])->name('evaluations.archived');
 
 // Laporan Kinerja
-Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 Route::get('/reports/archived', [ReportController::class, 'archived'])->name('reports.archived');
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
 // Jadwal Inspeksi
+Route::get('/inspections/archived', [InspectionController::class, 'archived'])->name('inspections.archived');
 Route::resource('/inspections', InspectionController::class);
 Route::put('/inspections/{inspection}/archive', [InspectionController::class, 'archive'])->name('inspections.archive');
 Route::put('/inspections/{inspection}/unarchive', [InspectionController::class, 'unarchive'])->name('inspections.unarchive');
-Route::get('/inspections/archived', [InspectionController::class, 'archived'])->name('inspections.archived');

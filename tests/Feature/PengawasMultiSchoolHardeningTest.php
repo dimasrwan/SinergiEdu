@@ -312,4 +312,44 @@ class PengawasMultiSchoolHardeningTest extends TestCase
         $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
         $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
     }
+
+    /** Test 24: Pengawas archived inspections endpoint returns 200 and filters by active school */
+    public function test_24_pengawas_archived_inspections_endpoint_returns_200_and_filters_by_active_school()
+    {
+        Inspection::create([
+            'title' => 'Archived School A Inspection',
+            'school_id' => $this->schoolA->id,
+            'created_by' => $this->pengawas->id,
+            'is_archived' => true,
+        ]);
+
+        Inspection::create([
+            'title' => 'Archived School B Inspection',
+            'school_id' => $this->schoolB->id,
+            'created_by' => $this->pengawas->id,
+            'is_archived' => true,
+        ]);
+
+        // Active school A should see archived school A inspection
+        $response = $this->actingAs($this->pengawas)
+            ->withSession(['pengawas_school_id' => $this->schoolA->id])
+            ->get(route('pengawas.inspections.archived'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Archived School A Inspection');
+        $response->assertDontSee('Archived School B Inspection');
+    }
+
+    /** Test 25: Pengawas user monitoring show endpoint returns 200 for user in active school */
+    public function test_25_pengawas_user_monitoring_show_returns_200()
+    {
+        $targetUser = User::factory()->create(['school_id' => $this->schoolA->id]);
+
+        $response = $this->actingAs($this->pengawas)
+            ->withSession(['pengawas_school_id' => $this->schoolA->id])
+            ->get(route('pengawas.users.show', $targetUser));
+
+        $response->assertStatus(200);
+        $response->assertSee($targetUser->name);
+    }
 }
