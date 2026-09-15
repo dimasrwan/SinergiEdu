@@ -14,7 +14,13 @@
         <x-card padding="md">
             <form method="GET" class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
                 <div class="flex-1 min-w-0">
-                    <x-select name="class_id" onchange="this.form.submit()" placeholder="Pilih Kelas" :selected="$selectedClassId" :options="$classes->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" />
+                    @php
+                        $classOptions = array_merge(
+                            [['value' => 'all', 'label' => 'Semua Kelas']],
+                            $classes->map(fn($c) => ['value' => (string) $c->id, 'label' => $c->name])->toArray()
+                        );
+                    @endphp
+                    <x-select name="class_id" onchange="this.form.submit()" placeholder="Semua Kelas" :selected="(string) $selectedClassId" :options="$classOptions" />
                 </div>
                 <a href="{{ route('pengawas.students.downloadReport', ['class_id' => $selectedClassId]) }}" 
                    class="px-4 py-2 bg-emerald-600 text-white font-medium text-sm rounded-xl hover:bg-emerald-700 transition inline-flex items-center gap-2 justify-center min-h-[44px]">

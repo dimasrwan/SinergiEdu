@@ -18,6 +18,11 @@ class PengawasPolicy
         }
 
         if ($user->role && $user->role->name === 'admin') {
+            // Admin Sekolah cannot create new Pengawas identity or delete Pengawas account
+            if (in_array($ability, ['create', 'update', 'delete', 'restore', 'forceDelete'])) {
+                return false;
+            }
+
             if ($model) {
                 if (is_string($model)) {
                     return true;

@@ -146,6 +146,9 @@ class PengawasController extends Controller
             $currentUser = auth()->user();
             $isSchoolAdmin = $currentUser && $currentUser->role && $currentUser->role->name === 'admin';
 
+            $oldSchoolIds = $targetUser->assignedSchools()->pluck('schools.id')->toArray();
+            $requestSchools = $request->schools ?? [];
+
             if ($isSchoolAdmin) {
                 // Admin Sekolah can only change their own school's assignment, preserving other schools
                 $otherAssignedSchools = $targetUser->assignedSchools()
@@ -153,14 +156,32 @@ class PengawasController extends Controller
                     ->pluck('schools.id')
                     ->toArray();
 
-                $newSchools = array_unique(array_merge($otherAssignedSchools, $request->schools ?? []));
+                $newSchools = array_unique(array_merge($otherAssignedSchools, $requestSchools));
                 $targetUser->assignedSchools()->sync($newSchools);
             } else {
-                $targetUser->assignedSchools()->sync($request->schools ?? []);
+                $syncResult = $targetUser->assignedSchools()->sync($requestSchools);
+                $attachedCount = count($syncResult['attached'] ?? []);
+                $detachedCount = count($syncResult['detached'] ?? []);
+                
+                $msgParts = [];
+                if ($attachedCount > 0) {
+                    $msgParts[] = "$attachedCount sekolah ditugaskan";
+                }
+                if ($detachedCount > 0) {
+                    $msgParts[] = "$detachedCount sekolah dilepas";
+                }
+                if (!empty($msgParts)) {
+                    $request->session()->flash('info_detail', implode(', ', $msgParts) . '.');
+                }
             }
         });
 
-        return redirect()->route('admin.pengawas.index')->with('success', 'Data Pengawas berhasil diperbarui.');
+        $successMsg = 'Penugasan Pengawas berhasil diperbarui.';
+        if (session('info_detail')) {
+            $successMsg .= ' (' . session('info_detail') . ')';
+        }
+
+        return redirect()->route('admin.pengawas.index')->with('success', $successMsg);
     }
 
     public function destroy(Pengawas $pengawas): RedirectResponse
@@ -170,5 +191,88 @@ class PengawasController extends Controller
         $pengawas->user->delete();
         
         return redirect()->route('admin.pengawas.index')->with('success', 'Data Pengawas berhasil dihapus.');
+    }
+
+    /**
+     * Form untuk Admin Sekolah menghubungkan Pengawas existing ke sekolahnya.
+     */
+    public function connectForm(): View
+    {
+        $user = auth()->user();
+        $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
+
+        if (!$isSchoolAdmin) {
+            abort(403, 'Halaman ini khusus untuk Admin Sekolah.');
+        }
+
+        $search = request('search');
+
+        $availablePengawas = Pengawas::with(['user.assignedSchools'])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('user', function ($qu) use ($search) {
+                        $qu->where('name', 'like', "%{$search}%")
+                           ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhere('nip', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('pages.admin.pengawas.connect', compact('availablePengawas'));
+    }
+
+    /**
+     * Action untuk Admin Sekolah menghubungkan Pengawas existing ke sekolahnya.
+     */
+    public function connect(): RedirectResponse
+    {
+        $user = auth()->user();
+        $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
+
+        if (!$isSchoolAdmin || !$user->school_id) {
+            abort(403, 'Hanya Admin Sekolah yang dapat menghubungkan Pengawas.');
+        }
+
+        request()->validate([
+            'pengawas_id' => 'required|exists:pengawas,id',
+        ]);
+
+        $pengawas = Pengawas::findOrFail(request('pengawas_id'));
+        $targetUser = $pengawas->user;
+
+        if (!$targetUser) {
+            return redirect()->back()->withErrors(['pengawas_id' => 'User Pengawas tidak ditemukan.']);
+        }
+
+        $alreadyConnected = $targetUser->assignedSchools()->where('schools.id', $user->school_id)->exists();
+        if ($alreadyConnected) {
+            return redirect()->route('admin.pengawas.index')->with('info', 'Pengawas sudah terhubung ke sekolah ini.');
+        }
+
+        $targetUser->assignedSchools()->syncWithoutDetaching([$user->school_id]);
+
+        return redirect()->route('admin.pengawas.index')->with('success', 'Pengawas berhasil dihubungkan ke sekolah Anda.');
+    }
+
+    /**
+     * Action untuk Admin Sekolah melepas Pengawas dari sekolahnya.
+     */
+    public function disconnect(Pengawas $pengawas): RedirectResponse
+    {
+        $user = auth()->user();
+        $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
+
+        if (!$isSchoolAdmin || !$user->school_id) {
+            abort(403, 'Hanya Admin Sekolah yang dapat melepas Pengawas.');
+        }
+
+        $targetUser = $pengawas->user;
+        if ($targetUser) {
+            $targetUser->assignedSchools()->detach($user->school_id);
+        }
+
+        return redirect()->route('admin.pengawas.index')->with('success', 'Pengawas berhasil dilepas dari sekolah Anda.');
     }
 }

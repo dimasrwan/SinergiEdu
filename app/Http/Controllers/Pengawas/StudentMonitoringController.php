@@ -32,7 +32,7 @@ class StudentMonitoringController extends Controller
             $classes = Classroom::query()
                 ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
                 ->get();
-            $selectedClassId = request('class_id');
+            $selectedClassId = 'all';
             return view('pages.pengawas.students.index', compact(
                 'students', 'classes', 'selectedClassId', 'activeYear', 'activeSemester'
             ));
@@ -42,12 +42,23 @@ class StudentMonitoringController extends Controller
         $classes = Classroom::query()
             ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->get();
-        $selectedClassId = request('class_id', $classes->first()?->id);
+
+        $requestClassId = request('class_id');
+        $selectedClassId = ($requestClassId && $requestClassId !== 'all') ? $requestClassId : 'all';
+
+        // Validasi jika class_id spesifik diberikan, pastikan kelas tersebut milik sekolah aktif
+        if ($selectedClassId !== 'all') {
+            $classExistsInActiveSchool = $classes->contains('id', (int) $selectedClassId);
+            if (!$classExistsInActiveSchool) {
+                // Jika mencoba akses kelas luar tenant, paksa ke 'all' atau kosongkan
+                $selectedClassId = 'all';
+            }
+        }
 
         // Dapatkan siswa dengan hasil belajar
         $students = Student::query()
             ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
-            ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
+            ->when($selectedClassId !== 'all', function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
                       ->where('student_classes.academic_year_id', $activeYear->id);
@@ -130,7 +141,8 @@ class StudentMonitoringController extends Controller
     {
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
-        $selectedClassId = request('class_id');
+        $requestClassId = request('class_id');
+        $selectedClassId = ($requestClassId && $requestClassId !== 'all') ? $requestClassId : 'all';
 
         $activeSchoolId = session('pengawas_school_id');
 
@@ -138,9 +150,17 @@ class StudentMonitoringController extends Controller
             abort(404, 'Tahun ajaran, semester aktif, atau sekolah pengawasan tidak ditemukan.');
         }
 
+        // Validasi jika class_id spesifik diberikan, pastikan kelas milik sekolah aktif
+        if ($selectedClassId !== 'all') {
+            $classExistsInActiveSchool = Classroom::where('school_id', $activeSchoolId)->where('id', $selectedClassId)->exists();
+            if (!$classExistsInActiveSchool) {
+                $selectedClassId = 'all';
+            }
+        }
+
         $students = Student::query()
             ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
-            ->when($selectedClassId, function ($query) use ($selectedClassId, $activeYear) {
+            ->when($selectedClassId !== 'all', function ($query) use ($selectedClassId, $activeYear) {
                 return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
                     $q->where('classes.id', $selectedClassId)
                       ->where('student_classes.academic_year_id', $activeYear->id);

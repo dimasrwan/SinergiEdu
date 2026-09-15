@@ -217,7 +217,7 @@ class PengawasMultiSchoolHardeningTest extends TestCase
         $this->assertCount(2, $createdUser->assignedSchools);
     }
 
-    /** Test 19: Admin School cannot assign cross-school */
+    /** Test 19: Admin School cannot create Pengawas identity directly (Option B policy check) */
     public function test_19_admin_school_cannot_assign_cross_school()
     {
         $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin Sekolah']);
@@ -228,10 +228,10 @@ class PengawasMultiSchoolHardeningTest extends TestCase
             'email' => 'illegal_pengawas@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'schools' => [$this->schoolA->id, $this->schoolB->id], // School B is cross-school for School Admin A
+            'schools' => [$this->schoolA->id],
         ]);
 
-        $response->assertSessionHasErrors(['schools']);
+        $response->assertStatus(403);
         $this->assertDatabaseMissing('users', ['email' => 'illegal_pengawas@example.com']);
     }
 
@@ -284,11 +284,11 @@ class PengawasMultiSchoolHardeningTest extends TestCase
         $this->assertNotNull(User::find($this->pengawas->id));
     }
 
-    /** Test 23: Admin School update preserves foreign school assignments */
+    /** Test 23: Super Admin update can modify pengawas identity and assigned schools */
     public function test_23_admin_school_update_preserves_foreign_school_assignments()
     {
-        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin Sekolah']);
-        $schoolAdminA = User::factory()->create(['role_id' => $adminRole->id, 'school_id' => $this->schoolA->id]);
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
 
         $pengawasModel = \App\Models\Pengawas::create([
             'user_id' => $this->pengawas->id,
@@ -298,8 +298,8 @@ class PengawasMultiSchoolHardeningTest extends TestCase
         // Ensure pivot is populated
         $this->pengawas->assignedSchools()->sync([$this->schoolA->id, $this->schoolB->id]);
 
-        // Admin School A updates Pengawas with schools = [School A]
-        $response = $this->actingAs($schoolAdminA)->put(route('admin.pengawas.update', $pengawasModel), [
+        // Super Admin updates Pengawas with schools = [School A]
+        $response = $this->actingAs($superAdmin)->put(route('admin.pengawas.update', $pengawasModel), [
             'name' => $this->pengawas->name,
             'email' => $this->pengawas->email,
             'nip' => '12345678',
@@ -307,10 +307,8 @@ class PengawasMultiSchoolHardeningTest extends TestCase
         ]);
 
         $response->assertRedirect(route('admin.pengawas.index'));
-        // School B assignment should remain intact!
-        $this->assertCount(2, $this->pengawas->fresh()->assignedSchools);
+        $this->assertCount(1, $this->pengawas->fresh()->assignedSchools);
         $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
-        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
     }
 
     /** Test 24: Pengawas archived inspections endpoint returns 200 and filters by active school */
@@ -351,5 +349,181 @@ class PengawasMultiSchoolHardeningTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee($targetUser->name);
+    }
+
+    /** Test 26: Admin School can connect existing Pengawas to own school */
+    public function test_26_admin_school_can_connect_existing_pengawas_to_own_school()
+    {
+        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin Sekolah']);
+        $schoolAdmin = User::factory()->create(['role_id' => $adminRole->id, 'school_id' => $this->schoolC->id]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '99988877',
+        ]);
+
+        // Connect School C via Admin School C
+        $response = $this->actingAs($schoolAdmin)->post(route('admin.pengawas.connect'), [
+            'pengawas_id' => $pengawasModel->id,
+        ]);
+
+        $response->assertRedirect(route('admin.pengawas.index'));
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolC));
+        // School A & B remain preserved
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
+    }
+
+    /** Test 27: Admin School can disconnect Pengawas from own school without deleting user/profile */
+    public function test_27_admin_school_can_disconnect_pengawas_from_own_school()
+    {
+        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin Sekolah']);
+        $schoolAdminA = User::factory()->create(['role_id' => $adminRole->id, 'school_id' => $this->schoolA->id]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '99988877',
+        ]);
+
+        // Disconnect School A via Admin School A
+        $response = $this->actingAs($schoolAdminA)->delete(route('admin.pengawas.disconnect', $pengawasModel));
+
+        $response->assertRedirect(route('admin.pengawas.index'));
+        $this->assertFalse($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        // School B remains intact
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
+        // User & Pengawas profile exist
+        $this->assertNotNull(User::find($this->pengawas->id));
+    }
+
+    /** Test 28: Direct URL edit or create by Admin School is denied (Option B) */
+    public function test_28_direct_url_edit_or_create_by_admin_school_is_denied()
+    {
+        $adminRole = Role::firstOrCreate(['name' => 'admin'], ['display_name' => 'Admin Sekolah']);
+        $schoolAdmin = User::factory()->create(['role_id' => $adminRole->id, 'school_id' => $this->schoolA->id]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '99988877',
+        ]);
+
+        $this->actingAs($schoolAdmin)->get(route('admin.pengawas.create'))->assertStatus(403);
+        $this->actingAs($schoolAdmin)->get(route('admin.pengawas.edit', $pengawasModel))->assertStatus(403);
+    }
+
+    /** Test 29: Student monitoring 'Semua Kelas' filter returns all active school students while maintaining tenant isolation */
+    public function test_29_student_monitoring_semua_kelas_returns_all_active_school_students()
+    {
+        $activeYear = AcademicYear::firstOrCreate(['is_active' => true], ['name' => '2025/2026']);
+        $activeSemester = Semester::firstOrCreate(['is_active' => true], ['name' => 'Ganjil']);
+
+        $classA = Classroom::create(['school_id' => $this->schoolA->id, 'name' => 'Kelas A', 'grade_level' => '10']);
+        $classB = Classroom::create(['school_id' => $this->schoolB->id, 'name' => 'Kelas B', 'grade_level' => '10']);
+
+        $userStudentA = User::factory()->create(['school_id' => $this->schoolA->id, 'name' => 'Student A Name']);
+        $userStudentB = User::factory()->create(['school_id' => $this->schoolB->id, 'name' => 'Student B Name']);
+
+        $studentA = Student::create(['school_id' => $this->schoolA->id, 'user_id' => $userStudentA->id, 'nis' => '1111']);
+        $studentB = Student::create(['school_id' => $this->schoolB->id, 'user_id' => $userStudentB->id, 'nis' => '2222']);
+
+        $studentA->classes()->attach($classA->id, ['academic_year_id' => $activeYear->id, 'school_id' => $this->schoolA->id]);
+        $studentB->classes()->attach($classB->id, ['academic_year_id' => $activeYear->id, 'school_id' => $this->schoolB->id]);
+
+        // Request with class_id='all' on active school A
+        $response = $this->actingAs($this->pengawas)
+            ->withSession(['pengawas_school_id' => $this->schoolA->id])
+            ->get(route('pengawas.students.index', ['class_id' => 'all']));
+
+        $response->assertStatus(200);
+        $response->assertSee('Student A Name');
+        $response->assertDontSee('Student B Name');
+
+        // Attempting to pass cross-school class_id falls back to 'all' safely scoped to active school A
+        $responseTamper = $this->actingAs($this->pengawas)
+            ->withSession(['pengawas_school_id' => $this->schoolA->id])
+            ->get(route('pengawas.students.index', ['class_id' => $classB->id]));
+
+        $responseTamper->assertStatus(200);
+        $responseTamper->assertSee('Student A Name');
+        $responseTamper->assertDontSee('Student B Name');
+    }
+
+    /** Test 30: Student report download respects 'Semua Kelas' and tenant isolation */
+    public function test_30_student_report_download_respects_semua_kelas_and_tenant_isolation()
+    {
+        $activeYear = AcademicYear::firstOrCreate(['is_active' => true], ['name' => '2025/2026']);
+        $activeSemester = Semester::firstOrCreate(['is_active' => true], ['name' => 'Ganjil']);
+
+        $userStudentA = User::factory()->create(['school_id' => $this->schoolA->id]);
+        $userStudentB = User::factory()->create(['school_id' => $this->schoolB->id]);
+
+        $studentA = Student::create(['school_id' => $this->schoolA->id, 'user_id' => $userStudentA->id, 'nis' => '11111']);
+        $studentB = Student::create(['school_id' => $this->schoolB->id, 'user_id' => $userStudentB->id, 'nis' => '99999']);
+
+        $response = $this->actingAs($this->pengawas)
+            ->withSession(['pengawas_school_id' => $this->schoolA->id])
+            ->get(route('pengawas.students.downloadReport', ['class_id' => 'all']));
+
+        $response->assertStatus(200);
+        $this->assertEquals('text/csv; charset=utf-8', $response->headers->get('Content-Type'));
+    }
+
+    /** Test 31: Super Admin can remove one school assignment via edit form while preserving others, profile, and user account */
+    public function test_31_super_admin_can_remove_one_school_assignment_via_edit_form()
+    {
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '77766655',
+        ]);
+
+        // Initially assigned to School A & School B
+        $this->pengawas->assignedSchools()->sync([$this->schoolA->id, $this->schoolB->id]);
+
+        // Super Admin unchecks School B, submitting only [School A]
+        $response = $this->actingAs($superAdmin)->put(route('admin.pengawas.update', $pengawasModel), [
+            'name' => $this->pengawas->name,
+            'email' => $this->pengawas->email,
+            'nip' => '77766655',
+            'schools' => [$this->schoolA->id],
+        ]);
+
+        $response->assertRedirect(route('admin.pengawas.index'));
+        $response->assertSessionHas('success');
+
+        // School A preserved, School B removed
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
+        $this->assertFalse($this->pengawas->fresh()->assignedSchools->contains($this->schoolB));
+
+        // User & Pengawas profile exist
+        $this->assertNotNull(User::find($this->pengawas->id));
+        $this->assertNotNull(\App\Models\Pengawas::find($pengawasModel->id));
+    }
+
+    /** Test 32: Super Admin attempting to uncheck all schools triggers validation error */
+    public function test_32_super_admin_unchecking_all_schools_triggers_validation_error()
+    {
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create(['role_id' => $superAdminRole->id, 'school_id' => null]);
+
+        $pengawasModel = \App\Models\Pengawas::create([
+            'user_id' => $this->pengawas->id,
+            'nip' => '77766655',
+        ]);
+
+        $this->pengawas->assignedSchools()->sync([$this->schoolA->id]);
+
+        // Submit empty schools array
+        $response = $this->actingAs($superAdmin)->put(route('admin.pengawas.update', $pengawasModel), [
+            'name' => $this->pengawas->name,
+            'email' => $this->pengawas->email,
+            'nip' => '77766655',
+            'schools' => [],
+        ]);
+
+        $response->assertSessionHasErrors(['schools']);
+        $this->assertTrue($this->pengawas->fresh()->assignedSchools->contains($this->schoolA));
     }
 }

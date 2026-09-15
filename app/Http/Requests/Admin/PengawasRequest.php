@@ -57,6 +57,8 @@ class PengawasRequest extends FormRequest
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal terdiri dari 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'schools.required' => 'Pengawas harus memiliki minimal satu sekolah penugasan.',
+            'schools.min' => 'Pengawas harus memiliki minimal satu sekolah penugasan.',
         ];
     }
 }

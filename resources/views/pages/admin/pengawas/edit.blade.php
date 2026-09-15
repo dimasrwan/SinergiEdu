@@ -15,8 +15,29 @@
             </div>
         </div>
 
-        <x-card padding="none" class="overflow-hidden">
-            <form action="{{ route('admin.pengawas.update', $pengawas) }}" method="POST">
+        <x-card padding="none" class="overflow-hidden" x-data="{
+            initialSchoolIds: {{ json_encode($assignedSchoolIds) }},
+            selectedSchools: {{ json_encode(old('schools', $assignedSchoolIds)) }},
+            showConfirmModal: false,
+            schoolNamesMap: {{ json_encode($schools->pluck('name', 'id')) }},
+            removedSchoolNames: [],
+            checkAndSubmit() {
+                this.removedSchoolNames = [];
+                for (let id of this.initialSchoolIds) {
+                    if (!this.selectedSchools.includes(id) && !this.selectedSchools.includes(String(id))) {
+                        if (this.schoolNamesMap[id]) {
+                            this.removedSchoolNames.push(this.schoolNamesMap[id]);
+                        }
+                    }
+                }
+                if (this.removedSchoolNames.length > 0) {
+                    this.showConfirmModal = true;
+                } else {
+                    $refs.editForm.submit();
+                }
+            }
+        }">
+            <form x-ref="editForm" action="{{ route('admin.pengawas.update', $pengawas) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -81,13 +102,18 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             @foreach($schools as $school)
-                                <label class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition hover:bg-slate-50 {{ in_array($school->id, old('schools', $assignedSchoolIds)) ? 'border-accent bg-accent/5' : 'border-slate-200' }}">
-                                    <input type="checkbox" name="schools[]" value="{{ $school->id }}" {{ in_array($school->id, old('schools', $assignedSchoolIds)) ? 'checked' : '' }} class="mt-0.5 rounded border-slate-300 text-accent focus:ring-accent">
+                                <label class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition hover:bg-slate-50 min-h-[44px]" :class="selectedSchools.includes('{{ $school->id }}') || selectedSchools.includes({{ $school->id }}) ? 'border-accent bg-accent/5' : 'border-slate-200'">
+                                    <input type="checkbox" name="schools[]" value="{{ $school->id }}" x-model="selectedSchools" class="mt-0.5 rounded border-slate-300 text-accent focus:ring-accent w-5 h-5">
                                     <div>
                                         <div class="text-sm font-semibold text-slate-900">{{ $school->name }}</div>
                                         @if($school->npsn)
                                             <div class="text-xs text-slate-500">NPSN: {{ $school->npsn }}</div>
                                         @endif
+                                        <template x-if="initialSchoolIds.includes({{ $school->id }}) && (!selectedSchools.includes('{{ $school->id }}') && !selectedSchools.includes({{ $school->id }}))">
+                                            <span class="inline-flex items-center mt-1 px-2 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-700 rounded border border-amber-200">
+                                                Penugasan akan dilepas
+                                            </span>
+                                        </template>
                                     </div>
                                 </label>
                             @endforeach
@@ -100,7 +126,40 @@
                 <!-- Footer / Actions -->
                 <div class="bg-slate-50 px-6 py-4 md:px-8 flex items-center justify-end gap-3 border-t border-slate-100">
                     <x-button variant="secondary" href="{{ route('admin.pengawas.index') }}">Batal</x-button>
-                    <x-button variant="primary" type="submit">Simpan Perubahan</x-button>
+                    <x-button variant="primary" type="button" @click="checkAndSubmit()">Simpan Perubahan</x-button>
+                </div>
+
+                <!-- Modal Konfirmasi Perubahan Penugasan -->
+                <div x-show="showConfirmModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+                    <div class="flex min-h-full items-center justify-center p-4 text-center">
+                        <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity" @click="showConfirmModal = false"></div>
+
+                        <div class="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all border border-slate-200">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-4">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-900">Perubahan Penugasan</h3>
+                            <p class="mt-2 text-sm text-slate-600">Pengawas akan dilepas dari sekolah berikut:</p>
+                            
+                            <ul class="mt-3 space-y-1.5 bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-xs font-semibold text-amber-800">
+                                <template x-for="name in removedSchoolNames" :key="name">
+                                    <li class="flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        <span x-text="name"></span>
+                                    </li>
+                                </template>
+                            </ul>
+
+                            <p class="mt-3 text-xs text-slate-500">Penugasan ke sekolah lain, profil, serta akun Pengawas tidak akan terhapus.</p>
+
+                            <div class="mt-6 flex justify-end gap-3">
+                                <x-button variant="secondary" type="button" @click="showConfirmModal = false">Batal</x-button>
+                                <x-button variant="primary" type="button" @click="$refs.editForm.submit()">Konfirmasi Perubahan</x-button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </x-card>

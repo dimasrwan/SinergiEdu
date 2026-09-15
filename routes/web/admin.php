@@ -32,6 +32,9 @@ Route::resource('/semesters', SemesterController::class);
 Route::resource('/teacher-assignments', TeacherAssignmentController::class)->except(['show']);
 Route::resource('/student-placements', StudentPlacementController::class)->except(['show']);
 Route::resource('/wakas', WakaController::class);
+Route::get('/pengawas/connect', [PengawasController::class, 'connectForm'])->name('pengawas.connect.form');
+Route::post('/pengawas/connect', [PengawasController::class, 'connect'])->name('pengawas.connect');
+Route::delete('/pengawas/{pengawas}/disconnect', [PengawasController::class, 'disconnect'])->name('pengawas.disconnect');
 Route::resource('/pengawas', PengawasController::class)->parameters([
     'pengawas' => 'pengawas'
 ]);
