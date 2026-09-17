@@ -9,7 +9,7 @@
         "php": "^8.3",
         "barryvdh/laravel-dompdf": "*",
         "laravel/framework": "^13.8",
-        "laravel/socialite": "*",
+        "laravel/socialite": "^5.31",
         "laravel/tinker": "^3.0",
         "maatwebsite/excel": "*",
         "openspout/openspout": "*"
