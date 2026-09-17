@@ -39,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('super-admin')->name('super_admin.')->middleware('role:super_admin')->group(base_path('routes/web/super_admin.php'));
 
     // Admin
-    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(base_path('routes/web/admin.php'));
+    Route::prefix('admin')->name('admin.')->middleware('role:admin,super_admin')->group(base_path('routes/web/admin.php'));
     
     // Waka Kurikulum
     Route::prefix('waka')->name('waka.')->middleware('role:waka')->group(base_path('routes/web/waka.php'));
@@ -54,8 +54,11 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('orangtua')->name('orangtua.')->middleware('role:orangtua')->group(base_path('routes/web/orangtua.php'));
     
     // Pengawas
-    Route::prefix('pengawas')->name('pengawas.')->middleware('role:pengawas')->group(base_path('routes/web/pengawas.php'));
+    Route::prefix('pengawas')->name('pengawas.')->middleware(['role:pengawas', 'pengawas.scope', 'pengawas.access'])->group(base_path('routes/web/pengawas.php'));
     
     // Kepala Sekolah
     Route::prefix('kepala-sekolah')->name('kepala-sekolah.')->middleware('role:kepala_sekolah')->group(base_path('routes/web/kepala_sekolah.php'));
+
+    // Komite Sekolah
+    Route::prefix('komite')->name('komite.')->middleware('role:komite')->group(base_path('routes/web/komite.php'));
 });

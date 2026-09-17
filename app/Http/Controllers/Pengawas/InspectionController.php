@@ -13,9 +13,11 @@ class InspectionController extends Controller
 {
     public function index(): View
     {
+        $activeSchoolId = session('pengawas_school_id');
+
         $inspections = Inspection::query()
             ->when(request('status'), fn ($q) => $q->where('status', request('status')))
-            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->with('school', 'createdBy')
             ->latest()
             ->paginate(10);
@@ -25,8 +27,10 @@ class InspectionController extends Controller
 
     public function create(): View
     {
+        $activeSchoolId = session('pengawas_school_id');
+
         $schools = School::query()
-            ->when(auth()->user()->school_id, fn ($q) => $q->where('id', auth()->user()->school_id))
+            ->when($activeSchoolId, fn ($q) => $q->where('id', $activeSchoolId))
             ->get();
 
         return view('pages.pengawas.inspections.create', compact('schools'));
@@ -52,17 +56,35 @@ class InspectionController extends Controller
 
     public function show(Inspection $inspection): View
     {
+        $activeSchoolId = session('pengawas_school_id');
+        if ($activeSchoolId && (int) $inspection->school_id !== (int) $activeSchoolId) {
+            abort(403, 'Akses ditolak.');
+        }
+
         return view('pages.pengawas.inspections.show', compact('inspection'));
     }
 
     public function edit(Inspection $inspection): View
     {
-        $schools = School::all();
+        $activeSchoolId = session('pengawas_school_id');
+        if ($activeSchoolId && (int) $inspection->school_id !== (int) $activeSchoolId) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $schools = School::query()
+            ->when($activeSchoolId, fn ($q) => $q->where('id', $activeSchoolId))
+            ->get();
+
         return view('pages.pengawas.inspections.edit', compact('inspection', 'schools'));
     }
 
     public function update(Request $request, Inspection $inspection): RedirectResponse
     {
+        $activeSchoolId = session('pengawas_school_id');
+        if ($activeSchoolId && (int) $inspection->school_id !== (int) $activeSchoolId) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:200',
             'content' => 'nullable|string',
@@ -79,6 +101,11 @@ class InspectionController extends Controller
 
     public function destroy(Inspection $inspection): RedirectResponse
     {
+        $activeSchoolId = session('pengawas_school_id');
+        if ($activeSchoolId && (int) $inspection->school_id !== (int) $activeSchoolId) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $inspection->delete();
 
         return redirect()->route('pengawas.inspections.index')->with('success', 'Jadwal inspeksi berhasil dihapus.');
@@ -89,6 +116,11 @@ class InspectionController extends Controller
      */
     public function archive(Inspection $inspection): RedirectResponse
     {
+        $activeSchoolId = session('pengawas_school_id');
+        if ($activeSchoolId && (int) $inspection->school_id !== (int) $activeSchoolId) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $inspection->update(['is_archived' => true]);
 
         return redirect()->route('pengawas.inspections.index')->with('success', 'Jadwal inspeksi berhasil diarsipkan.');
@@ -99,6 +131,11 @@ class InspectionController extends Controller
      */
     public function unarchive(Inspection $inspection): RedirectResponse
     {
+        $activeSchoolId = session('pengawas_school_id');
+        if ($activeSchoolId && (int) $inspection->school_id !== (int) $activeSchoolId) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $inspection->update(['is_archived' => false]);
 
         return redirect()->route('pengawas.inspections.index')->with('success', 'Arsip jadwal inspeksi berhasil dibatalkan.');
@@ -109,8 +146,10 @@ class InspectionController extends Controller
      */
     public function archived(): View
     {
+        $activeSchoolId = session('pengawas_school_id');
+
         $archived = Inspection::archived()
-            ->when(auth()->user()->school_id, fn ($q) => $q->where('school_id', auth()->user()->school_id))
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->with('school', 'createdBy')
             ->latest()
             ->paginate(10);

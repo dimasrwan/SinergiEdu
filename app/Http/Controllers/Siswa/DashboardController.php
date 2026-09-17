@@ -10,23 +10,16 @@ use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Feedback;
 use App\Models\Material;
-use App\Models\Student;
 use App\Models\StudentGrade;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
-    /**
-     * Tampilkan halaman dashboard Siswa.
-     */
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         $stats = [

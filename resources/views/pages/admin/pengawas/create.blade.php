@@ -77,6 +77,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Sekolah yang Diawasi -->
+                    <div class="space-y-4">
+                        <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">Sekolah yang Diawasi <span class="text-danger">*</span></h2>
+                        <p class="text-sm text-slate-500">Pilih minimal satu sekolah yang akan diawasi oleh pengawas ini. Pengawas hanya dapat mengakses data sekolah yang dipilih.</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            @foreach($schools as $school)
+                                <label class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition hover:bg-slate-50 {{ in_array($school->id, old('schools', [])) ? 'border-accent bg-accent/5' : 'border-slate-200' }}">
+                                    <input type="checkbox" name="schools[]" value="{{ $school->id }}" {{ in_array($school->id, old('schools', [])) ? 'checked' : '' }} class="mt-0.5 rounded border-slate-300 text-accent focus:ring-accent">
+                                    <div>
+                                        <div class="text-sm font-semibold text-slate-900">{{ $school->name }}</div>
+                                        @if($school->npsn)
+                                            <div class="text-xs text-slate-500">NPSN: {{ $school->npsn }}</div>
+                                        @endif
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                        <x-input-error :messages="$errors->get('schools')" class="mt-2 text-xs" />
+                        <x-input-error :messages="$errors->get('schools.*')" class="mt-1 text-xs" />
+                    </div>
                 </div>
 
                 <!-- Footer / Actions -->

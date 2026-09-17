@@ -54,6 +54,14 @@ class School extends Model
     {
         return $this->hasMany(\App\Models\Pengawas::class);
     }
+
+    /**
+     * Relasi many-to-many ke pengawas yang di-assign ke sekolah ini.
+     */
+    public function supervisors(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'pengawas_school', 'school_id', 'user_id');
+    }
     
     public function kepalaSekolahs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

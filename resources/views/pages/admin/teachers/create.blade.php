@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <x-card padding="none" class="overflow-hidden">
+        <x-card padding="none">
             <form action="{{ route('admin.teachers.store') }}" method="POST" x-data="teacherForm()" @submit="submitForm($event)">
                 @csrf
 
@@ -105,7 +105,7 @@
                             </div>
                         @endif
 
-                        <div class="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-50 rounded-xl border border-slate-200">
                             <!-- Desktop/Tablet Header -->
                             <div class="hidden md:grid grid-cols-12 gap-4 px-5 py-3 border-b border-slate-200 bg-slate-100/50">
                                 <div class="col-span-1 text-xs font-bold text-slate-500 uppercase tracking-wider">No</div>

@@ -113,8 +113,113 @@ class SuperAdminSchoolManagementTest extends TestCase
 
         $response = $this->actingAs($admin)->get('/dashboard');
         
-        // Either redirect to login or throw 403 Forbidden.
         // In our implementation TenantMiddleware throws abort(403)
         $response->assertStatus(403);
     }
+
+    public function test_super_admin_can_reactivate_school()
+    {
+        $sa = $this->createSuperAdmin();
+        $school = School::create(['name' => 'Sekolah Nonaktif', 'is_active' => false]);
+
+        $response = $this->actingAs($sa)->patch(route('super_admin.schools.toggle-status', $school), [
+            'is_active' => 1,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('schools', [
+            'id' => $school->id,
+            'is_active' => 1,
+        ]);
+    }
+
+    public function test_super_admin_can_permanently_delete_empty_school()
+    {
+        $sa = $this->createSuperAdmin();
+        $school = School::create(['name' => 'Sekolah Kosong', 'is_active' => true]);
+
+        $response = $this->actingAs($sa)->delete(route('super_admin.schools.destroy', $school), [
+            'confirm_school_name' => 'Sekolah Kosong',
+        ]);
+
+        $response->assertRedirect(route('super_admin.schools.index'));
+        $this->assertDatabaseMissing('schools', [
+            'id' => $school->id,
+        ]);
+    }
+
+    public function test_delete_fails_if_confirm_school_name_does_not_match()
+    {
+        $sa = $this->createSuperAdmin();
+        $school = School::create(['name' => 'Sekolah Kosong', 'is_active' => true]);
+
+        $response = $this->actingAs($sa)->delete(route('super_admin.schools.destroy', $school), [
+            'confirm_school_name' => 'Nama Salah',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('schools', [
+            'id' => $school->id,
+        ]);
+    }
+
+    public function test_delete_blocked_if_school_has_users()
+    {
+        $sa = $this->createSuperAdmin();
+        $school = School::create(['name' => 'Sekolah Ada User', 'is_active' => true]);
+        $this->createSchoolAdmin($school);
+
+        $response = $this->actingAs($sa)->delete(route('super_admin.schools.destroy', $school), [
+            'confirm_school_name' => 'Sekolah Ada User',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('schools', [
+            'id' => $school->id,
+        ]);
+    }
+
+    public function test_admin_sekolah_cannot_delete_school()
+    {
+        $school = School::create(['name' => 'Sekolah Target', 'is_active' => true]);
+        $admin = $this->createSchoolAdmin($school);
+
+        $response = $this->actingAs($admin)->delete(route('super_admin.schools.destroy', $school), [
+            'confirm_school_name' => 'Sekolah Target',
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('schools', [
+            'id' => $school->id,
+        ]);
+    }
+
+    public function test_deleting_eligible_school_detaches_supervisor_pivot_without_deleting_pengawas_account()
+    {
+        $sa = $this->createSuperAdmin();
+        $school = School::create(['name' => 'Sekolah Binaan', 'is_active' => true]);
+        
+        $pengawasRole = Role::firstOrCreate(['name' => 'pengawas'], ['display_name' => 'Pengawas']);
+        $pengawasUser = User::create([
+            'name' => 'Pengawas Drs. H. Ahmad',
+            'email' => 'pengawas@test.com',
+            'password' => bcrypt('password'),
+            'role_id' => $pengawasRole->id,
+            'school_id' => null,
+        ]);
+
+        $school->supervisors()->attach($pengawasUser->id);
+
+        $response = $this->actingAs($sa)->delete(route('super_admin.schools.destroy', $school), [
+            'confirm_school_name' => 'Sekolah Binaan',
+        ]);
+
+        $response->assertRedirect(route('super_admin.schools.index'));
+        $this->assertDatabaseMissing('schools', ['id' => $school->id]);
+        $this->assertDatabaseMissing('pengawas_school', ['school_id' => $school->id]);
+        $this->assertDatabaseHas('users', ['id' => $pengawasUser->id]);
+    }
 }
+

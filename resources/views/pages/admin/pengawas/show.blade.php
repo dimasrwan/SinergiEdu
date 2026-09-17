@@ -15,11 +15,16 @@
                     <p class="text-sm text-slate-500">Detail informasi kepegawaian dan akun sistem.</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <x-button variant="secondary" href="{{ route('admin.pengawas.edit', $pengawas) }}">
-                    Edit Profil
-                </x-button>
-            </div>
+            @php
+                $isSuperAdmin = auth()->user() && auth()->user()->role && in_array(auth()->user()->role->name, ['super_admin', 'superadmin']);
+            @endphp
+            @if($isSuperAdmin)
+                <div class="flex gap-2">
+                    <x-button variant="secondary" href="{{ route('admin.pengawas.edit', $pengawas) }}">
+                        Edit Profil
+                    </x-button>
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -100,11 +105,74 @@
                                 <dt class="text-sm font-semibold text-slate-500">Role Sistem</dt>
                                 <dd class="mt-1 text-sm text-slate-900">Pengawas</dd>
                             </div>
+                            <div>
+                                <dt class="text-sm font-semibold text-slate-500">Status Akun</dt>
+                                <dd class="mt-1 text-sm">
+                                    @if($pengawas->user && $pengawas->user->is_active)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                        </span>
+                                    @endif
+                                </dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-semibold text-slate-500">Tanggal Terdaftar</dt>
+                                <dd class="mt-1 text-sm text-slate-900">{{ $pengawas->created_at ? $pengawas->created_at->format('d M Y, H:i') : '-' }}</dd>
+                            </div>
                             <div class="sm:col-span-2">
                                 <dt class="text-sm font-semibold text-slate-500">Alamat Tempat Tinggal</dt>
                                 <dd class="mt-1 text-sm text-slate-900">{{ $pengawas->address ?? 'Belum Diatur' }}</dd>
                             </div>
                         </dl>
+                    </div>
+                </x-card>
+
+                <!-- Sekolah Binaan Section -->
+                <x-card padding="none">
+                    <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-900">Sekolah Binaan</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Daftar sekolah yang berada di bawah kepengawasan akun ini.</p>
+                        </div>
+                        <span class="px-2.5 py-1 bg-blue-50 text-primary text-xs font-bold rounded-lg border border-blue-100">
+                            {{ $pengawas->user->assignedSchools->count() }} Sekolah
+                        </span>
+                    </div>
+                    <div class="p-6">
+                        @if($pengawas->user && $pengawas->user->assignedSchools->count() > 0)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                @foreach($pengawas->user->assignedSchools as $school)
+                                    <div class="p-4 border border-slate-200 rounded-xl bg-white flex items-start gap-3 shadow-2xs">
+                                        <div class="w-10 h-10 rounded-lg bg-blue-50 text-primary flex items-center justify-center shrink-0 border border-blue-100 font-bold">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                                            </svg>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h3 class="font-bold text-slate-900 text-sm truncate">{{ $school->name }}</h3>
+                                            @if($school->npsn)
+                                                <p class="text-xs text-slate-500 font-mono mt-0.5">NPSN: {{ $school->npsn }}</p>
+                                            @endif
+                                            @if($school->address)
+                                                <p class="text-xs text-slate-500 line-clamp-1 mt-1">{{ $school->address }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                <svg class="w-10 h-10 text-slate-300 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+                                </svg>
+                                <p class="text-sm font-semibold text-slate-700">Belum ada sekolah binaan</p>
+                                <p class="text-xs text-slate-500 mt-1">Pengawas ini belum terhubung ke sekolah manapun.</p>
+                            </div>
+                        @endif
                     </div>
                 </x-card>
             </div>

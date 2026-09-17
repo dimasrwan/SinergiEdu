@@ -170,7 +170,7 @@
                         <div class="py-12 text-center text-slate-500 text-sm">Tidak ada tugas yang sesuai dengan filter.</div>
                     @endforelse
                 </div>
-            </x-card>d>
+            </x-card>
             @if ($assignments->hasPages())
                 <div>{{ $assignments->links() }}</div>
             @endif

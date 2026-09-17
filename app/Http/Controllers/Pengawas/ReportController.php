@@ -12,10 +12,11 @@ class ReportController extends Controller
     {
         $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
         $activeSemester = \App\Models\Semester::where('is_active', true)->first();
+        $activeSchoolId = session('pengawas_school_id');
 
         $totalStudents = \App\Models\Student::count();
         $totalTeachers = \App\Models\Teacher::count();
-        $totalSchools = \App\Models\School::count();
+        $totalSchools = 1; // Konteks sekolah aktif pengawasan saat ini
 
         $grades = \App\Models\StudentGrade::query()
             ->when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear?->id))
@@ -26,12 +27,14 @@ class ReportController extends Controller
         $feedbackGiven = $grades->whereNotNull('supervisor_feedback')->count();
 
         $evaluations = \App\Models\SchoolEvaluation::query()
+            ->where('user_id', auth()->id())
             ->when($activeYear, fn ($q) => $q->whereYear('created_at', $activeYear?->year))
             ->latest()
             ->take(5)
             ->get();
 
         $inspections = \App\Models\Inspection::query()
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
             ->when($activeYear, fn ($q) => $q->whereYear('inspection_date', $activeYear?->year))
             ->latest()
             ->take(5)

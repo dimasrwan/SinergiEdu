@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Tambah Sekolah Baru</x-slot:title>
 
-    <div class="w-full max-w-5xl mx-auto">
+    <div class="w-full">
         <div class="mb-8 flex flex-col items-start gap-4">
             <a href="{{ route('super_admin.schools.index') }}" class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

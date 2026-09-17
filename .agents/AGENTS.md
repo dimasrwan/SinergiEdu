@@ -50,3 +50,30 @@ These rules must be followed for ALL pages and ALL roles in the project.
 ## 8. Development & Testing
 - Desain harus menggunakan Mobile-First Tailwind secara ketat (jangan mendesain untuk Desktop lalu memaksanya dikecilkan).
 - Selalu lakukan visual check pada berbagai ukuran viewport. Mencegah adanya Horizontal Overflow.
+
+---
+
+# SinergiEdu Permanent Walkthrough Standards
+
+Setiap task di SinergiEdu WAJIB mengikuti alur:
+`IMPLEMENTASI → TEST → VERIFY → WALKTHROUGH (Artifact) → FINAL STATUS`
+
+## Aturan Utama:
+1. **Wajib Buat Walkthrough:** Setelah seluruh pekerjaan selesai, WAJIB menghasilkan WALKTHROUGH menggunakan fitur Artifact bawaan Antigravity.
+2. **Jangan Membuat File .md di Repository:** Walkthrough TIDAK BOLEH disimpan sebagai file `.md` (e.g. `walkthrough.md`, `audit.md`, `report.md`) di dalam folder repository project. Walkthrough adalah output review di Antigravity Artifact system.
+3. **Berdasarkan Perubahan Nyata:** Walkthrough harus dibuat berdasarkan analisis, implementasi, testing, dan verifikasi nyata (dilarang mengarang hasil pengujian atau mengklaim PASS jika belum dites).
+4. **Format Default Walkthrough:**
+   - `# Walkthrough — [Nama Task]`
+   - `## 1. Ringkasan Perubahan`
+   - `## 2. Perubahan yang Dilakukan`
+   - `## 3. File yang Diubah` (`[NEW]`, `[MODIFIED]`, `[DELETED]`)
+   - `## 4. Logic / Architecture`
+   - `## 5. Security & Authorization`
+   - `## 6. Database`
+   - `## 7. UI / UX`
+   - `## 8. Testing` (Total, Passed, Skipped, Failed, Assertions)
+   - `## 9. Verification`
+   - `## 10. Findings` (P0 Critical, P1 High, P2 Medium, P3 Low)
+   - `## 11. Final Status` (`PASS`, `PASS WITH MINOR FINDINGS`, atau `FAIL`)
+5. **Git Rules:** Tampilkan `git status` dan `git diff --stat` jika relevan, tetapi JANGAN melakukan `git commit` atau `git push` kecuali secara eksplisit diminta user.
+

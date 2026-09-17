@@ -55,7 +55,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Inspeksi</label>
-                        <input type="date" name="inspection_date" value="{{ old('inspection_date', $inspection->inspection_date?->format('Y-m-d')) }}" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <x-date-picker name="inspection_date" value="{{ old('inspection_date', $inspection->inspection_date?->format('Y-m-d')) }}" required />
                         @error('inspection_date')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -63,11 +63,11 @@
 
                     <div>
                         <label class="block text-sm font-semibold text-slate-900 mb-2">Status</label>
-                        <select name="status" class="w-full px-4 py-2.5 border border-slate-300 rounded-lg-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <x-select name="status" selected="{{ old('status', $inspection->status) }}">
                             <option value="pending" {{ old('status', $inspection->status) == 'pending' ? 'selected' : '' }}>Menunggu</option>
                             <option value="scheduled" {{ old('status', $inspection->status) == 'scheduled' ? 'selected' : '' }}>Dijadwalkan</option>
                             <option value="completed" {{ old('status', $inspection->status) == 'completed' ? 'selected' : '' }}>Selesai</option>
-                        </select>
+                        </x-select>
                         @error('status')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror

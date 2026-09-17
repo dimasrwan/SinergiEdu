@@ -64,6 +64,22 @@ class User extends Authenticatable
         return $this->belongsTo(\App\Models\School::class);
     }
 
+    /**
+     * Relasi many-to-many ke sekolah yang di-assign (untuk pengawas multi-school).
+     */
+    public function assignedSchools(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\School::class, 'pengawas_school', 'user_id', 'school_id');
+    }
+
+    /**
+     * Relasi ke profil Pengawas.
+     */
+    public function pengawas(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Pengawas::class);
+    }
+
     protected static function booted()
     {
         $checkSchoolId = function ($user) {
@@ -73,6 +89,9 @@ class User extends Authenticatable
                 if ($user->school_id !== null) {
                     throw new \Exception('Super Admin must have school_id = NULL');
                 }
+            } elseif ($roleName === 'pengawas') {
+                // Pengawas school_id diabaikan, sekolah diambil dari pivot table pengawas_school
+                // Tidak perlu validasi school_id di sini
             } else {
                 if ($user->school_id === null) {
                     throw new \Exception('Normal user must have a valid school_id');

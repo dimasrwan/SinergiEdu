@@ -130,7 +130,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
-                        @forelse($feedbacks as $feedback)
+@forelse($feedbacks as $feedback)
                             @php
                                 $hasFeedback = $feedback->studentGrades->where('supervisor_feedback')->isNotEmpty();
                                 $lastFeedback = $feedback->studentGrades->where('supervisor_feedback')->sortByDesc('updated_at')->first();

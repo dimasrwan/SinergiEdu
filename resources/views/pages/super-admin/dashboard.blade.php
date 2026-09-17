@@ -27,7 +27,7 @@
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <x-card padding="sm" class="hover:shadow-md transition-shadow">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Sekolah</span>
@@ -79,6 +79,19 @@
                     <p class="text-xs text-slate-500 mt-2 font-medium">Seluruh platform</p>
                 </div>
             </x-card>
+
+            <x-card padding="sm" class="hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Pengawas</span>
+                    <div class="text-primary bg-indigo-50 p-2.5 rounded-xl border border-indigo-100">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-3xl font-bold tracking-tight text-slate-900 leading-none">{{ $totalPengawas }}</h3>
+                    <p class="text-xs text-slate-500 mt-2 font-medium">Akun Pengawas</p>
+                </div>
+            </x-card>
         </div>
 
         <!-- System Overview -->
@@ -126,6 +139,78 @@
                 </x-card>
             </div>
         </div>
+
+        <!-- Section Monitoring Pengawasan -->
+        <x-card padding="md" class="border-t border-slate-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Monitoring Pengawasan</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Ringkasan penugasan Pengawas pada sekolah di platform.</p>
+                </div>
+                <a href="{{ route('admin.pengawas.index') }}" class="text-xs sm:text-sm font-bold text-primary hover:text-blue-700 transition-colors shrink-0">
+                    Lihat Manajemen Pengawas &rarr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Pengawas Aktif</span>
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-2xl font-extrabold text-slate-900">{{ $activePengawas }}</span>
+                        <span class="text-xs text-slate-500 font-medium">Akun aktif</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Belum Ditugaskan</span>
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-2xl font-extrabold {{ $unassignedPengawas > 0 ? 'text-amber-600' : 'text-slate-900' }}">{{ $unassignedPengawas }}</span>
+                        <span class="text-xs text-slate-500 font-medium">0 sekolah binaan</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Total Penugasan</span>
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-2xl font-extrabold text-slate-900">{{ $totalAssignments }}</span>
+                        <span class="text-xs text-slate-500 font-medium">Relasi pivot</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Sekolah Tercover</span>
+                    <div class="flex items-baseline justify-between">
+                        <span class="text-2xl font-extrabold text-slate-900">{{ $coveredSchoolsCount }} / {{ $activeSchools }}</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold {{ $coveragePercentage >= 100 ? 'bg-emerald-100 text-emerald-800' : ($coveragePercentage > 0 ? 'bg-blue-100 text-blue-800' : 'bg-slate-200 text-slate-700') }}">
+                            Coverage {{ $coveragePercentage }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            @if($uncoveredSchoolsCount > 0)
+                <div class="mt-4 p-3.5 bg-amber-50 border border-amber-200/80 rounded-xl flex items-center justify-between text-xs text-amber-900">
+                    <div class="flex items-center gap-2.5">
+                        <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                        </svg>
+                        <span>Terdapat <strong>{{ $uncoveredSchoolsCount }} Sekolah Belum Tercover</strong> oleh Pengawas manapun.</span>
+                    </div>
+                    <a href="{{ route('admin.pengawas.index') }}" class="font-bold underline text-amber-900 hover:text-amber-950 shrink-0 ml-2">Tugaskan Sekarang</a>
+                </div>
+            @elseif($activeSchools > 0 && $coveredSchoolsCount === $activeSchools)
+                <div class="mt-4 p-3.5 bg-emerald-50 border border-emerald-200/80 rounded-xl flex items-center gap-2.5 text-xs text-emerald-900">
+                    <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Seluruh <strong>{{ $activeSchools }} Sekolah Aktif</strong> telah memiliki Pengawas binaan.</span>
+                </div>
+            @elseif($activeSchools === 0)
+                <div class="mt-4 p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-2.5 text-xs text-slate-600">
+                    <span>Belum ada sekolah yang memiliki Pengawas.</span>
+                </div>
+            @endif
+        </x-card>
 
         <!-- Dashboard Grid (Recent Schools) -->
         <div class="grid grid-cols-1 gap-6 pt-2">
