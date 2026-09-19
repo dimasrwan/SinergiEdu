@@ -84,12 +84,12 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <x-input-label for="start_date" :value="__('Tanggal Mulai')" />
-                        <x-text-input id="start_date" name="start_date" type="date" value="{{ old('start_date') }}" class="w-full" />
+                        <x-date-picker id="start_date" name="start_date" value="{{ old('start_date') }}" placeholder="Pilih tanggal mulai..." />
                         @error('start_date') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <x-input-label for="due_date" :value="__('Tanggal Tenggat')" />
-                        <x-text-input id="due_date" name="due_date" type="date" value="{{ old('due_date') }}" class="w-full" />
+                        <x-date-picker id="due_date" name="due_date" value="{{ old('due_date') }}" placeholder="Pilih tanggal tenggat..." />
                         @error('due_date') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>

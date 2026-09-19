@@ -22,9 +22,9 @@ class AcademicController extends Controller
         $subjects = Subject::orderBy('name')->get();
         $semesters = Semester::with('academicYear')->get();
 
-        $classId = $request->input('class_id');
-        $subjectId = $request->input('subject_id');
-        $semesterId = $request->input('semester_id', $aggregator->activeSemester()?->id);
+        $classId = $request->filled('class_id') ? (int) $request->input('class_id') : null;
+        $subjectId = $request->filled('subject_id') ? (int) $request->input('subject_id') : null;
+        $semesterId = $request->filled('semester_id') ? (int) $request->input('semester_id') : ($aggregator->activeSemester()?->id ? (int) $aggregator->activeSemester()?->id : null);
 
         $rows = $aggregator->getRekapList(
             auth()->user()->school_id,
@@ -43,8 +43,8 @@ class AcademicController extends Controller
     {
         $students = Student::with('user')->get();
         $classes = Classroom::orderBy('name')->get();
-        $selectedStudent = request()->input('student_id');
-        $classId = request()->input('class_id');
+        $selectedStudent = request()->filled('student_id') ? (int) request()->input('student_id') : null;
+        $classId = request()->filled('class_id') ? (int) request()->input('class_id') : null;
 
         $studentList = $students;
         if ($classId) {
@@ -54,16 +54,21 @@ class AcademicController extends Controller
         }
 
         $rows = collect([]);
+        $student = null;
         if ($selectedStudent) {
+            $student = Student::with('user')->find($selectedStudent);
+            if (! $student) {
+                abort(404);
+            }
+
             $grades = StudentGrade::with(['subject', 'semester'])
                 ->where('student_id', $selectedStudent)
                 ->get();
 
-            $student = Student::with('user')->find($selectedStudent);
             $rows = $grades->groupBy('subject_id')->map(function ($subjectGrades, $subjectId) {
                 $first = $subjectGrades->first();
                 return (object) [
-                    'subject_name' => $first->subject->name,
+                    'subject_name' => $first->subject?->name ?? '-',
                     'avg' => round($subjectGrades->avg(fn ($g) => $g->average_score) ?? 0, 2),
                     'avg_pre_test' => round($subjectGrades->avg('pre_test_score') ?? 0, 1),
                     'avg_assignment' => round($subjectGrades->avg('assignment_score') ?? 0, 1),
@@ -73,8 +78,6 @@ class AcademicController extends Controller
                     'grades' => $subjectGrades,
                 ];
             })->values();
-        } else {
-            $student = null;
         }
 
         $allStudentGrades = StudentGrade::with('student.user')
@@ -93,8 +96,8 @@ class AcademicController extends Controller
                 ];
             })->values();
 
-        $topStudents = $allStudentGrades->sortByDesc('avg')->take(10);
-        $attentionStudents = $allStudentGrades->sortBy('avg')->take(5);
+        $topStudents = $allStudentGrades->sortByDesc('avg')->take(10)->values();
+        $attentionStudents = $allStudentGrades->sortBy('avg')->take(5)->values();
 
         return view('pages.kepala-sekolah.academic.perkembangan', compact(
             'students', 'classes', 'selectedStudent', 'classId', 'studentList', 'rows', 'student', 'topStudents', 'attentionStudents'
