@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Profil</x-slot:title>
 
-    <div class="max-w-3xl space-y-6 mx-auto">
+    <div class="w-full space-y-6">
         <x-page-header title="Profil Saya" description="Perbarui informasi akun dan data kepala sekolah Anda." />
 
         @if(session('success'))

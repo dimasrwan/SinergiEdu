@@ -91,7 +91,7 @@
                     </div>
                     <div>
                         <x-input-label for="action_deadline" :value="__('Tenggat Tindak Lanjut (Opsional)')" />
-                        <x-text-input id="action_deadline" name="action_deadline" type="date" value="{{ old('action_deadline') }}" class="w-full" />
+                        <x-date-picker id="action_deadline" name="action_deadline" value="{{ old('action_deadline') }}" placeholder="Pilih tanggal tenggat..." />
                         @error('action_deadline') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>

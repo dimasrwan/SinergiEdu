@@ -20,8 +20,7 @@
                 </div>
                 <div>
                     <x-input-label for="class_id" :value="__('Kelas')" />
-                    <x-select id="class_id" name="class_id">
-                        <option value="">-- Semua Kelas --</option>
+                    <x-select id="class_id" name="class_id" :selected="$classId" placeholder="-- Semua Kelas --">
                         @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ (string) $classId === (string) $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
                         @endforeach
@@ -29,8 +28,7 @@
                 </div>
                 <div>
                     <x-input-label for="subject_id" :value="__('Mata Pelajaran')" />
-                    <x-select id="subject_id" name="subject_id">
-                        <option value="">-- Semua Mapel --</option>
+                    <x-select id="subject_id" name="subject_id" :selected="$subjectId" placeholder="-- Semua Mapel --">
                         @foreach($subjects as $subject)
                             <option value="{{ $subject->id }}" {{ (string) $subjectId === (string) $subject->id ? 'selected' : '' }}>{{ $subject->name }}</option>
                         @endforeach

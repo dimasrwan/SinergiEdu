@@ -16,7 +16,7 @@ class ReportController extends Controller
     public function index(AcademicAggregatorService $aggregator): View
     {
         $semesters = Semester::with('academicYear')->get();
-        $selectedSemester = request()->input('semester_id', $aggregator->activeSemester()?->id);
+        $selectedSemester = request()->filled('semester_id') ? (int) request()->input('semester_id') : ($aggregator->activeSemester()?->id ? (int) $aggregator->activeSemester()?->id : null);
 
         $rows = $aggregator->getRekapList(auth()->user()->school_id, null, $selectedSemester);
 
