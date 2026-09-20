@@ -34,5 +34,6 @@ class DatabaseSeeder extends Seeder
 
         // Akun Kepala Sekolah default (idempotent, role tidak fallback)
         $this->call(KepalaSekolahSeeder::class);
+        $this->call(KepalaSekolahKomiteSeeder::class);
     }
 }

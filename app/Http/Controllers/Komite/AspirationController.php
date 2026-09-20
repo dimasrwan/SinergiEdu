@@ -53,6 +53,8 @@ class AspirationController extends Controller
             abort(403, 'Anda tidak memiliki hak akses ke data aspirasi ini.');
         }
 
+        $aspiration->load(['responses.user']);
+
         return view('pages.komite.aspirations.show', compact('aspiration'));
     }
 }

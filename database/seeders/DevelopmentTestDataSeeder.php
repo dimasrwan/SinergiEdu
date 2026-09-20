@@ -43,7 +43,7 @@ class DevelopmentTestDataSeeder extends Seeder
             return;
         }
 
-        $password = Hash::make('123');
+        $password = Hash::make('password');
         $tenantService = app(TenantService::class);
 
         // Fetch roles

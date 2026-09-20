@@ -48,20 +48,17 @@
             <!-- Tanggapan Sekolah -->
             <div class="pt-4 border-t border-slate-100">
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Tanggapan Sekolah</label>
-                @if(!empty($aspiration->response))
-                    <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-sm text-slate-800 leading-relaxed">
-                        <div class="flex items-center gap-2 mb-2 text-xs font-bold text-primary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                            </svg>
-                            Tanggapan Manajemen Sekolah:
-                        </div>
-                        <div class="whitespace-pre-line text-slate-700">
-                            {{ $aspiration->response }}
-                        </div>
-                        @if($aspiration->responded_at)
-                            <p class="text-[11px] text-slate-400 mt-3 font-medium">Ditanggapi pada: {{ \Carbon\Carbon::parse($aspiration->responded_at)->translatedFormat('d M Y, H:i') }}</p>
-                        @endif
+                @if($aspiration->responses->isNotEmpty())
+                    <div class="space-y-4">
+                        @foreach($aspiration->responses as $response)
+                            <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-sm text-slate-800 leading-relaxed">
+                                <p class="text-xs font-bold text-primary mb-1">{{ $response->user->name }}</p>
+                                <div class="whitespace-pre-line text-slate-700">
+                                    {{ $response->message }}
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-2 font-medium">{{ $response->created_at->translatedFormat('d M Y, H:i') }}</p>
+                            </div>
+                        @endforeach
                     </div>
                 @else
                     <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-500 italic">

@@ -8,6 +8,8 @@ use App\Traits\TenantScoped;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\KomiteAspirationResponse;
 
 class KomiteAspiration extends Model
 {
@@ -19,7 +21,6 @@ class KomiteAspiration extends Model
         'title',
         'content',
         'status',
-        'response',
     ];
 
     public function user(): BelongsTo
@@ -30,6 +31,11 @@ class KomiteAspiration extends Model
     public function school(): BelongsTo
     {
         return $this->belongsTo(School::class);
+    }
+
+    public function responses(): HasMany
+    {
+        return $this->hasMany(KomiteAspirationResponse::class);
     }
 
     public function getStatusLabelAttribute(): string

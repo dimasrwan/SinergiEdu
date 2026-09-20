@@ -70,6 +70,16 @@ Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])
             ->name('export-rekap-excel');
     });
 
+    // Aspirasi Komite
+    Route::prefix('aspirations')->name('aspirations.')->group(function () {
+        Route::get('/', [KepalaSekolah\AspirationController::class, 'index'])
+            ->name('index');
+        Route::get('/{aspiration}', [KepalaSekolah\AspirationController::class, 'show'])
+            ->name('show');
+        Route::post('/{aspiration}/response', [KepalaSekolah\AspirationController::class, 'storeResponse'])
+            ->name('store-response');
+    });
+
     // Profil
     Route::get('/profil', [KepalaSekolah\ProfileController::class, 'edit'])
         ->name('profile.edit');
