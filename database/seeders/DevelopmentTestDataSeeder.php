@@ -22,7 +22,9 @@ use App\Models\TeacherSubject;
 use App\Models\Material;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use App\Models\LearningMeeting;
 use App\Models\StudentGrade;
+use App\Models\StudentReflection;
 use App\Models\Feedback;
 use App\Models\ParentSupport;
 use App\Services\TenantService;
@@ -602,6 +604,30 @@ class DevelopmentTestDataSeeder extends Seeder
                         ]
                     );
                 }
+            }
+        }
+
+        // ==================================================
+        // 30. DUMMY REFLECTION (Added)
+        // ==================================================
+        $meeting = LearningMeeting::create([
+            'teacher_id' => $teachers[0]->id,
+            'class_id' => $classrooms['VII A']?->id ?? $classrooms['X IPA 1']->id,
+            'subject_id' => $subjects['Matematika']->id,
+            'academic_year_id' => $yearActive->id,
+            'semester_id' => $semesterActiveGanjil->id,
+            'meeting_number' => 1,
+            'meeting_date' => now(),
+            'topic' => 'Topik Dummy',
+        ]);
+
+        foreach ($students as $index => $student) {
+            if ($index < 3) {
+                StudentReflection::create([
+                    'student_id' => $student->id,
+                    'learning_meeting_id' => $meeting->id,
+                    'content' => 'Refleksi pembelajaran ke-' . ($index + 1) . ' dari siswa ' . $student->user->name,
+                ]);
             }
         }
 
