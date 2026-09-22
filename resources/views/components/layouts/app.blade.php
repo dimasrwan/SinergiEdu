@@ -179,7 +179,7 @@
                         <div class="h-8 w-8 bg-primary rounded flex items-center justify-center shrink-0 lg:hidden">
                             <span class="text-white font-bold text-sm">S</span>
                         </div>
-                        <h2 class="text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-0 flex-1">{{ $title ?? 'Dashboard' }}</h2>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-[9rem] flex-1 truncate">{{ $title ?? 'Dashboard' }}</h2>
                         @if(strtolower(Auth::user()->role->name ?? '') === 'pengawas')
                             @php
                                 $activePengawasSchoolId = session('pengawas_school_id');
@@ -227,14 +227,13 @@
                         @endif
                     </div>
 <div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
-                        @if(strtolower(Auth::user()->role->name ?? '') !== 'super_admin' && strtolower(Auth::user()->role->name ?? '') !== 'siswa')
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                                 </svg>
                             </div>
-                            <input type="text" x-model="query" @input.debounce.500ms="fetchResults" @keydown.escape="close()" class="block w-64 rounded-lg border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
+                            <input type="text" x-model="query" @input.debounce.500ms="fetchResults" @keydown.escape="close()" class="block w-44 sm:w-56 xl:w-64 rounded-lg border-0 py-1.5 pl-10 pr-4 text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 bg-slate-50" placeholder="Cari data...">
                             
                             <!-- Dropdown Results -->
                             <div x-show="open" x-transition.opacity class="absolute top-full mt-2 w-[400px] bg-white rounded-xl shadow-lg ring-1 ring-slate-900/5 py-2 z-50 lg:right-auto right-0 max-h-96 overflow-y-auto" style="display: none;">
@@ -259,7 +258,6 @@
                                 </template>
                             </div>
                         </div>
-                        @endif
 
                         <!-- Divider -->
                         <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-slate-200" aria-hidden="true"></div>
@@ -269,7 +267,7 @@
                             <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200" @click="open = !open">
                                 <span class="sr-only">Buka menu user</span>
                                 <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-sm" />
-                                <div class="hidden lg:flex lg:items-center">
+                                <div class="hidden xl:flex xl:items-center">
                                     <span class="text-sm font-semibold leading-6 text-slate-900" aria-hidden="true">{{ Auth::user()->name ?? 'Guest' }}</span>
                                     <svg class="ml-2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -313,11 +311,7 @@
             </main>
 
             <!-- Footer -->
-            <footer class="bg-white border-t border-slate-200/50 py-4 sm:py-6 mt-auto shrink-0">
-                <div class="px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-500 gap-2">
-                    <p class="whitespace-nowrap font-medium text-slate-500">&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</p>
-                </div>
-            </footer>
+            <x-layouts.footer />
         </div>
     </div>
     

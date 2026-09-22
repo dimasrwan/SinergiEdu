@@ -10,7 +10,9 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\StudentClass;
+use App\Services\TenantService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentPlacementController extends Controller
 {
@@ -83,16 +85,38 @@ class StudentPlacementController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', \App\Models\StudentClass::class);
+
+        if ($request->has('student_id') && (!$request->has('student_ids') || empty($request->input('student_ids')))) {
+            $request->merge([
+                'student_ids' => [$request->input('student_id')]
+            ]);
+        }
+
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
         
         $validated = $request->validate([
             'student_ids' => 'required|array|min:1',
-            'student_ids.*' => 'numeric',
-            'class_id' => 'required|exists:classes,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
+            'student_ids.*' => [
+                'required',
+                'numeric',
+                Rule::exists('students', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'class_id' => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'academic_year_id' => [
+                'required',
+                Rule::exists('academic_years', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
         ], [
             'student_ids.required' => 'Pilih minimal satu siswa.',
+            'student_ids.min' => 'Pilih minimal satu siswa.',
+            'student_ids.*.exists' => 'Siswa yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'class_id.required' => 'Kelas wajib dipilih.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
+            'academic_year_id.exists' => 'Tahun ajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
         ]);
 
         $successCount = 0;
@@ -135,7 +159,21 @@ class StudentPlacementController extends Controller
         $message = "Berhasil menempatkan {$successCount} siswa.";
         if (count($failedStudents) > 0) {
             $message .= " Gagal menempatkan " . count($failedStudents) . " siswa: " . implode(', ', $failedStudents);
+
+            if ($request->input('redirect_to') === 'students_index') {
+                return redirect()->route('admin.students.index')->with('warning', $message);
+            }
+            if ($request->input('redirect_to') === 'student' && $request->input('student_id')) {
+                return redirect()->route('admin.students.show', $request->input('student_id'))->with('warning', $message);
+            }
             return redirect()->route('admin.student-placements.index')->with('warning', $message);
+        }
+
+        if ($request->input('redirect_to') === 'students_index') {
+            return redirect()->route('admin.students.index')->with('success', $message);
+        }
+        if ($request->input('redirect_to') === 'student' && $request->input('student_id')) {
+            return redirect()->route('admin.students.show', $request->input('student_id'))->with('success', $message);
         }
 
         return redirect()->route('admin.student-placements.index')->with('success', $message);
@@ -159,14 +197,28 @@ class StudentPlacementController extends Controller
     public function update(Request $request, StudentClass $studentPlacement)
     {
         Gate::authorize('update', $studentPlacement);
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'class_id' => 'required|exists:classes,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
+            'student_id' => [
+                'required',
+                Rule::exists('students', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'class_id' => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'academic_year_id' => [
+                'required',
+                Rule::exists('academic_years', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
         ], [
             'student_id.required' => 'Siswa wajib dipilih.',
+            'student_id.exists' => 'Siswa yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'class_id.required' => 'Kelas wajib dipilih.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
+            'academic_year_id.exists' => 'Tahun ajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
         ]);
 
         // Duplicate validation (excluding current record)

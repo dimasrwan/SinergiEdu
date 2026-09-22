@@ -143,8 +143,8 @@
 
                 <!-- Subject Performance Matrix -->
                 <section class="min-w-0">
-                    <div class="flex items-center justify-between mb-4 min-w-0">
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 truncate">Matriks Ketercapaian Mata Pelajaran</h2>
+                    <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 mb-4 min-w-0">
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 min-w-0">Matriks Ketercapaian Mata Pelajaran</h2>
                         <a href="{{ route('waka.analytics.index') }}" class="text-xs sm:text-sm font-bold text-primary hover:text-blue-700 transition shrink-0">Analitik Penuh &rarr;</a>
                     </div>
                     

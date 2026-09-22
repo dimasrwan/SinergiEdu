@@ -33,7 +33,7 @@
                                     <span class="text-blue-100/80 font-medium">NIS:</span>
                                     <span class="font-semibold text-white">{{ $student->nis ?? '-' }}</span>
                                 </div>
-                                <span class="text-blue-100/40 font-bold text-xs select-none">·</span>
+                                <span class="text-blue-100/40 font-bold text-xs select-none">Â·</span>
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-blue-100/80 font-medium">Jenis Kelamin:</span>
                                     <span class="font-semibold text-white">{{ $student->gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
@@ -47,7 +47,7 @@
                                     <span class="font-semibold text-white">{{ $student->parent?->user?->name ?? '-' }}</span>
                                 </div>
                                 @if($activeClassroom)
-                                    <span class="text-blue-100/40 font-bold text-xs select-none">·</span>
+                                    <span class="text-blue-100/40 font-bold text-xs select-none">Â·</span>
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-blue-100/80 font-medium">Kelas:</span>
                                         <span class="font-semibold text-white">{{ $activeClassroom->name }}</span>
@@ -83,9 +83,9 @@
                             Kelas: {{ number_format($classAverage, 1) }}
                             <span class="text-blue-600 font-semibold">
                                 @if($stats['overall_avg'] >= $classAverage)
-                                    ↑ Lebih tinggi
+                                    â†‘ Lebih tinggi
                                 @else
-                                    ↓ Lebih rendah
+                                    â†“ Lebih rendah
                                 @endif
                             </span>
                         </p>
@@ -189,7 +189,7 @@
             </div>
 
             {{-- Desktop Table --}}
-            <div class="hidden lg:block">
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50/50 border-b border-slate-200">

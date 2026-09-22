@@ -2,7 +2,7 @@
     'name' => '',
     'id' => null,
     'value' => '',
-    'placeholder' => 'DD/MM/YYYY',
+    'placeholder' => 'DD/MM/YYYY HH:mm',
     'disabled' => false,
     'required' => false,
     'min' => null,
@@ -10,18 +10,37 @@
 ])
 
 @php
-    $elementId = $id ?? ($name ?: 'date_'.uniqid());
+    $elementId = $id ?? ($name ?: 'datetime_'.uniqid());
     $initialValue = old($name, $value ?? '');
-    if ($initialValue instanceof \Carbon\Carbon || $initialValue instanceof \DateTimeInterface) {
-        $initialValue = $initialValue->format('Y-m-d');
+
+    $initialDisplayValue = '';
+    $initialCanonicalValue = '';
+
+    if ($initialValue) {
+        if ($initialValue instanceof \Carbon\Carbon || $initialValue instanceof \DateTimeInterface) {
+            $initialDisplayValue = $initialValue->format('d/m/Y H:i');
+            $initialCanonicalValue = $initialValue->format('Y-m-d\TH:i');
+            $initialValue = $initialCanonicalValue;
+        } else {
+            try {
+                $parsed = \Carbon\Carbon::parse($initialValue);
+                $initialDisplayValue = $parsed->format('d/m/Y H:i');
+                $initialCanonicalValue = $parsed->format('Y-m-d\TH:i');
+            } catch (\Throwable $e) {
+                $initialDisplayValue = (string) $initialValue;
+                $initialCanonicalValue = (string) $initialValue;
+            }
+        }
     }
 @endphp
 
 <div x-data="{
         open: false,
         viewMode: 'calendar', // 'calendar', 'month', 'year'
-        selectedDate: '{{ $initialValue }}',
-        displayInput: '',
+        selectedDate: '', // YYYY-MM-DD
+        selectedHour: '23',
+        selectedMinute: '59',
+        displayInput: '{{ addslashes($initialDisplayValue) }}',
         currentYear: new Date().getFullYear(),
         currentMonth: new Date().getMonth(),
         decadeStartYear: Math.floor(new Date().getFullYear() / 12) * 12,
@@ -30,21 +49,54 @@
         blankDays: [],
         monthDays: [],
 
+        hoursList: Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0')),
+        minutesList: ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55', '59'],
+
         init() {
-            if (this.selectedDate) {
-                let d = new Date(this.selectedDate + 'T00:00:00');
-                if (!isNaN(d.getTime())) {
-                    this.currentYear = d.getFullYear();
-                    this.currentMonth = d.getMonth();
-                    this.displayInput = this.formatDisplayDDMMYYYY(this.selectedDate);
-                } else {
-                    this.displayInput = this.selectedDate;
-                }
+            let rawInit = '{{ addslashes($initialValue) }}';
+            if (rawInit) {
+                this.parseAndSetInitial(rawInit);
             } else {
                 this.displayInput = '';
+                this.selectedDate = '';
+                this.selectedHour = '23';
+                this.selectedMinute = '59';
             }
             this.decadeStartYear = Math.floor(this.currentYear / 12) * 12;
             this.generateCalendar();
+        },
+
+        parseAndSetInitial(str) {
+            let clean = str.replace('T', ' ').trim();
+            // Try YYYY-MM-DD HH:mm
+            let parts = clean.split(' ');
+            if (parts.length >= 1 && parts[0].includes('-')) {
+                let dParts = parts[0].split('-');
+                if (dParts.length === 3) {
+                    let y = parseInt(dParts[0], 10);
+                    let m = parseInt(dParts[1], 10) - 1;
+                    let d = parseInt(dParts[2], 10);
+                    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+                        this.currentYear = y;
+                        this.currentMonth = m;
+                        this.selectedDate = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    }
+                }
+            }
+            if (parts.length >= 2 && parts[1].includes(':')) {
+                let tParts = parts[1].split(':');
+                if (tParts.length >= 2) {
+                    this.selectedHour = String(parseInt(tParts[0], 10)).padStart(2, '0');
+                    this.selectedMinute = String(parseInt(tParts[1], 10)).padStart(2, '0');
+                }
+            }
+
+            if (this.selectedDate) {
+                let dParts = this.selectedDate.split('-');
+                this.displayInput = `${dParts[2].padStart(2, '0')}/${dParts[1].padStart(2, '0')}/${dParts[0]} ${this.selectedHour}:${this.selectedMinute}`;
+            } else {
+                this.displayInput = str;
+            }
         },
 
         generateCalendar() {
@@ -91,8 +143,6 @@
         },
 
         selectYear(yr) {
-            let maxAllowedYear = new Date().getFullYear() + 10;
-            if (yr > maxAllowedYear) return;
             this.currentYear = yr;
             this.generateCalendar();
             this.viewMode = 'calendar';
@@ -103,10 +153,7 @@
         },
 
         nextDecade() {
-            let maxAllowedYear = new Date().getFullYear() + 10;
-            if (this.decadeStartYear + 12 <= maxAllowedYear) {
-                this.decadeStartYear += 12;
-            }
+            this.decadeStartYear += 12;
         },
 
         get visibleYears() {
@@ -118,66 +165,104 @@
             let monthStr = String(this.currentMonth + 1).padStart(2, '0');
             let dayStr = String(day).padStart(2, '0');
             this.selectedDate = `${this.currentYear}-${monthStr}-${dayStr}`;
-            this.displayInput = `${dayStr}/${monthStr}/${this.currentYear}`;
-            this.open = false;
-            this.viewMode = 'calendar';
+            this.syncDisplayAndHidden();
+        },
+
+        selectHour(hr) {
+            this.selectedHour = hr;
+            if (!this.selectedDate) {
+                let monthStr = String(this.currentMonth + 1).padStart(2, '0');
+                let dayStr = String(new Date().getDate()).padStart(2, '0');
+                this.selectedDate = `${this.currentYear}-${monthStr}-${dayStr}`;
+            }
+            this.syncDisplayAndHidden();
+        },
+
+        selectMinute(min) {
+            this.selectedMinute = min;
+            if (!this.selectedDate) {
+                let monthStr = String(this.currentMonth + 1).padStart(2, '0');
+                let dayStr = String(new Date().getDate()).padStart(2, '0');
+                this.selectedDate = `${this.currentYear}-${monthStr}-${dayStr}`;
+            }
+            this.syncDisplayAndHidden();
+        },
+
+        syncDisplayAndHidden() {
+            if (this.selectedDate) {
+                let dParts = this.selectedDate.split('-');
+                let dayStr = dParts[2].padStart(2, '0');
+                let monthStr = dParts[1].padStart(2, '0');
+                let yearStr = dParts[0];
+                this.displayInput = `${dayStr}/${monthStr}/${yearStr} ${this.selectedHour}:${this.selectedMinute}`;
+            } else {
+                this.displayInput = '';
+            }
             this.updateInput();
         },
 
-        clearDate() {
+        clearDateTime() {
             if ({{ $disabled ? 'true' : 'false' }}) return;
             this.selectedDate = '';
+            this.selectedHour = '23';
+            this.selectedMinute = '59';
             this.displayInput = '';
             this.open = false;
             this.viewMode = 'calendar';
             this.updateInput();
         },
 
-        selectToday() {
-            if ({{ $disabled ? 'true' : 'false' }}) return;
-            let now = new Date();
-            this.currentYear = now.getFullYear();
-            this.currentMonth = now.getMonth();
-            let monthStr = String(this.currentMonth + 1).padStart(2, '0');
-            let dayStr = String(now.getDate()).padStart(2, '0');
-            this.selectedDate = `${this.currentYear}-${monthStr}-${dayStr}`;
-            this.displayInput = `${dayStr}/${monthStr}/${this.currentYear}`;
-            this.generateCalendar();
+        applyDateTime() {
+            if (!this.selectedDate) {
+                let monthStr = String(this.currentMonth + 1).padStart(2, '0');
+                let dayStr = String(new Date().getDate()).padStart(2, '0');
+                this.selectedDate = `${this.currentYear}-${monthStr}-${dayStr}`;
+            }
+            this.syncDisplayAndHidden();
             this.open = false;
             this.viewMode = 'calendar';
-            this.updateInput();
         },
 
         updateInput() {
             this.$nextTick(() => {
+                let hiddenValue = '';
+                if (this.selectedDate) {
+                    hiddenValue = `${this.selectedDate}T${this.selectedHour}:${this.selectedMinute}`;
+                } else if (this.displayInput) {
+                    hiddenValue = this.displayInput;
+                }
                 let input = this.$refs.hiddenInput;
                 if (input) {
-                    input.value = this.selectedDate;
+                    input.value = hiddenValue;
                     input.dispatchEvent(new Event('change', { bubbles: true }));
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
         },
 
-        formatDisplayDDMMYYYY(dateStr) {
-            if (!dateStr) return '';
-            let parts = dateStr.split('-');
-            if (parts.length === 3) {
-                return `${parts[2].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[0]}`;
-            }
-            return dateStr;
-        },
-
         formatMask(val) {
-            let digits = val.replace(/\D/g, '').slice(0, 8);
+            let digits = val.replace(/\D/g, '').slice(0, 12);
             if (!digits) return '';
-            if (digits.length <= 2) {
-                return digits;
-            }
-            if (digits.length <= 4) {
-                return `${digits.slice(0, 2)}/${digits.slice(2)}`;
-            }
-            return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+            
+            let result = '';
+            // DD
+            if (digits.length <= 2) return digits;
+            result += `${digits.slice(0, 2)}/`;
+            
+            // MM
+            if (digits.length <= 4) return result + digits.slice(2);
+            result += `${digits.slice(2, 4)}/`;
+
+            // YYYY
+            if (digits.length <= 8) return result + digits.slice(4);
+            result += `${digits.slice(4, 8)} `;
+
+            // HH
+            if (digits.length <= 10) return result + digits.slice(8);
+            result += `${digits.slice(8, 10)}:`;
+
+            // mm
+            return result + digits.slice(10, 12);
         },
 
         onTextInput(val) {
@@ -190,19 +275,23 @@
                 return;
             }
 
-            // Match DD/MM/YYYY
-            let ddmmyyyyMatch = formatted.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-            if (ddmmyyyyMatch) {
-                let day = parseInt(ddmmyyyyMatch[1], 10);
-                let month = parseInt(ddmmyyyyMatch[2], 10);
-                let year = parseInt(ddmmyyyyMatch[3], 10);
+            // Match DD/MM/YYYY HH:mm
+            let matchFull = formatted.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})$/);
+            if (matchFull) {
+                let day = parseInt(matchFull[1], 10);
+                let month = parseInt(matchFull[2], 10);
+                let year = parseInt(matchFull[3], 10);
+                let hr = parseInt(matchFull[4], 10);
+                let min = parseInt(matchFull[5], 10);
 
-                if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+                if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && hr >= 0 && hr <= 23 && min >= 0 && min <= 59 && year >= 1900 && year <= 2100) {
                     let d = new Date(year, month - 1, day);
                     if (d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day) {
                         let monthStr = String(month).padStart(2, '0');
                         let dayStr = String(day).padStart(2, '0');
                         this.selectedDate = `${year}-${monthStr}-${dayStr}`;
+                        this.selectedHour = String(hr).padStart(2, '0');
+                        this.selectedMinute = String(min).padStart(2, '0');
                         this.currentYear = year;
                         this.currentMonth = month - 1;
                         this.generateCalendar();
@@ -212,8 +301,25 @@
                 }
             }
 
-            // If text is not complete or not valid YYYY-MM-DD yet, pass formatted so Laravel validation catches invalid format
-            this.selectedDate = formatted;
+            // Match DD/MM/YYYY date only
+            let matchDate = formatted.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            if (matchDate) {
+                let day = parseInt(matchDate[1], 10);
+                let month = parseInt(matchDate[2], 10);
+                let year = parseInt(matchDate[3], 10);
+
+                if (month >= 1 && month <= 12 && day >= 1 && day <= 31 && year >= 1900 && year <= 2100) {
+                    let monthStr = String(month).padStart(2, '0');
+                    let dayStr = String(day).padStart(2, '0');
+                    this.selectedDate = `${year}-${monthStr}-${dayStr}`;
+                    this.currentYear = year;
+                    this.currentMonth = month - 1;
+                    this.generateCalendar();
+                    this.updateInput();
+                    return;
+                }
+            }
+
             this.updateInput();
         },
 
@@ -229,6 +335,13 @@
             let monthStr = String(this.currentMonth + 1).padStart(2, '0');
             let dayStr = String(day).padStart(2, '0');
             return this.selectedDate === `${this.currentYear}-${monthStr}-${dayStr}`;
+        },
+
+        get formattedHiddenValue() {
+            if (this.selectedDate) {
+                return `${this.selectedDate}T${this.selectedHour}:${this.selectedMinute}`;
+            }
+            return this.displayInput;
         }
     }"
     class="relative w-full"
@@ -239,14 +352,16 @@
            name="{{ $name }}"
            id="{{ $elementId }}"
            x-ref="hiddenInput"
-           :value="selectedDate"
+           value="{{ $initialCanonicalValue }}"
+           :value="formattedHiddenValue"
            {{ $required ? 'required' : '' }}
            {{ $disabled ? 'disabled' : '' }}>
 
     <div class="relative w-full">
         <input type="text"
                inputmode="numeric"
-               maxlength="10"
+               maxlength="16"
+               value="{{ $initialDisplayValue }}"
                x-model="displayInput"
                @input="onTextInput($event.target.value)"
                @focus="open = true; viewMode = 'calendar'"
@@ -254,23 +369,23 @@
                aria-label="{{ $placeholder }}"
                {{ $disabled ? 'disabled' : '' }}
                {!! $attributes->except(['class', 'name', 'id', 'required', 'disabled', 'value', 'type'])->merge([
-                   'class' => 'w-full h-10 bg-white border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl pl-3.5 pr-10 text-sm font-medium text-slate-800 shadow-2xs transition-all disabled:bg-slate-100 disabled:opacity-75 disabled:cursor-not-allowed'
+                   'class' => 'w-full h-10 bg-white border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-xl pl-3.5 pr-10 text-sm font-medium text-slate-800 shadow-2xs transition-all disabled:bg-slate-100 disabled:opacity-75 disabled:cursor-not-allowed font-mono tracking-tight'
                ]) !!}
         >
         <button type="button"
                 @click="open = !open; if(open) viewMode = 'calendar'"
                 tabindex="-1"
-                aria-label="Buka kalender"
+                aria-label="Buka tenggat waktu"
                 {{ $disabled ? 'disabled' : '' }}
                 class="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-slate-400 hover:text-slate-600 focus:outline-none disabled:cursor-not-allowed"
         >
             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
         </button>
     </div>
 
-    {{-- Calendar Popover --}}
+    {{-- Datetime Picker Popover --}}
     <div x-show="open"
          x-transition:enter="transition ease-out duration-100"
          x-transition:enter-start="transform opacity-0 scale-95"
@@ -278,10 +393,16 @@
          x-transition:leave="transition ease-in duration-75"
          x-transition:leave-start="transform opacity-100 scale-100"
          x-transition:leave-end="transform opacity-0 scale-95"
-         class="absolute z-50 mt-1.5 w-72 sm:w-80 bg-white border border-slate-200/90 rounded-2xl shadow-xl p-4 focus:outline-none"
+         class="absolute z-50 mt-1.5 w-80 sm:w-84 bg-white border border-slate-200/90 rounded-2xl shadow-xl p-4 focus:outline-none"
          style="display: none;"
     >
-        {{-- VIEW MODE 1: CALENDAR VIEW --}}
+        {{-- Header Status --}}
+        <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2.5 mb-3 flex items-center justify-between text-xs font-semibold text-slate-700">
+            <span class="text-slate-400 uppercase tracking-wider text-[10px]">Deadline:</span>
+            <span class="font-bold text-primary font-mono" x-text="displayInput || 'dd/mm/yyyy --:--'"></span>
+        </div>
+
+        {{-- VIEW MODE 1: CALENDAR VIEW WITH TIME SECTION --}}
         <template x-if="viewMode === 'calendar'">
             <div>
                 {{-- Calendar Header --}}
@@ -328,17 +449,15 @@
                 </div>
 
                 {{-- Date Grid --}}
-                <div class="grid grid-cols-7 gap-1 text-center py-1">
-                    {{-- Blank Days --}}
+                <div class="grid grid-cols-7 gap-1 text-center py-1 border-b border-slate-100 pb-3">
                     <template x-for="blank in blankDays" :key="'b-'+blank">
-                        <div class="h-9 w-9 sm:h-8 sm:w-8"></div>
+                        <div class="h-8 w-8"></div>
                     </template>
 
-                    {{-- Month Days --}}
                     <template x-for="day in monthDays" :key="'d-'+day">
                         <button type="button"
                                 @click="selectDate(day)"
-                                class="h-9 w-9 sm:h-8 sm:w-8 mx-auto flex items-center justify-center text-xs font-semibold rounded-lg transition-colors select-none"
+                                class="h-8 w-8 mx-auto flex items-center justify-center text-xs font-semibold rounded-lg transition-colors select-none"
                                 :class="{
                                     'bg-primary text-white font-bold shadow-xs': isSelected(day),
                                     'text-primary font-bold ring-2 ring-primary/30 bg-blue-50/50': isToday(day) && !isSelected(day),
@@ -350,13 +469,51 @@
                     </template>
                 </div>
 
+                {{-- TIME SECTION --}}
+                <div class="pt-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Waktu Deadline
+                        </span>
+                        <span class="text-xs font-mono font-bold text-primary bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md" x-text="`${selectedHour}:${selectedMinute}`"></span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 block mb-1 uppercase">Jam</span>
+                            <select x-model="selectedHour"
+                                    @change="selectHour($event.target.value)"
+                                    aria-label="Pilih Jam"
+                                    class="w-full py-1.5 px-2 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer font-mono"
+                            >
+                                <template x-for="hr in hoursList" :key="hr">
+                                    <option :value="hr" x-text="hr" :selected="selectedHour === hr"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 block mb-1 uppercase">Menit</span>
+                            <select x-model="selectedMinute"
+                                    @change="selectMinute($event.target.value)"
+                                    aria-label="Pilih Menit"
+                                    class="w-full py-1.5 px-2 text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer font-mono"
+                            >
+                                <template x-for="mn in minutesList" :key="mn">
+                                    <option :value="mn" x-text="mn" :selected="selectedMinute === mn"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Footer Actions --}}
-                <div class="flex items-center justify-between pt-3 mt-1 border-t border-slate-100">
-                    <button type="button" @click="clearDate()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                <div class="flex items-center justify-between pt-3 mt-3 border-t border-slate-100">
+                    <button type="button" @click="clearDateTime()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
                         Bersihkan
                     </button>
-                    <button type="button" @click="selectToday()" class="px-3 py-1.5 text-xs font-bold text-primary hover:bg-blue-50 rounded-lg transition-colors">
-                        Hari ini
+                    <button type="button" @click="applyDateTime()" class="px-4 py-1.5 text-xs font-bold text-white bg-primary hover:bg-blue-900 rounded-lg transition-colors shadow-2xs">
+                        Terapkan
                     </button>
                 </div>
             </div>
@@ -425,5 +582,3 @@
         </template>
     </div>
 </div>
-
-

@@ -35,6 +35,9 @@ Route::middleware(['auth'])->group(function () {
         return $route ? redirect()->route($route) : redirect('/');
     })->name('dashboard');
 
+    // Global Search (Navbar)
+    Route::get('/admin/search', [\App\Http\Controllers\Admin\SearchController::class, 'index'])->name('admin.search');
+
     // Super Admin
     Route::prefix('super-admin')->name('super_admin.')->middleware('role:super_admin')->group(base_path('routes/web/super_admin.php'));
 

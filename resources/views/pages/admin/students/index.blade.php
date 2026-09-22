@@ -7,14 +7,16 @@
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-5 gap-4">
             <div>
-                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Daftar Siswa</h1>
-                <p class="mt-2 text-sm text-slate-500 max-w-2xl">
-                    Kelola data murid, penempatan kelas aktif, serta relasi dengan orang tua murid.
+                <div class="flex flex-wrap items-center gap-2">
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">Daftar Siswa</h1>
                     @if($totalStudents > 0)
-                        <span class="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
                             {{ $totalStudents }} siswa terdaftar
                         </span>
                     @endif
+                </div>
+                <p class="mt-2 text-sm text-slate-500 max-w-2xl">
+                    Kelola data murid, penempatan kelas aktif, serta relasi dengan orang tua murid.
                 </p>
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto shrink-0">
@@ -263,6 +265,7 @@
                         @csrf
                         <input type="hidden" name="redirect_to" value="students_index">
                         <input type="hidden" name="student_id" value="{{ $student->id }}">
+                        <input type="hidden" name="student_ids[]" value="{{ $student->id }}">
                         
                         <div class="p-6 text-left whitespace-normal">
                             <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Tambah Penempatan Siswa</h2>

@@ -20,7 +20,6 @@ use App\Http\Controllers\Admin\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::resource('/teachers', TeacherController::class);
 Route::resource('/students', StudentController::class);

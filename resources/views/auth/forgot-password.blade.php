@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Lupa Kata Sandi — SinergiEdu">
     <div class="mb-8">
         <h2 class="text-3xl font-bold text-slate-900 tracking-tight mb-2">Lupa Kata Sandi?</h2>
         <p class="text-sm text-slate-500 leading-relaxed">

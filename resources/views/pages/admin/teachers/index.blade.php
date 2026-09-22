@@ -128,6 +128,73 @@
                         </div>
                     </div>
 
+                    <!-- Grouped Assignments Section (Mobile) -->
+                    @php
+                        $groupedAssignmentsMobile = $teacher->teacherSubjects
+                            ->filter(fn($ts) => $ts->subject && $ts->classroom)
+                            ->groupBy(fn($ts) => $ts->subject->id)
+                            ->map(function($items) {
+                                $subjectName = $items->first()->subject->name;
+                                $classes = $items->pluck('classroom.name')->filter()->unique()->values()->sort()->values();
+                                return [
+                                    'subject_name' => $subjectName,
+                                    'classes' => $classes,
+                                    'class_count' => $classes->count(),
+                                ];
+                            })
+                            ->sortBy('subject_name');
+                    @endphp
+
+                    <div class="pt-2 border-t border-slate-100 space-y-2">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Kelas & Mapel</span>
+                        @if($groupedAssignmentsMobile->isNotEmpty())
+                            <div class="space-y-2">
+                                @foreach($groupedAssignmentsMobile as $group)
+                                    <div x-data="{ expanded: false }" class="bg-slate-50/80 border border-slate-200/70 rounded-xl p-2.5">
+                                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                                            <div class="flex items-center gap-1.5 min-w-0">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+                                                <span class="font-bold text-slate-800 text-xs truncate">{{ $group['subject_name'] }}</span>
+                                            </div>
+                                            <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-semibold text-[11px] border border-blue-100 shrink-0">
+                                                {{ $group['class_count'] }} kelas
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-wrap items-center gap-1">
+                                            @php
+                                                $maxVisible = 4;
+                                                $classes = $group['classes'];
+                                                $visibleClasses = $classes->take($maxVisible);
+                                                $remainingCount = $classes->count() - $maxVisible;
+                                            @endphp
+                                            @foreach($visibleClasses as $className)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-medium">
+                                                    {{ $className }}
+                                                </span>
+                                            @endforeach
+                                            @if($remainingCount > 0)
+                                                <template x-if="expanded">
+                                                    <div class="contents">
+                                                        @foreach($classes->slice($maxVisible) as $className)
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-medium">
+                                                                {{ $className }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                </template>
+                                                <button type="button" @click="expanded = !expanded" class="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 hover:bg-blue-100 text-primary text-[11px] font-semibold border border-blue-200/60 transition-colors">
+                                                    <span x-text="expanded ? 'Sembunyikan' : '+ {{ $remainingCount }} kelas'"></span>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <span class="text-xs text-slate-400 italic">Belum ada penugasan</span>
+                        @endif
+                    </div>
+
                     <!-- Actions Footer -->
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2 flex-wrap">
                         <button type="button" 
@@ -191,7 +258,7 @@
                                         </div>
                                         <div>
                                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Semester <span class="text-danger">*</span></label>
-                                            <x-semester-select name="semester_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer" :selected="old('semester_id')" empty-label="-- Pilih Semester --" disabled-empty />
+                                            <x-semester-select name="semester_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer" :selected="old('semester_id')" :semesters="$semesters" empty-label="-- Pilih Semester --" disabled-empty />
                                         </div>
                                     </div>
                                 </div>
@@ -261,19 +328,69 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         @php
-                                            $assignments = \Illuminate\Support\Facades\DB::table('teacher_subjects')
-                                                ->join('classes', 'teacher_subjects.class_id', '=', 'classes.id')
-                                                ->join('subjects', 'teacher_subjects.subject_id', '=', 'subjects.id')
-                                                ->where('teacher_id', $teacher->id)
-                                                ->select('classes.name as class_name', 'subjects.name as subject_name')
-                                                ->get();
+                                            $groupedAssignments = $teacher->teacherSubjects
+                                                ->filter(fn($ts) => $ts->subject && $ts->classroom)
+                                                ->groupBy(fn($ts) => $ts->subject->id)
+                                                ->map(function($items) {
+                                                    $subjectName = $items->first()->subject->name;
+                                                    $classes = $items->pluck('classroom.name')->filter()->unique()->values()->sort()->values();
+                                                    return [
+                                                        'subject_name' => $subjectName,
+                                                        'classes' => $classes,
+                                                        'class_count' => $classes->count(),
+                                                    ];
+                                                })
+                                                ->sortBy('subject_name');
                                         @endphp
                                         
-                                        @if($assignments->count() > 0)
-                                            <div class="flex flex-col gap-1">
-                                                @foreach($assignments as $assign)
-                                                    <div class="text-sm text-slate-700">
-                                                        <span class="font-medium">{{ $assign->class_name }}</span> &middot; <span class="text-slate-500">{{ $assign->subject_name }}</span>
+                                        @if($groupedAssignments->isNotEmpty())
+                                            <div class="space-y-2 min-w-[260px] max-w-md">
+                                                @foreach($groupedAssignments as $group)
+                                                    <div x-data="{ expanded: false }" class="bg-slate-50/80 border border-slate-200/80 rounded-xl p-2.5 transition-all">
+                                                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                                                            <div class="flex items-center gap-1.5 min-w-0">
+                                                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+                                                                <span class="font-bold text-slate-800 text-xs sm:text-sm truncate" title="{{ $group['subject_name'] }}">
+                                                                    {{ $group['subject_name'] }}
+                                                                </span>
+                                                            </div>
+                                                            <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-semibold text-[11px] border border-blue-100 shrink-0">
+                                                                {{ $group['class_count'] }} kelas
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="flex flex-wrap items-center gap-1">
+                                                            @php
+                                                                $maxVisible = 5;
+                                                                $classes = $group['classes'];
+                                                                $visibleClasses = $classes->take($maxVisible);
+                                                                $remainingCount = $classes->count() - $maxVisible;
+                                                            @endphp
+
+                                                            @foreach($visibleClasses as $className)
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-2xs">
+                                                                    {{ $className }}
+                                                                </span>
+                                                            @endforeach
+
+                                                            @if($remainingCount > 0)
+                                                                <template x-if="expanded">
+                                                                    <div class="contents">
+                                                                        @foreach($classes->slice($maxVisible) as $className)
+                                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-2xs">
+                                                                                {{ $className }}
+                                                                            </span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                </template>
+
+                                                                <button type="button" 
+                                                                        @click="expanded = !expanded" 
+                                                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 hover:bg-blue-100 text-primary text-xs font-semibold border border-blue-200/60 transition-colors">
+                                                                    <span x-text="expanded ? 'Sembunyikan' : '+ {{ $remainingCount }} kelas lainnya'"></span>
+                                                                </button>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -336,7 +453,7 @@
                                                             </div>
                                                             <div>
                                                                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Semester <span class="text-danger">*</span></label>
-                                                                <x-semester-select name="semester_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer" :selected="old('semester_id')" empty-label="-- Pilih Semester --" disabled-empty />
+                                                                <x-semester-select name="semester_id" required class="block w-full py-2.5 px-3 text-sm border border-slate-300 focus:border-accent focus:ring focus:ring-accent/20 rounded-lg bg-white shadow-sm cursor-pointer" :selected="old('semester_id')" :semesters="$semesters" empty-label="-- Pilih Semester --" disabled-empty />
                                                             </div>
                                                         </div>
                                                     </div>

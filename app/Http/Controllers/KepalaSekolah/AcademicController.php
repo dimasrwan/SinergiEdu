@@ -18,16 +18,41 @@ class AcademicController extends Controller
 {
     public function rekap(Request $request, AcademicAggregatorService $aggregator): View
     {
+        $schoolId = (int) auth()->user()->school_id;
+
         $classes = Classroom::orderBy('name')->get();
         $subjects = Subject::orderBy('name')->get();
-        $semesters = Semester::with('academicYear')->get();
+        $semesters = Semester::with('academicYear')->orderBy('id')->get();
 
         $classId = $request->filled('class_id') ? (int) $request->input('class_id') : null;
         $subjectId = $request->filled('subject_id') ? (int) $request->input('subject_id') : null;
-        $semesterId = $request->filled('semester_id') ? (int) $request->input('semester_id') : ($aggregator->activeSemester()?->id ? (int) $aggregator->activeSemester()?->id : null);
+
+        if ($request->has('semester_id')) {
+            $rawSemesterId = $request->input('semester_id');
+            if ($rawSemesterId === null || $rawSemesterId === '') {
+                $semesterId = null;
+            } else {
+                $semesterId = (int) $rawSemesterId;
+                $isValidSemester = Semester::where('id', $semesterId)->exists();
+                if (! $isValidSemester) {
+                    abort(404);
+                }
+            }
+        } else {
+            $activeSemester = $aggregator->activeSemester();
+            $semesterId = $activeSemester?->id ? (int) $activeSemester->id : null;
+        }
+
+        if ($classId && ! Classroom::where('id', $classId)->exists()) {
+            abort(404);
+        }
+
+        if ($subjectId && ! Subject::where('id', $subjectId)->exists()) {
+            abort(404);
+        }
 
         $rows = $aggregator->getRekapList(
-            auth()->user()->school_id,
+            $schoolId,
             null,
             $semesterId,
             $classId,
@@ -41,22 +66,29 @@ class AcademicController extends Controller
 
     public function perkembangan(AcademicAggregatorService $aggregator): View
     {
-        $students = Student::with('user')->get();
+        $schoolId = (int) auth()->user()->school_id;
+
         $classes = Classroom::orderBy('name')->get();
         $selectedStudent = request()->filled('student_id') ? (int) request()->input('student_id') : null;
         $classId = request()->filled('class_id') ? (int) request()->input('class_id') : null;
 
-        $studentList = $students;
-        if ($classId) {
-            $studentList = Student::whereHas('classes', fn ($q) => $q->where('classes.id', $classId))
-                ->with('user')
-                ->get();
+        if ($classId && ! Classroom::where('id', $classId)->exists()) {
+            abort(404);
         }
+
+        $studentList = Student::with('user')
+            ->when($classId, fn ($q) => $q->whereHas('classes', fn ($q2) => $q2->where('classes.id', $classId)))
+            ->get();
 
         $rows = collect([]);
         $student = null;
         if ($selectedStudent) {
-            $student = Student::with('user')->find($selectedStudent);
+            $studentQuery = Student::with('user')->where('id', $selectedStudent);
+            if ($classId) {
+                $studentQuery->whereHas('classes', fn ($q) => $q->where('classes.id', $classId));
+            }
+            $student = $studentQuery->first();
+
             if (! $student) {
                 abort(404);
             }
@@ -100,7 +132,7 @@ class AcademicController extends Controller
         $attentionStudents = $allStudentGrades->sortBy('avg')->take(5)->values();
 
         return view('pages.kepala-sekolah.academic.perkembangan', compact(
-            'students', 'classes', 'selectedStudent', 'classId', 'studentList', 'rows', 'student', 'topStudents', 'attentionStudents'
+            'classes', 'selectedStudent', 'classId', 'studentList', 'rows', 'student', 'topStudents', 'attentionStudents'
         ));
     }
 

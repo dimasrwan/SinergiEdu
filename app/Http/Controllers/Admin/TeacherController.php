@@ -24,13 +24,13 @@ class TeacherController extends Controller
         Gate::authorize('viewAny', \App\Models\Teacher::class);
         $search = request('search');
         
-        $teachers = Teacher::with(['user', 'classes', 'subjects'])
+        $teachers = Teacher::with(['user', 'teacherSubjects.subject', 'teacherSubjects.classroom'])
             ->when($search, function ($query) use ($search) {
                 $query->where(function($query) use ($search) {
-                $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })->orWhere('nip', 'like', "%{$search}%");
-            });
+                    $query->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })->orWhere('nip', 'like', "%{$search}%");
+                });
             })
             ->latest()
             ->paginate(10)

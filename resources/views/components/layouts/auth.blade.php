@@ -14,9 +14,10 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-800 antialiased min-h-screen flex flex-col items-center justify-center p-4">
     <div class="w-full max-w-md bg-white border border-slate-100 rounded-3xl p-8 shadow-xl shadow-slate-100/50">
         {{ $slot }}
     </div>
+    <x-layouts.footer as="div" class="mt-6 bg-transparent border-t-0 !p-0" />
 </body>
 </html>

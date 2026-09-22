@@ -106,7 +106,7 @@
                         </div>
 
                         {{-- Desktop table --}}
-                        <div class="hidden lg:block">
+                        <div class="hidden lg:block overflow-x-auto">
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200">
@@ -178,7 +178,7 @@
                         </div>
 
                         {{-- Desktop table --}}
-                        <div class="hidden lg:block">
+                        <div class="hidden lg:block overflow-x-auto">
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200">

@@ -12,6 +12,7 @@ use App\Models\Semester;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\TeacherSubject;
+use App\Services\TenantService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -116,18 +117,76 @@ class TeacherAssignmentController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', \App\Models\TeacherSubject::class);
+
+        // Normalize single assignment modal input (subject_id + class_id) to assignments array
+        if ($request->has('subject_id') && $request->has('class_id') && (!$request->has('assignments') || empty($request->input('assignments')))) {
+            $request->merge([
+                'assignments' => [
+                    [
+                        'subject_id' => $request->input('subject_id'),
+                        'class_id' => $request->input('class_id'),
+                    ]
+                ]
+            ]);
+        }
+
+        // Fallback for academic_year_id / semester_id if empty
+        if (!$request->filled('academic_year_id')) {
+            $activeAY = AcademicYear::where('is_active', true)->first();
+            if ($activeAY) {
+                $request->merge(['academic_year_id' => $activeAY->id]);
+            }
+        }
+
+        if (!$request->filled('semester_id')) {
+            $ayId = $request->input('academic_year_id');
+            $activeSem = Semester::where('is_active', true)
+                ->when($ayId, fn ($q) => $q->where('academic_year_id', $ayId))
+                ->first();
+            if ($activeSem) {
+                $request->merge(['semester_id' => $activeSem->id]);
+            }
+        }
+
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'teacher_id' => 'required|exists:teachers,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
-            'semester_id' => 'required|exists:semesters,id',
+            'teacher_id' => [
+                'required',
+                Rule::exists('teachers', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'academic_year_id' => [
+                'required',
+                Rule::exists('academic_years', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'semester_id' => [
+                'required',
+                Rule::exists('semesters', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
             'assignments' => 'required|array|min:1',
-            'assignments.*.class_id' => 'required|numeric',
-            'assignments.*.subject_id' => 'required|numeric',
+            'assignments.*.class_id' => [
+                'required',
+                'numeric',
+                Rule::exists('classes', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'assignments.*.subject_id' => [
+                'required',
+                'numeric',
+                Rule::exists('subjects', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
         ], [
             'teacher_id.required' => 'Guru wajib dipilih.',
+            'teacher_id.exists' => 'Guru yang dipilih tidak valid atau bukan milik sekolah Anda.',
+            'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
+            'academic_year_id.exists' => 'Tahun ajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
+            'semester_id.required' => 'Semester wajib dipilih.',
+            'semester_id.exists' => 'Semester yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'assignments.required' => 'Minimal satu penugasan wajib ditambahkan.',
+            'assignments.min' => 'Minimal satu penugasan wajib ditambahkan.',
             'assignments.*.class_id.required' => 'Kelas wajib dipilih.',
+            'assignments.*.class_id.exists' => 'Kelas yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'assignments.*.subject_id.required' => 'Mata pelajaran wajib dipilih.',
+            'assignments.*.subject_id.exists' => 'Mata pelajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
         ]);
 
         $successCount = 0;
@@ -182,12 +241,21 @@ class TeacherAssignmentController extends Controller
         $message = "Berhasil menambahkan {$successCount} penugasan.";
         if (count($failedAssignments) > 0) {
             $message .= " Gagal menambahkan " . count($failedAssignments) . " penugasan: " . implode(', ', $failedAssignments);
+
+            if ($request->input('redirect_to') === 'teachers_index') {
+                return redirect()->route('admin.teachers.index')->with('warning', $message);
+            }
+            if ($request->input('redirect_to') === 'teacher' && $request->input('teacher_id')) {
+                return redirect()->route('admin.teachers.show', $request->input('teacher_id'))->with('warning', $message);
+            }
             return redirect()->route('admin.teacher-assignments.index')->with('warning', $message);
         }
 
-        if ($request->input('redirect_to') === 'teacher') {
-            return redirect()->route('admin.teachers.show', $teacherId)
-                ->with('success', $message);
+        if ($request->input('redirect_to') === 'teachers_index') {
+            return redirect()->route('admin.teachers.index')->with('success', $message);
+        }
+        if ($request->input('redirect_to') === 'teacher' && $request->input('teacher_id')) {
+            return redirect()->route('admin.teachers.show', $request->input('teacher_id'))->with('success', $message);
         }
 
         return redirect()->route('admin.teacher-assignments.index')
@@ -218,18 +286,40 @@ class TeacherAssignmentController extends Controller
     public function update(Request $request, TeacherSubject $teacherAssignment)
     {
         Gate::authorize('update', $teacherAssignment);
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'teacher_id' => 'required|exists:teachers,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'class_id' => 'required|exists:classes,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
-            'semester_id' => 'required|exists:semesters,id',
+            'teacher_id' => [
+                'required',
+                Rule::exists('teachers', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'subject_id' => [
+                'required',
+                Rule::exists('subjects', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'class_id' => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'academic_year_id' => [
+                'required',
+                Rule::exists('academic_years', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'semester_id' => [
+                'required',
+                Rule::exists('semesters', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
         ], [
             'teacher_id.required' => 'Guru wajib dipilih.',
+            'teacher_id.exists' => 'Guru yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'subject_id.required' => 'Mata pelajaran wajib dipilih.',
+            'subject_id.exists' => 'Mata pelajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'class_id.required' => 'Kelas wajib dipilih.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
+            'academic_year_id.exists' => 'Tahun ajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'semester_id.required' => 'Semester wajib dipilih.',
+            'semester_id.exists' => 'Semester yang dipilih tidak valid atau bukan milik sekolah Anda.',
         ]);
 
         // Duplicate assignment validation (excluding current record)

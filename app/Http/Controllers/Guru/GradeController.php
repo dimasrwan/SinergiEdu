@@ -54,8 +54,8 @@ class GradeController extends Controller
                 ->get();
 
             $students = Student::whereHas('classes', function ($q) use ($selectedClassId, $academicYear) {
-                    $q->where('class_id', $selectedClassId)
-                      ->where('academic_year_id', $academicYear->id);
+                    $q->where('student_classes.class_id', $selectedClassId)
+                      ->where('student_classes.academic_year_id', $academicYear->id);
                 })
                 ->with('user')
                 ->orderBy(function ($query) {

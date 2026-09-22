@@ -78,7 +78,7 @@
             </div>
 
             {{-- Desktop Table --}}
-            <div class="hidden lg:block">
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">

@@ -64,13 +64,20 @@ class DashboardController extends Controller
         $educationLevelsString = count($educationLevels) > 0 ? 'Tersebar di tingkat ' . implode(', ', $educationLevels) : 'Belum ada kelas';
 
         // 3. User Growth (Last 6 Months)
+        $schoolId = app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()?->school_id;
         $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
-        $growthData = User::select(
+        $growthDataQuery = User::select(
                 DB::raw('COUNT(id) as total'), 
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('YEAR(created_at) as year')
             )
-            ->where('created_at', '>=', $sixMonthsAgo)
+            ->where('created_at', '>=', $sixMonthsAgo);
+        
+        if ($schoolId) {
+            $growthDataQuery->where('school_id', $schoolId);
+        }
+
+        $growthData = $growthDataQuery
             ->groupBy('year', 'month')
             ->orderBy('year', 'asc')
             ->orderBy('month', 'asc')
@@ -79,7 +86,11 @@ class DashboardController extends Controller
         $growthLabels = [];
         $growthValues = [];
         // Accumulate data for the last 6 months to make a line chart
-        $runningTotal = User::where('created_at', '<', $sixMonthsAgo)->count();
+        $runningTotalQuery = User::where('created_at', '<', $sixMonthsAgo);
+        if ($schoolId) {
+            $runningTotalQuery->where('school_id', $schoolId);
+        }
+        $runningTotal = $runningTotalQuery->count();
         
         for ($i = 5; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
@@ -102,16 +113,21 @@ class DashboardController extends Controller
 
         // 4. User Distribution
         $distributionData = DB::table('users')
-            ->where('users.school_id', app(\App\Services\TenantService::class)->getSchoolId())
+            ->where('users.school_id', $schoolId)
             ->join('roles', 'users.role_id', '=', 'roles.id')
             ->select('roles.name', DB::raw('COUNT(users.id) as total'))
             ->groupBy('roles.id', 'roles.name')
             ->get();
 
-        $recentUsers = User::with('role')
+        $recentUsersQuery = User::with('role')
             ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+            ->limit(5);
+
+        if ($schoolId) {
+            $recentUsersQuery->where('school_id', $schoolId);
+        }
+
+        $recentUsers = $recentUsersQuery->get();
 
         foreach($recentUsers as $user) {
             $user->role_model_id = null;

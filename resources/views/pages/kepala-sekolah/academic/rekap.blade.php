@@ -16,7 +16,7 @@
             <form method="GET" action="{{ route('kepala-sekolah.academic.rekap') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                     <x-input-label for="semester_id" :value="__('Semester')" />
-                    <x-semester-select id="semester_id" name="semester_id" :selected="$semesterId" empty-label="-- Semua Semester --" />
+                    <x-semester-select id="semester_id" name="semester_id" :selected="$semesterId" :semesters="$semesters" empty-label="-- Semua Semester --" />
                 </div>
                 <div>
                     <x-input-label for="class_id" :value="__('Kelas')" />
@@ -94,7 +94,7 @@
             </div>
 
             {{-- Desktop Table --}}
-            <div class="hidden lg:block">
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200">

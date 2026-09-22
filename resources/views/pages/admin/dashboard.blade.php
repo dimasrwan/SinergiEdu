@@ -328,19 +328,19 @@
                                 }
                             @endphp
                             <div class="bg-white border border-slate-200/80 rounded-xl p-3.5 shadow-2xs space-y-3">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="flex items-start gap-3 min-w-0 flex-1">
-                                        <div class="w-8 h-8 rounded-full {{ $colorClass }} flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                                            {{ $initials }}
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <p class="text-sm font-semibold text-slate-900 leading-snug break-words whitespace-normal">{{ $user->name }}</p>
-                                            <p class="text-xs text-slate-500 font-medium break-all mt-0.5">{{ $user->email }}</p>
-                                        </div>
+                                <div class="flex items-start gap-3 min-w-0">
+                                    <div class="w-8 h-8 rounded-full {{ $colorClass }} flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                                        {{ $initials }}
                                     </div>
-                                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider border border-slate-200 shrink-0">
-                                        {{ $primaryRole }}
-                                    </span>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                            <p class="text-sm font-semibold text-slate-900 leading-snug min-w-0">{{ $user->name }}</p>
+                                            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                                {{ $primaryRole }}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 font-medium break-all mt-0.5">{{ $user->email }}</p>
+                                    </div>
                                 </div>
 
                                 <div class="flex items-center justify-between text-xs text-slate-400 pt-2.5 border-t border-slate-100">

@@ -36,7 +36,7 @@ class StudentController extends Controller
 
         if ($classId = $request->input('class_id')) {
             $query->whereHas('classes', function ($q) use ($classId) {
-                $q->where('class_id', $classId);
+                $q->where('student_classes.class_id', $classId);
             });
         }
 

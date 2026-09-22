@@ -20,8 +20,8 @@
                     <x-input-label for="student_id" :value="__('Siswa')" />
                     <x-select id="student_id" name="student_id">
                         <option value="">-- Pilih Siswa --</option>
-                        @foreach($studentList as $student)
-                            <option value="{{ $student->id }}" {{ (string) $selectedStudent === (string) $student->id ? 'selected' : '' }}>{{ $student->user?->name }}</option>
+                        @foreach($studentList as $stdItem)
+                            <option value="{{ $stdItem->id }}" {{ (string) $selectedStudent === (string) $stdItem->id ? 'selected' : '' }}>{{ $stdItem->user?->name }}</option>
                         @endforeach
                     </x-select>
                 </div>
@@ -41,7 +41,7 @@
                         <div class="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">{{ substr($student->user?->name ?? '?', 0, 1) }}</div>
                         <div>
                             <h2 class="text-lg font-bold text-slate-900">{{ $student->user?->name }}</h2>
-                            <p class="text-sm text-slate-500">NIS: {{ $student->nis }} • NISN: {{ $student->nisn }}</p>
+                            <p class="text-sm text-slate-500">NIS: {{ $student->nis }} â€¢ NISN: {{ $student->nisn }}</p>
                         </div>
                     </div>
                     <a href="{{ route('kepala-sekolah.academic.student-detail', $student) }}" class="inline-flex items-center text-sm font-semibold text-primary hover:text-primary/80">Lihat Detail Penuh &rarr;</a>
@@ -89,7 +89,7 @@
                 </div>
 
                 {{-- Desktop Table --}}
-                <div class="hidden lg:block">
+                <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200">
@@ -147,7 +147,7 @@
                         </div>
 
                         {{-- Desktop table --}}
-                        <div class="hidden sm:block">
+                        <div class="hidden sm:block overflow-x-auto">
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200">

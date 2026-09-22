@@ -117,17 +117,19 @@
                         </div>
                         
                         <div class="space-y-4">
-                            <div>
-                                <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">File Jawaban Anda:</span>
-                                <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 group min-w-0">
-                                    <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 group-hover:text-primary transition-colors shrink-0">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-[13px] font-bold group-hover:text-primary transition-colors truncate">Lihat Berkas</span>
-                                </a>
-                            </div>
+                            @if($submission->file_path)
+                                <div>
+                                    <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">File Jawaban Anda:</span>
+                                    <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 group min-w-0">
+                                        <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 group-hover:text-primary transition-colors shrink-0">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-[13px] font-bold group-hover:text-primary transition-colors truncate">Lihat Berkas</span>
+                                    </a>
+                                </div>
+                            @endif
                             @if($submission->notes)
                                 <div>
                                     <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Catatan Tambahan:</span>

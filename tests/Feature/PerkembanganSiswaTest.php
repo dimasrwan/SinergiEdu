@@ -157,7 +157,7 @@ class PerkembanganSiswaTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_class_id_from_other_school_returns_empty_or_isolated_list(): void
+    public function test_class_id_from_other_school_returns_404(): void
     {
         $academicYearB = AcademicYear::create([
             'school_id' => $this->schoolB->id,
@@ -176,7 +176,7 @@ class PerkembanganSiswaTest extends TestCase
         $response = $this->actingAs($this->kepalaSekolah)
             ->get(route('kepala-sekolah.academic.perkembangan', ['class_id' => $classOther->id]));
 
-        $response->assertOk();
+        $response->assertNotFound();
         $response->assertDontSee('Kelas Sekolah B');
     }
 

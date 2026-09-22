@@ -54,12 +54,22 @@
     if (!empty($placeholder) && !collect($formattedOptions)->contains('value', '')) {
         array_unshift($formattedOptions, ['value' => '', 'label' => (string)$placeholder]);
     }
+
+    $initialLabel = (string)($placeholder ?: '-- Pilih --');
+    if ($selectedValue !== null && $selectedValue !== '') {
+        foreach ($formattedOptions as $opt) {
+            if ((string)$opt['value'] === (string)$selectedValue) {
+                $initialLabel = (string)$opt['label'];
+                break;
+            }
+        }
+    }
 @endphp
 
 <div x-data="{
         open: false,
         selectedVal: '{{ $selectedValue }}',
-        selectedLabel: '',
+        selectedLabel: '{{ addslashes($initialLabel) }}',
         options: @js($formattedOptions),
         placeholder: '{{ addslashes($placeholder) }}',
         init() {
@@ -117,7 +127,7 @@
                 'class' => 'w-full h-10 flex items-center justify-between bg-white border border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 rounded-lg px-3.5 text-sm font-medium text-slate-800 shadow-2xs transition-all disabled:bg-slate-100 disabled:opacity-75 disabled:cursor-not-allowed'
             ]) !!}
     >
-        <span x-text="selectedLabel" :class="{'text-slate-400': !selectedVal && selectedVal !== 0}" class="truncate pr-2"></span>
+        <span x-text="selectedLabel" :class="{'text-slate-400': !selectedVal && selectedVal !== 0}" class="truncate pr-2">{{ $initialLabel }}</span>
         <svg class="h-4 w-4 text-slate-400 transition-transform duration-200 shrink-0 ml-1" 
              :class="{'rotate-180': open}" 
              fill="none" 

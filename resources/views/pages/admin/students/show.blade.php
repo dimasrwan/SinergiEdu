@@ -247,6 +247,7 @@
                         @csrf
                         <input type="hidden" name="redirect_to" value="student">
                         <input type="hidden" name="student_id" value="{{ $student->id }}">
+                        <input type="hidden" name="student_ids[]" value="{{ $student->id }}">
                         
                         <div class="p-6 text-left whitespace-normal">
                             <h2 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 mb-5">Tambah Penempatan Siswa</h2>

@@ -6,12 +6,13 @@
     'emptyLabel' => null,
     'disabledEmpty' => false,
     'class' => null,
+    'semesters' => null,
 ])
 
 @php
-    $semesters = \App\Models\Semester::with('academicYear')->orderBy('id')->get();
-    $options = $semesters->map(fn($s) => ['value' => $s->id, 'label' => $s->label])->toArray();
-    $placeholder = $emptyLabel ?? '-- Pilih Semester --';
+    $semestersCollection = $semesters ?? \App\Models\Semester::with('academicYear')->orderBy('id')->get();
+    $options = $semestersCollection->map(fn($s) => ['value' => $s->id, 'label' => $s->label])->toArray();
+    $placeholder = $emptyLabel ?? ($semestersCollection->isEmpty() ? 'Belum ada semester yang tersedia' : '-- Pilih Semester --');
 @endphp
 
 <x-select :name="$name" 
