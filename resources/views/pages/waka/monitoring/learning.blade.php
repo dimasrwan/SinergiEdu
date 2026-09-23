@@ -76,12 +76,47 @@
                             <p class="truncate"><span class="font-semibold text-slate-700">Guru:</span> {{ $material->teacher->user->name ?? '-' }}</p>
                             <p class="mt-1 truncate"><span class="font-semibold text-slate-700">Kelas:</span> {{ $material->classroom->name ?? '-' }}</p>
                         </div>
-                        <div class="mt-4 flex flex-wrap gap-2">
+                        <div class="mt-4 flex flex-wrap items-center gap-2">
                             @if ($material->file_path)
-                                <a href="{{ asset('storage/'.$material->file_path) }}" target="_blank" class="inline-flex items-center min-h-[44px] rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100">Buka PDF</a>
+                                <a href="{{ route('waka.monitoring.materials.preview', $material) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1.5 min-h-[38px] rounded-xl bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Lihat PDF
+                                </a>
+                                <a href="{{ route('waka.monitoring.materials.download', $material) }}"
+                                    class="inline-flex items-center gap-1 min-h-[38px] rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.5V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                    Unduh
+                                </a>
                             @endif
                             @if ($material->video_path)
-                                <a href="{{ asset('storage/'.$material->video_path) }}" target="_blank" class="inline-flex items-center min-h-[44px] rounded-xl bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">Putar Video</a>
+                                <button type="button"
+                                    @click="$dispatch('open-preview', {
+                                        title: '{{ addslashes($material->title) }}',
+                                        url: '{{ route('waka.monitoring.materials.preview', ['material' => $material, 'type' => 'video']) }}',
+                                        downloadUrl: '{{ route('waka.monitoring.materials.download', ['material' => $material, 'type' => 'video']) }}',
+                                        mime: 'video/mp4'
+                                    })"
+                                    class="inline-flex items-center gap-1.5 min-h-[38px] rounded-xl bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 hover:bg-blue-100 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                                    </svg>
+                                    Putar Video
+                                </button>
+                                <a href="{{ route('waka.monitoring.materials.download', ['material' => $material, 'type' => 'video']) }}"
+                                    class="inline-flex items-center gap-1 min-h-[38px] rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.5V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                    Unduh
+                                </a>
                             @endif
                             @if (! $material->file_path && ! $material->video_path)
                                 <span class="text-xs italic text-slate-400 self-center">Materi teks</span>
@@ -176,4 +211,6 @@
             @endif
         </section>
     </div>
+
+    <x-file-preview-modal />
 </x-layouts.app>

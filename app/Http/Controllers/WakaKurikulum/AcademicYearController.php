@@ -28,11 +28,13 @@ class AcademicYearController extends Controller
     public function store(AcademicYearRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $schoolId = app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+        $data['school_id'] = $schoolId;
         
         try {
-            DB::transaction(function () use ($data) {
+            DB::transaction(function () use ($data, $schoolId) {
                 if (isset($data['is_active']) && $data['is_active']) {
-                    AcademicYear::query()->update(['is_active' => false]);
+                    AcademicYear::where('school_id', $schoolId)->where('is_active', true)->update(['is_active' => false]);
                 }
                 AcademicYear::create($data);
             });
@@ -51,11 +53,15 @@ class AcademicYearController extends Controller
     public function update(AcademicYearRequest $request, AcademicYear $academicYear): RedirectResponse
     {
         $data = $request->validated();
+        $schoolId = $academicYear->school_id ?? app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
 
         try {
-            DB::transaction(function () use ($data, $academicYear) {
-                if (isset($data['is_active']) && $data['is_active']) {
-                    AcademicYear::query()->update(['is_active' => false]);
+            DB::transaction(function () use ($data, $academicYear, $schoolId) {
+                if (isset($data['is_active']) && $data['is_active'] && !$academicYear->is_active) {
+                    AcademicYear::where('school_id', $schoolId)
+                        ->where('id', '!=', $academicYear->id)
+                        ->where('is_active', true)
+                        ->update(['is_active' => false]);
                 }
                 $academicYear->update($data);
             });
@@ -77,9 +83,11 @@ class AcademicYearController extends Controller
      */
     public function toggleActive(AcademicYear $academicYear): RedirectResponse
     {
+        $schoolId = $academicYear->school_id ?? app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         try {
-            DB::transaction(function () use ($academicYear) {
-                AcademicYear::query()->update(['is_active' => false]);
+            DB::transaction(function () use ($academicYear, $schoolId) {
+                AcademicYear::where('school_id', $schoolId)->where('is_active', true)->update(['is_active' => false]);
                 $academicYear->update(['is_active' => true]);
             });
             return redirect()->route('waka.academic-years.index')->with('success', 'Tahun ajaran aktif berhasil diubah.');

@@ -56,7 +56,7 @@ class ClassroomController extends Controller
         abort_if($class->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke data kelas ini.');
 
         // Load relasi yang diperlukan untuk detail
-        $class->load(['classroom.students', 'subject', 'academicYear', 'semester']);
+        $class->load(['classroom.students.user', 'subject', 'academicYear', 'semester']);
 
         return view('pages.guru.classes.show', compact('class'));
     }

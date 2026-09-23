@@ -21,10 +21,20 @@ class AcademicYearRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('academic_year') ? $this->route('academic_year')->id : null;
+        $academicYear = $this->route('academic_year');
+        $id = $academicYear instanceof \App\Models\AcademicYear ? $academicYear->id : $academicYear;
+        $schoolId = ($academicYear instanceof \App\Models\AcademicYear ? $academicYear->school_id : null)
+            ?? app(\App\Services\TenantService::class)->getSchoolId()
+            ?? auth()->user()?->school_id;
 
         return [
-            'year' => 'required|string|unique:academic_years,year,' . $id,
+            'year' => [
+                'required',
+                'string',
+                \Illuminate\Validation\Rule::unique('academic_years', 'year')
+                    ->ignore($id)
+                    ->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
             'is_active' => 'nullable|boolean',
         ];
     }

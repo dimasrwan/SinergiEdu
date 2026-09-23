@@ -21,6 +21,7 @@ use App\Models\Teacher;
 use App\Models\WakaFeedback;
 use App\Models\ParentSupport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Barryvdh\DomPDF\Facade\Pdf as PdfFacade;
 use OpenSpout\Writer\XLSX\Writer;
@@ -44,23 +45,77 @@ class MonitoringController extends Controller
             'semester_id' => ['nullable', 'integer', 'exists:semesters,id'],
         ]);
 
-        $applyFilters = static function ($query) use ($filters): void {
-            $query
-                ->when($filters['class_id'] ?? null, fn ($builder, $id) => $builder->where('class_id', $id))
-                ->when($filters['subject_id'] ?? null, fn ($builder, $id) => $builder->where('subject_id', $id))
-                ->when($filters['teacher_id'] ?? null, fn ($builder, $id) => $builder->where('teacher_id', $id))
-                ->when($filters['academic_year_id'] ?? null, fn ($builder, $id) => $builder->where('academic_year_id', $id))
-                ->when($filters['semester_id'] ?? null, fn ($builder, $id) => $builder->where('semester_id', $id));
-        };
-
         $materialsQuery = Material::query()->with(['teacher.user', 'classroom', 'subject', 'learningMeeting'])->latest();
-        $applyFilters($materialsQuery);
+        $materialsQuery
+            ->when($filters['class_id'] ?? null, fn ($builder, $id) => $builder->where('class_id', $id))
+            ->when($filters['subject_id'] ?? null, fn ($builder, $id) => $builder->where('subject_id', $id))
+            ->when($filters['teacher_id'] ?? null, fn ($builder, $id) => $builder->where('teacher_id', $id));
+
+        if (!empty($filters['academic_year_id']) || !empty($filters['semester_id'])) {
+            $materialsQuery->where(function ($query) use ($filters) {
+                $query->whereHas('learningMeeting', function ($q) use ($filters) {
+                    if (!empty($filters['academic_year_id'])) {
+                        $q->where('academic_year_id', $filters['academic_year_id']);
+                    }
+                    if (!empty($filters['semester_id'])) {
+                        $q->where('semester_id', $filters['semester_id']);
+                    }
+                })->orWhere(function ($q) use ($filters) {
+                    $q->whereNull('learning_meeting_id')
+                        ->whereHas('teacher.teacherSubjects', function ($ts) use ($filters) {
+                            $ts->whereColumn('teacher_subjects.class_id', 'materials.class_id')
+                               ->whereColumn('teacher_subjects.subject_id', 'materials.subject_id');
+                            if (!empty($filters['academic_year_id'])) {
+                                $ts->where('academic_year_id', $filters['academic_year_id']);
+                            }
+                            if (!empty($filters['semester_id'])) {
+                                $ts->where('semester_id', $filters['semester_id']);
+                            }
+                        });
+                });
+            });
+        }
 
         $assignmentsQuery = Assignment::query()
             ->with(['teacher.user', 'classroom', 'subject', 'learningMeeting', 'material'])
             ->withCount('submissions')
             ->latest();
-        $applyFilters($assignmentsQuery);
+        $assignmentsQuery
+            ->when($filters['class_id'] ?? null, fn ($builder, $id) => $builder->where('class_id', $id))
+            ->when($filters['subject_id'] ?? null, fn ($builder, $id) => $builder->where('subject_id', $id))
+            ->when($filters['teacher_id'] ?? null, fn ($builder, $id) => $builder->where('teacher_id', $id));
+
+        if (!empty($filters['academic_year_id']) || !empty($filters['semester_id'])) {
+            $assignmentsQuery->where(function ($query) use ($filters) {
+                $query->whereHas('learningMeeting', function ($q) use ($filters) {
+                    if (!empty($filters['academic_year_id'])) {
+                        $q->where('academic_year_id', $filters['academic_year_id']);
+                    }
+                    if (!empty($filters['semester_id'])) {
+                        $q->where('semester_id', $filters['semester_id']);
+                    }
+                })->orWhereHas('material.learningMeeting', function ($q) use ($filters) {
+                    if (!empty($filters['academic_year_id'])) {
+                        $q->where('academic_year_id', $filters['academic_year_id']);
+                    }
+                    if (!empty($filters['semester_id'])) {
+                        $q->where('semester_id', $filters['semester_id']);
+                    }
+                })->orWhere(function ($q) use ($filters) {
+                    $q->whereNull('learning_meeting_id')
+                        ->whereHas('teacher.teacherSubjects', function ($ts) use ($filters) {
+                            $ts->whereColumn('teacher_subjects.class_id', 'assignments.class_id')
+                               ->whereColumn('teacher_subjects.subject_id', 'assignments.subject_id');
+                            if (!empty($filters['academic_year_id'])) {
+                                $ts->where('academic_year_id', $filters['academic_year_id']);
+                            }
+                            if (!empty($filters['semester_id'])) {
+                                $ts->where('semester_id', $filters['semester_id']);
+                            }
+                        });
+                });
+            });
+        }
 
         $materials = $materialsQuery->paginate(9, ['*'], 'materials_page')->withQueryString();
         $assignments = $assignmentsQuery->paginate(10, ['*'], 'assignments_page')->withQueryString();
@@ -69,12 +124,103 @@ class MonitoringController extends Controller
             ->with(['teacher.user', 'classroom', 'subject'])
             ->withCount(['materials', 'assessments'])
             ->orderByDesc('meeting_date');
-        $applyFilters($meetingsQuery);
+        $meetingsQuery
+            ->when($filters['class_id'] ?? null, fn ($builder, $id) => $builder->where('class_id', $id))
+            ->when($filters['subject_id'] ?? null, fn ($builder, $id) => $builder->where('subject_id', $id))
+            ->when($filters['teacher_id'] ?? null, fn ($builder, $id) => $builder->where('teacher_id', $id))
+            ->when($filters['academic_year_id'] ?? null, fn ($builder, $id) => $builder->where('academic_year_id', $id))
+            ->when($filters['semester_id'] ?? null, fn ($builder, $id) => $builder->where('semester_id', $id));
         $meetings = $meetingsQuery->paginate(10, ['*'], 'meetings_page')->withQueryString();
 
         return view('pages.waka.monitoring.learning', compact(
             'classes', 'subjects', 'teachers', 'academicYears', 'semesters', 'filters', 'meetings', 'materials', 'assignments'
         ));
+    }
+
+    public function previewMaterial(Material $material)
+    {
+        $type = request()->query('type', 'file');
+        $path = $type === 'video' ? $material->video_path : $material->file_path;
+
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File materi tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = Storage::disk('local')->mimeType($path) ?? ($type === 'video' ? 'video/mp4' : 'application/pdf');
+
+        return Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadMaterial(Material $material)
+    {
+        $type = request()->query('type', 'file');
+        $path = $type === 'video' ? $material->video_path : $material->file_path;
+
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File materi tidak ditemukan.');
+        }
+
+        return Storage::disk('local')->download($path);
+    }
+
+    public function previewAssignment(Assignment $assignment)
+    {
+        $path = $assignment->attachment_path;
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File lampiran tugas tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadAssignment(Assignment $assignment)
+    {
+        $path = $assignment->attachment_path;
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File lampiran tugas tidak ditemukan.');
+        }
+
+        return Storage::disk('local')->download($path);
+    }
+
+    public function previewSubmission(Assignment $assignment, AssignmentSubmission $submission)
+    {
+        abort_if($submission->assignment_id !== $assignment->id, 404);
+
+        $path = $submission->file_path;
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban tugas tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function downloadSubmission(Assignment $assignment, AssignmentSubmission $submission)
+    {
+        abort_if($submission->assignment_id !== $assignment->id, 404);
+
+        $path = $submission->file_path;
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban tugas tidak ditemukan.');
+        }
+
+        return Storage::disk('local')->download($path);
     }
 
     public function assignment(Assignment $assignment): View

@@ -180,4 +180,112 @@ class TeacherClassesTest extends TestCase
         $response = $this->actingAs($this->guruA)->get(route('guru.classes.show', $assignmentB));
         $response->assertStatus(403);
     }
+
+    public function test_teacher_can_see_registered_students_in_class_detail()
+    {
+        $this->guruA = $this->createTeacher($this->schoolA, 'Guru A', 'gurua@a.com');
+        $assignment = $this->assignTeacherToClass($this->guruA, '7A', 'Matematika', $this->schoolA);
+        
+        $roleSiswa = Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
+        
+        $userSiswa1 = User::create([
+            'school_id' => $this->schoolA->id,
+            'name' => 'Ahmad Fauzan',
+            'email' => 'ahmad@a.com',
+            'password' => bcrypt('password'),
+            'role_id' => $roleSiswa->id,
+        ]);
+        $student1 = \App\Models\Student::create([
+            'school_id' => $this->schoolA->id,
+            'user_id' => $userSiswa1->id,
+            'nis' => '20260001',
+            'gender' => 'L',
+        ]);
+        
+        $userSiswa2 = User::create([
+            'school_id' => $this->schoolA->id,
+            'name' => 'Siti Aisyah',
+            'email' => 'siti@a.com',
+            'password' => bcrypt('password'),
+            'role_id' => $roleSiswa->id,
+        ]);
+        $student2 = \App\Models\Student::create([
+            'school_id' => $this->schoolA->id,
+            'user_id' => $userSiswa2->id,
+            'nis' => '20260002',
+            'gender' => 'P',
+        ]);
+
+        $assignment->classroom->students()->attach([
+            $student1->id => ['school_id' => $this->schoolA->id, 'academic_year_id' => $this->academicYear->id],
+            $student2->id => ['school_id' => $this->schoolA->id, 'academic_year_id' => $this->academicYear->id],
+        ]);
+
+        $response = $this->actingAs($this->guruA)->get(route('guru.classes.show', $assignment));
+        $response->assertStatus(200);
+        $response->assertSee('Daftar Siswa Terdaftar');
+        $response->assertSee('2 ORANG');
+        $response->assertSee('2 Siswa terdaftar');
+        $response->assertSee('Ahmad Fauzan');
+        $response->assertSee('20260001');
+        $response->assertSee('Laki-Laki');
+        $response->assertSee('Siti Aisyah');
+        $response->assertSee('20260002');
+        $response->assertSee('Perempuan');
+    }
+
+    public function test_teacher_only_sees_students_enrolled_in_current_class()
+    {
+        $this->guruA = $this->createTeacher($this->schoolA, 'Guru A', 'gurua@a.com');
+        $assignment7A = $this->assignTeacherToClass($this->guruA, '7A', 'Matematika', $this->schoolA);
+        $assignment7B = $this->assignTeacherToClass($this->guruA, '7B', 'IPA', $this->schoolA);
+
+        $roleSiswa = Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
+
+        $userSiswa7A = User::create([
+            'school_id' => $this->schoolA->id,
+            'name' => 'Siswa Kelas Tujuh A',
+            'email' => 'siswa7a@a.com',
+            'password' => bcrypt('password'),
+            'role_id' => $roleSiswa->id,
+        ]);
+        $student7A = \App\Models\Student::create([
+            'school_id' => $this->schoolA->id,
+            'user_id' => $userSiswa7A->id,
+            'nis' => '7001',
+            'gender' => 'L',
+        ]);
+        $assignment7A->classroom->students()->attach([
+            $student7A->id => ['school_id' => $this->schoolA->id, 'academic_year_id' => $this->academicYear->id]
+        ]);
+
+        $userSiswa7B = User::create([
+            'school_id' => $this->schoolA->id,
+            'name' => 'Siswa Kelas Tujuh B',
+            'email' => 'siswa7b@a.com',
+            'password' => bcrypt('password'),
+            'role_id' => $roleSiswa->id,
+        ]);
+        $student7B = \App\Models\Student::create([
+            'school_id' => $this->schoolA->id,
+            'user_id' => $userSiswa7B->id,
+            'nis' => '7002',
+            'gender' => 'P',
+        ]);
+        $assignment7B->classroom->students()->attach([
+            $student7B->id => ['school_id' => $this->schoolA->id, 'academic_year_id' => $this->academicYear->id]
+        ]);
+
+        // Buka 7A
+        $response7A = $this->actingAs($this->guruA)->get(route('guru.classes.show', $assignment7A));
+        $response7A->assertStatus(200);
+        $response7A->assertSee('Siswa Kelas Tujuh A');
+        $response7A->assertDontSee('Siswa Kelas Tujuh B');
+
+        // Buka 7B
+        $response7B = $this->actingAs($this->guruA)->get(route('guru.classes.show', $assignment7B));
+        $response7B->assertStatus(200);
+        $response7B->assertSee('Siswa Kelas Tujuh B');
+        $response7B->assertDontSee('Siswa Kelas Tujuh A');
+    }
 }

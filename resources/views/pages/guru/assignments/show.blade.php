@@ -36,12 +36,29 @@
                     @if($assignment->attachment_path)
                         <div class="mt-5 pt-5 border-t border-slate-100">
                             <h4 class="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Lampiran Pendukung</h4>
-                            <a href="{{ route('guru.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center gap-2 p-3 w-full bg-blue-50/50 border border-blue-100 rounded-lg text-sm font-semibold text-blue-700 hover:bg-blue-100 transition">
-                                <svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                </svg>
-                                Unduh Lampiran Soal
-                            </a>
+                            <div class="flex items-center gap-2">
+                                <a
+                                    href="{{ route('guru.assignments.preview', $assignment) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-center gap-2 p-3 flex-1 bg-blue-50/50 border border-blue-100 rounded-xl text-sm font-semibold text-blue-700 hover:bg-blue-100 transition"
+                                >
+                                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Lihat Lampiran
+                                </a>
+                                <a
+                                    href="{{ route('guru.assignments.download', $assignment) }}"
+                                    class="inline-flex items-center justify-center p-3 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-xl transition shadow-xs"
+                                    title="Unduh Lampiran Soal"
+                                >
+                                    <svg class="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     @endif
                 </x-card>
@@ -153,12 +170,31 @@
                                 <div class="flex items-center gap-2 pt-1 flex-wrap" x-data="{ openModal: false, openFeedbackModal: false }">
                                     @if($submission)
                                         @if($submission->file_path)
-                                            <a href="{{ route('guru.assignments.submissions.download', [$assignment, $submission]) }}" title="Unduh File" class="inline-flex items-center justify-center min-h-[40px] px-3 py-2 rounded-xl text-blue-700 bg-blue-50 hover:bg-blue-100 font-medium text-xs transition gap-1.5">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                </svg>
-                                                File
-                                            </a>
+                                            <div class="inline-flex items-center rounded-xl bg-blue-50 border border-blue-100 overflow-hidden text-xs">
+                                                <a
+                                                    href="{{ route('guru.assignments.submissions.preview', [$assignment, $submission]) }}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="inline-flex items-center justify-center min-h-[40px] px-3 py-2 text-blue-700 hover:bg-blue-100 font-medium text-xs transition gap-1.5"
+                                                    title="Lihat Berkas Jawaban"
+                                                >
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                    Lihat
+                                                </a>
+                                                <span class="w-px h-4 bg-blue-200"></span>
+                                                <a
+                                                    href="{{ route('guru.assignments.submissions.download', [$assignment, $submission]) }}"
+                                                    class="p-2.5 text-blue-700 hover:bg-blue-100 transition"
+                                                    title="Unduh Berkas Jawaban"
+                                                >
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
+                                                </a>
+                                            </div>
                                         @endif
 
                                         <button @click="openModal = true" class="inline-flex items-center justify-center min-h-[40px] px-3.5 py-2 rounded-xl font-medium text-xs transition gap-1.5 {{ $submission->score !== null ? 'text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-blue-700 bg-blue-50 hover:bg-blue-100' }}">
@@ -302,11 +338,31 @@
                                     <div class="flex items-center gap-2" x-data="{ openModal: false, openFeedbackModal: false }">
                                         @if($submission)
                                             @if($submission->file_path)
-                                                <a href="{{ route('guru.assignments.submissions.download', [$assignment, $submission]) }}" title="Unduh File" class="inline-flex items-center justify-center p-2 rounded-lg text-blue-600 hover:bg-blue-50 transition">
-                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                    </svg>
-                                                </a>
+                                                <div class="inline-flex items-center rounded-lg bg-blue-50 border border-blue-100 overflow-hidden text-xs">
+                                                    <a
+                                                        href="{{ route('guru.assignments.submissions.preview', [$assignment, $submission]) }}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="p-1.5 text-blue-700 hover:bg-blue-100 transition inline-flex items-center gap-1 font-medium"
+                                                        title="Lihat Berkas Jawaban"
+                                                    >
+                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        Lihat
+                                                    </a>
+                                                    <span class="w-px h-3.5 bg-blue-200"></span>
+                                                    <a
+                                                        href="{{ route('guru.assignments.submissions.download', [$assignment, $submission]) }}"
+                                                        class="p-1.5 text-blue-700 hover:bg-blue-100 transition"
+                                                        title="Unduh Berkas Jawaban"
+                                                    >
+                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                        </svg>
+                                                    </a>
+                                                </div>
                                             @elseif($submission->notes)
                                                 <span class="inline-flex items-center justify-center p-2 text-slate-400" title="{{ $submission->notes }}">
                                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -443,5 +499,7 @@
                 </x-card>
             </div>
         </div>
+
+        <x-file-preview-modal />
     </div>
 </x-layouts.app>

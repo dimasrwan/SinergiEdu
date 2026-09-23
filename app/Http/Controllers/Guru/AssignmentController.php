@@ -403,6 +403,26 @@ class AssignmentController extends Controller
         return redirect()->route('guru.assignments.index')->with('success', 'Tugas berhasil dihapus.');
     }
     
+    public function preview(Assignment $assignment)
+    {
+        $teacher = $this->getTeacherProfile();
+        abort_if($assignment->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $path = $assignment->attachment_path;
+        
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
     public function download(Assignment $assignment)
     {
         $teacher = $this->getTeacherProfile();
@@ -415,6 +435,39 @@ class AssignmentController extends Controller
         }
         
         return Storage::disk('local')->download($path);
+    }
+
+    public function previewSubmission(Assignment $assignment, \App\Models\AssignmentSubmission $submission)
+    {
+        $teacher = $this->getTeacherProfile();
+        
+        abort_if($assignment->teacher_id !== $teacher->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        abort_if($submission->assignment_id !== $assignment->id, 403, 'Submission tidak sesuai dengan tugas ini.');
+        
+        // Verifikasi student dalam kelas
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        $studentInClass = \App\Models\StudentClass::where('student_id', $submission->student_id)
+            ->where('class_id', $assignment->class_id)
+            ->when($activeAcademicYear, function($q) use ($activeAcademicYear) {
+                $q->where('academic_year_id', $activeAcademicYear->id);
+            })
+            ->exists();
+            
+        abort_if(!$studentInClass, 403, 'Siswa pengumpul bukan anggota kelas ini.');
+        
+        $path = $submission->file_path;
+        
+        if (!$path || !Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
     }
 
     public function downloadSubmission(Assignment $assignment, \App\Models\AssignmentSubmission $submission)

@@ -83,6 +83,28 @@ class AssignmentController extends Controller
         return back()->with('success', 'Jawaban tugas Anda berhasil dikumpulkan.');
     }
 
+    public function preview(Assignment $assignment)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $path = $assignment->attachment_path;
+        
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File lampiran tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
     public function download(Assignment $assignment)
     {
         $student = $this->requireStudentProfile();
@@ -97,6 +119,32 @@ class AssignmentController extends Controller
         }
         
         return \Illuminate\Support\Facades\Storage::disk('local')->download($path);
+    }
+
+    public function previewSubmission(Assignment $assignment)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $submission = AssignmentSubmission::where('assignment_id', $assignment->id)
+            ->where('student_id', $student->id)
+            ->firstOrFail();
+            
+        $path = $submission->file_path;
+        
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban Anda tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
     }
 
     public function downloadSubmission(Assignment $assignment)

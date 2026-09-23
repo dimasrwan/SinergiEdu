@@ -27,6 +27,12 @@ Route::resource('/subjects', SubjectController::class)->except(['show']);
 
 // Monitoring
 Route::get('/monitoring/learning', [MonitoringController::class, 'learning'])->name('monitoring.learning');
+Route::get('/monitoring/materials/{material}/preview', [MonitoringController::class, 'previewMaterial'])->name('monitoring.materials.preview');
+Route::get('/monitoring/materials/{material}/download', [MonitoringController::class, 'downloadMaterial'])->name('monitoring.materials.download');
+Route::get('/monitoring/assignments/{assignment}/preview', [MonitoringController::class, 'previewAssignment'])->name('monitoring.assignments.preview');
+Route::get('/monitoring/assignments/{assignment}/download', [MonitoringController::class, 'downloadAssignment'])->name('monitoring.assignments.download');
+Route::get('/monitoring/assignments/{assignment}/submissions/{submission}/preview', [MonitoringController::class, 'previewSubmission'])->name('monitoring.assignments.submissions.preview');
+Route::get('/monitoring/assignments/{assignment}/submissions/{submission}/download', [MonitoringController::class, 'downloadSubmission'])->name('monitoring.assignments.submissions.download');
 Route::get('/monitoring/assignments/{assignment}', [MonitoringController::class, 'assignment'])->name('monitoring.assignments.show');
 Route::get('/monitoring/classes', [MonitoringController::class, 'classes'])->name('monitoring.classes');
 Route::get('/monitoring/grades', [MonitoringController::class, 'grades'])->name('monitoring.grades');

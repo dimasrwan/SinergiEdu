@@ -136,14 +136,16 @@ class DashboardController extends Controller
                 $user->role_model_id = \App\Models\Teacher::where('user_id', $user->id)->value('id');
             } elseif ($r === 'siswa') {
                 $user->role_model_id = \App\Models\Student::where('user_id', $user->id)->value('id');
-            } elseif ($r === 'orang tua') {
+            } elseif ($r === 'orangtua' || $r === 'orang_tua' || $r === 'orang tua') {
                 $user->role_model_id = \App\Models\StudentParent::where('user_id', $user->id)->value('id');
-            } elseif ($r === 'waka kurikulum' || $r === 'waka') {
+            } elseif ($r === 'waka' || $r === 'waka_kurikulum' || $r === 'waka kurikulum') {
                 $user->role_model_id = \App\Models\Waka::where('user_id', $user->id)->value('id');
             } elseif ($r === 'pengawas') {
                 $user->role_model_id = \App\Models\Pengawas::where('user_id', $user->id)->value('id');
-            } elseif ($r === 'kepala sekolah') {
+            } elseif ($r === 'kepala_sekolah' || $r === 'kepala sekolah') {
                 $user->role_model_id = \App\Models\KepalaSekolah::where('user_id', $user->id)->value('id');
+            } elseif ($r === 'komite') {
+                $user->role_model_id = $user->id;
             }
         }
 

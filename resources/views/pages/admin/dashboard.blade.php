@@ -276,10 +276,10 @@
                                                     if ($user->role_model_id) {
                                                         if ($r === 'guru') { $showUrl = route('admin.teachers.show', $user->role_model_id); $editUrl = route('admin.teachers.edit', $user->role_model_id); }
                                                         elseif ($r === 'siswa') { $showUrl = route('admin.students.show', $user->role_model_id); $editUrl = route('admin.students.edit', $user->role_model_id); }
-                                                        elseif ($r === 'orang tua') { $showUrl = route('admin.parents.show', $user->role_model_id); $editUrl = route('admin.parents.edit', $user->role_model_id); }
-                                                        elseif ($r === 'waka kurikulum' || $r === 'waka') { $showUrl = route('admin.wakas.show', $user->role_model_id); $editUrl = route('admin.wakas.edit', $user->role_model_id); }
+                                                        elseif ($r === 'orang tua' || $r === 'orang_tua' || $r === 'orangtua') { $showUrl = route('admin.parents.show', $user->role_model_id); $editUrl = route('admin.parents.edit', $user->role_model_id); }
+                                                        elseif ($r === 'waka kurikulum' || $r === 'waka' || $r === 'waka_kurikulum') { $showUrl = route('admin.wakas.show', $user->role_model_id); $editUrl = route('admin.wakas.edit', $user->role_model_id); }
                                                         elseif ($r === 'pengawas') { $showUrl = route('admin.pengawas.show', $user->role_model_id); $editUrl = route('admin.pengawas.edit', $user->role_model_id); }
-                                                        elseif ($r === 'kepala sekolah') { $showUrl = route('admin.kepala-sekolah.show', $user->role_model_id); $editUrl = route('admin.kepala-sekolah.edit', $user->role_model_id); }
+                                                        elseif ($r === 'kepala sekolah' || $r === 'kepala_sekolah') { $showUrl = route('admin.kepala-sekolah.show', $user->role_model_id); $editUrl = route('admin.kepala-sekolah.edit', $user->role_model_id); }
                                                     }
                                                 @endphp
                                                 <a href="{{ $showUrl }}" class="p-1.5 text-slate-400 hover:text-primary transition" title="Lihat"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg></a>
@@ -309,7 +309,7 @@
                                 $primaryRole = 'Pengguna';
                                 if ($r_name === 'guru') $primaryRole = 'Guru';
                                 elseif ($r_name === 'siswa') $primaryRole = 'Siswa';
-                                elseif ($r_name === 'orang_tua' || $r_name === 'orang tua') $primaryRole = 'Orang Tua';
+                                elseif ($r_name === 'orang_tua' || $r_name === 'orang tua' || $r_name === 'orangtua') $primaryRole = 'Orang Tua';
                                 elseif ($r_name === 'waka' || $r_name === 'waka_kurikulum' || $r_name === 'waka kurikulum') $primaryRole = 'Waka Kurikulum';
                                 elseif ($r_name === 'pengawas') $primaryRole = 'Pengawas';
                                 elseif ($r_name === 'kepala_sekolah' || $r_name === 'kepala sekolah') $primaryRole = 'Kepala Sekolah/Madrasah';
@@ -321,8 +321,8 @@
                                 if ($user->role_model_id) {
                                     if ($r_name === 'guru') { $showUrl = route('admin.teachers.show', $user->role_model_id); $editUrl = route('admin.teachers.edit', $user->role_model_id); }
                                     elseif ($r_name === 'siswa') { $showUrl = route('admin.students.show', $user->role_model_id); $editUrl = route('admin.students.edit', $user->role_model_id); }
-                                    elseif ($r_name === 'orang tua' || $r_name === 'orang_tua') { $showUrl = route('admin.parents.show', $user->role_model_id); $editUrl = route('admin.parents.edit', $user->role_model_id); }
-                                    elseif ($r_name === 'waka kurikulum' || $r_name === 'waka') { $showUrl = route('admin.wakas.show', $user->role_model_id); $editUrl = route('admin.wakas.edit', $user->role_model_id); }
+                                    elseif ($r_name === 'orang tua' || $r_name === 'orang_tua' || $r_name === 'orangtua') { $showUrl = route('admin.parents.show', $user->role_model_id); $editUrl = route('admin.parents.edit', $user->role_model_id); }
+                                    elseif ($r_name === 'waka kurikulum' || $r_name === 'waka' || $r_name === 'waka_kurikulum') { $showUrl = route('admin.wakas.show', $user->role_model_id); $editUrl = route('admin.wakas.edit', $user->role_model_id); }
                                     elseif ($r_name === 'pengawas') { $showUrl = route('admin.pengawas.show', $user->role_model_id); $editUrl = route('admin.pengawas.edit', $user->role_model_id); }
                                     elseif ($r_name === 'kepala sekolah' || $r_name === 'kepala_sekolah') { $showUrl = route('admin.kepala-sekolah.show', $user->role_model_id); $editUrl = route('admin.kepala-sekolah.edit', $user->role_model_id); }
                                 }
@@ -343,10 +343,10 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center justify-between text-xs text-slate-400 pt-2.5 border-t border-slate-100">
-                                    <span class="font-medium text-slate-500">Bergabung: <strong class="text-slate-700 font-semibold">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d M Y') }}</strong></span>
+                                <div class="flex items-center justify-between text-xs text-slate-400 pt-2.5 border-t border-slate-100 gap-2">
+                                    <span class="font-medium text-slate-500 truncate">Bergabung: <strong class="text-slate-700 font-semibold">{{ \Carbon\Carbon::parse($user->created_at)->translatedFormat('d M Y') }}</strong></span>
                                     
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-1.5 shrink-0">
                                         @if($showUrl !== '#')
                                             <a href="{{ $showUrl }}" class="px-2.5 py-1 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors">
                                                 Lihat

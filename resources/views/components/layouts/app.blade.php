@@ -28,7 +28,7 @@
         })();
     </script>
 </head>
-<body class="h-full font-sans text-slate-800 antialiased tracking-tight" x-data="{ sidebarOpen: false }">
+<body class="min-h-full font-sans text-slate-800 antialiased tracking-tight" x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false">
     <div>
         <!-- Off-canvas menu untuk mobile -->
         <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-show="sidebarOpen" x-description="Off-canvas menu overlay" style="display: none;">
@@ -43,9 +43,10 @@
                  x-transition:leave-end="opacity-0"
                  @click="sidebarOpen = false"></div>
 
-            <div class="fixed inset-0 flex">
+            <div class="fixed inset-0 flex" @click="sidebarOpen = false">
                 <!-- Sidebar panel -->
                 <div class="relative flex w-[80vw] max-w-[320px] flex-col bg-white border-r border-slate-200/80 shadow-2xl transition-transform duration-300 ease-in-out h-full"
+                     @click.stop
                      x-show="sidebarOpen"
                      x-transition:enter="transition ease-in-out duration-300 transform"
                      x-transition:enter-start="-translate-x-full"
@@ -161,9 +162,9 @@
         </div>
 
         <!-- Main column -->
-        <div class="lg:pl-[230px] flex flex-col min-h-screen min-w-0 w-full overflow-x-hidden">
+        <div class="lg:pl-[230px] flex flex-col min-h-screen min-w-0 w-full overflow-x-clip">
             <!-- Navbar -->
-            <div class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
+            <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
                 <button type="button" class="-m-2.5 p-2.5 text-slate-700 lg:hidden" @click="sidebarOpen = true">
                     <span class="sr-only">Buka sidebar</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -175,10 +176,8 @@
 
                 <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between min-w-0">
                     <div class="flex items-center gap-x-3 min-w-0 flex-1">
-                        <!-- Desktop Logo/Brand -->
-                        <div class="h-8 w-8 bg-primary rounded flex items-center justify-center shrink-0 lg:hidden">
-                            <span class="text-white font-bold text-sm">S</span>
-                        </div>
+                        <!-- Mobile Brand Logo -->
+                        <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto shrink-0 lg:hidden object-contain">
                         <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-[9rem] flex-1 truncate">{{ $title ?? 'Dashboard' }}</h2>
                         @if(strtolower(Auth::user()->role->name ?? '') === 'pengawas')
                             @php
@@ -302,7 +301,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             <main class="py-10 flex-1 min-w-0">
                 <div class="px-4 sm:px-6 lg:px-8">

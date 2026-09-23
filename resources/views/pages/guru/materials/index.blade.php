@@ -75,21 +75,61 @@
                     
                     <div class="flex flex-wrap items-center gap-2">
                         @if($material->file_path)
-                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-danger hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-2 rounded-xl transition min-h-[38px]" title="Unduh PDF">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                PDF
-                            </a>
+                            <div class="inline-flex items-center rounded-xl bg-red-50 border border-red-100 overflow-hidden text-xs">
+                                <a
+                                    href="{{ route('guru.materials.preview', ['material' => $material->id, 'type' => 'file']) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1.5 font-semibold text-danger hover:text-red-700 hover:bg-red-100/60 px-2.5 py-1.5 transition"
+                                    title="Lihat Preview PDF"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Lihat PDF
+                                </a>
+                                <span class="w-px h-4 bg-red-200"></span>
+                                <a
+                                    href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}"
+                                    class="p-1.5 text-danger hover:text-red-700 hover:bg-red-100/60 transition"
+                                    title="Unduh PDF"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                            </div>
                         @endif
                         @if($material->video_path)
-                            <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-accent bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-xl transition min-h-[38px]" title="Unduh Video">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Video
-                            </a>
+                            <div class="inline-flex items-center rounded-xl bg-blue-50 border border-blue-100 overflow-hidden text-xs">
+                                <button
+                                    type="button"
+                                    @click="$dispatch('open-preview', {
+                                        title: 'Video Materi: {{ addslashes($material->title) }}',
+                                        fileUrl: '{{ route('guru.materials.preview', ['material' => $material->id, 'type' => 'video']) }}',
+                                        downloadUrl: '{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}',
+                                        fileName: '{{ basename($material->video_path) }}'
+                                    })"
+                                    class="inline-flex items-center gap-1.5 font-semibold text-accent hover:text-blue-800 hover:bg-blue-100/60 px-2.5 py-1.5 transition"
+                                    title="Putar Video"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    </svg>
+                                    Video
+                                </button>
+                                <span class="w-px h-4 bg-blue-200"></span>
+                                <a
+                                    href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}"
+                                    class="p-1.5 text-accent hover:text-blue-800 hover:bg-blue-100/60 transition"
+                                    title="Unduh Video"
+                                >
+                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                            </div>
                         @endif
                         
                         @if(!$material->file_path && !$material->video_path)
@@ -139,5 +179,7 @@
                 </div>
             </x-modal>
         @endforeach
+
+        <x-file-preview-modal />
     </div>
 </x-layouts.app>

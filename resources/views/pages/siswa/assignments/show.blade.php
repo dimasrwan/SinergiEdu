@@ -87,12 +87,33 @@
                                     </div>
                                     <div class="min-w-0">
                                         <h4 class="text-sm font-bold text-slate-900 break-words">Materi Tugas (Berkas)</h4>
-                                        <p class="text-xs text-slate-500 mt-0.5">Unduh untuk membaca rincian soal selengkapnya.</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">Buka untuk membaca rincian soal atau simpan ke perangkat.</p>
                                     </div>
                                 </div>
-                                <a href="{{ route('siswa.assignments.download', $assignment) }}" target="_blank" class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl text-sm font-semibold transition w-full sm:w-auto shadow-sm shrink-0">
-                                    Unduh File
-                                </a>
+                                <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                                    <a
+                                        href="{{ route('siswa.assignments.preview', $assignment) }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-semibold transition w-full sm:w-auto shadow-sm gap-2"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Lihat
+                                    </a>
+                                    <a
+                                        href="{{ route('siswa.assignments.download', $assignment) }}"
+                                        class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl text-sm font-semibold transition w-full sm:w-auto shadow-sm gap-2"
+                                        title="Unduh Berkas Tugas"
+                                    >
+                                        <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Unduh
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -120,14 +141,44 @@
                             @if($submission->file_path)
                                 <div>
                                     <span class="block text-[11px] font-bold text-slate-500 mb-1.5 uppercase tracking-wider">File Jawaban Anda:</span>
-                                    <a href="{{ route('siswa.assignments.submissions.download', $assignment) }}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition text-slate-700 group min-w-0">
-                                        <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 group-hover:text-primary transition-colors shrink-0">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                            </svg>
+                                    <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl gap-2">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <div class="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-500 shrink-0">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                                </svg>
+                                            </div>
+                                            <span class="text-xs text-slate-700 font-mono truncate">{{ basename($submission->file_path) }}</span>
                                         </div>
-                                        <span class="text-[13px] font-bold group-hover:text-primary transition-colors truncate">Lihat Berkas</span>
-                                    </a>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <button
+                                                type="button"
+                                                @click="$dispatch('open-preview', {
+                                                    title: 'Jawaban Tugas Saya',
+                                                    fileUrl: '{{ route('siswa.assignments.submissions.preview', $assignment) }}',
+                                                    downloadUrl: '{{ route('siswa.assignments.submissions.download', $assignment) }}',
+                                                    fileName: '{{ basename($submission->file_path) }}'
+                                                })"
+                                            <a
+                                                href="{{ route('siswa.assignments.submissions.preview', $assignment) }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition"
+                                            >
+                                                Lihat
+                                            </button>
+                                            </a>
+                                            <a
+                                                href="{{ route('siswa.assignments.submissions.download', $assignment) }}"
+                                                class="p-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold transition"
+                                                title="Unduh Jawaban"
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                             @if($submission->notes)
@@ -298,4 +349,5 @@
             }));
         });
     </script>
+    <x-file-preview-modal />
 </x-layouts.app>

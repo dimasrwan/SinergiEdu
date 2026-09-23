@@ -40,4 +40,44 @@ class MaterialController extends Controller
 
         return view('pages.siswa.materials.show', compact('material'));
     }
+
+    public function preview(Material $material)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $material->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke materi ini.');
+
+        $type = request()->query('type', 'file');
+        $path = $type === 'video' ? $material->video_path : $material->file_path;
+
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($path) ?? ($type === 'video' ? 'video/mp4' : 'application/pdf');
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function download(Material $material)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $material->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke materi ini.');
+
+        $type = request()->query('type', 'file');
+        $path = $type === 'video' ? $material->video_path : $material->file_path;
+
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path);
+    }
 }

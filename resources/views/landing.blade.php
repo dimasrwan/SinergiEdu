@@ -80,21 +80,6 @@
                             Platform terintegrasi untuk membantu sekolah mengelola pembelajaran, tugas, penilaian, monitoring, dan komunikasi antar pihak sekolah dalam satu sistem terpusat.
                         </p>
 
-                        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 text-base font-bold text-white bg-[#123B82] hover:bg-[#0F3170] active:scale-[0.98] rounded-2xl transition shadow-lg shadow-[#123B82]/20 focus:outline-none focus:ring-2 focus:ring-[#123B82]">
-                                    Buka Dashboard Sistem &rarr;
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 text-base font-bold text-white bg-[#123B82] hover:bg-[#0F3170] active:scale-[0.98] rounded-2xl transition shadow-lg shadow-[#123B82]/20 focus:outline-none focus:ring-2 focus:ring-[#123B82]">
-                                    Mulai Sekarang
-                                </a>
-                                <a href="{{ route('login') }}" class="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 text-base font-bold text-[#123B82] bg-white hover:bg-[#EAF6FF] active:scale-[0.98] border border-[#DCE8F3] rounded-2xl transition focus:outline-none focus:ring-2 focus:ring-[#123B82]">
-                                    Masuk ke Sistem
-                                </a>
-                            @endauth
-                        </div>
-
                         <!-- Micro Trust Text -->
                         <div class="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-[#123B82] font-semibold tracking-wide uppercase">
                             <span class="flex items-center gap-1.5">
@@ -575,17 +560,6 @@
                 <p class="text-base sm:text-lg text-[#EAF6FF] max-w-2xl mx-auto font-normal leading-relaxed">
                     Satu platform untuk membantu sekolah mengelola pembelajaran, penilaian, monitoring, dan komunikasi antar pihak sekolah.
                 </p>
-                <div class="pt-4 flex justify-center">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-[#123B82] bg-white hover:bg-[#EAF6FF] active:scale-[0.98] rounded-2xl transition shadow-xl focus:outline-none focus:ring-2 focus:ring-white">
-                            Ke Dashboard Sekarang &rarr;
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-[#123B82] bg-white hover:bg-[#EAF6FF] active:scale-[0.98] rounded-2xl transition shadow-xl focus:outline-none focus:ring-2 focus:ring-white">
-                            Masuk ke Sistem
-                        </a>
-                    @endauth
-                </div>
             </div>
         </section>
     </main>
@@ -620,10 +594,7 @@
                 <!-- Col 3: System Access -->
                 <div class="space-y-2">
                     <span class="text-xs font-extrabold text-white uppercase tracking-wider block mb-2">Akses Portal</span>
-                    <p class="text-xs text-[#AFC4DA] mb-2">Akses pintu masuk utama seluruh peran pengguna sekolah.</p>
-                    <a href="{{ route('login') }}" class="inline-flex items-center text-xs font-bold text-[#119FEA] hover:text-white">
-                        Masuk ke Sistem &rarr;
-                    </a>
+                    <p class="text-xs text-[#AFC4DA]">Akses pintu masuk utama seluruh peran pengguna sekolah.</p>
                 </div>
 
             </div>

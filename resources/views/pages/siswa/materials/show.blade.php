@@ -62,12 +62,30 @@
                                     <p class="text-sm text-slate-500 mt-0.5">Dokumen panduan materi.</p>
                                 </div>
                             </div>
-                            <x-button variant="danger" href="{{ asset('storage/' . $material->file_path) }}" target="_blank" download class="w-full sm:w-auto shadow-sm min-h-[44px] justify-center shrink-0">
-                                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke-currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Unduh PDF
-                            </x-button>
+                            <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                                <a
+                                    href="{{ route('siswa.materials.preview', ['material' => $material->id, 'type' => 'file']) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition w-full sm:w-auto shadow-sm gap-2"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Lihat PDF
+                                </a>
+                                <a
+                                    href="{{ route('siswa.materials.download', ['material' => $material->id, 'type' => 'file']) }}"
+                                    class="inline-flex items-center justify-center min-h-[44px] px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold transition w-full sm:w-auto shadow-sm gap-2"
+                                    title="Unduh PDF"
+                                >
+                                    <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    Unduh
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -78,7 +96,7 @@
                         <h3 class="font-bold text-slate-900 mb-3 text-lg">Video Pembelajaran</h3>
                         <div class="aspect-video w-full rounded-2xl overflow-hidden bg-slate-900 shadow-md ring-1 ring-slate-900/10">
                             <video class="w-full h-full object-contain" controls preload="metadata">
-                                <source src="{{ asset('storage/' . $material->video_path) }}" type="video/mp4">
+                                <source src="{{ route('siswa.materials.preview', ['material' => $material->id, 'type' => 'video']) }}" type="video/mp4">
                                 Browser Anda tidak mendukung pemutar video HTML5. Silakan unduh berkas videonya.
                             </video>
                         </div>
@@ -86,5 +104,7 @@
                 @endif
             </div>
         </x-card>
+
+        <x-file-preview-modal />
     </div>
 </x-layouts.app>

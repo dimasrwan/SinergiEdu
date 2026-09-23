@@ -34,12 +34,15 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+        $response->assertSessionHasErrors([
+            'email' => 'Email atau Password anda salah. Silahkan coba lagi.',
+        ]);
     }
 
     public function test_users_can_not_authenticate_when_inactive(): void

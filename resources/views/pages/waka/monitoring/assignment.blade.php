@@ -26,7 +26,25 @@
                     </dl>
                     <div class="mt-5 border-t border-slate-100 pt-5 text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{{ $assignment->description }}</div>
                     @if ($assignment->attachment_path)
-                        <a href="{{ asset('storage/'.$assignment->attachment_path) }}" target="_blank" class="mt-5 inline-flex rounded-lg-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100">Unduh lampiran tugas</a>
+                        <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                            <a href="{{ route('waka.monitoring.assignments.preview', $assignment) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center gap-1.5 min-h-[38px] rounded-xl bg-blue-50 px-3 py-1.5 text-xs font-bold text-primary hover:bg-blue-100 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                Lihat Lampiran
+                            </a>
+                            <a href="{{ route('waka.monitoring.assignments.download', $assignment) }}"
+                                class="inline-flex items-center gap-1 min-h-[38px] rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.5V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Unduh
+                            </a>
+                        </div>
                     @endif
                 </x-card>
 
@@ -87,7 +105,29 @@
                                             <td class="px-6 py-4">
                                                 @if ($submission)
                                                     <div class="font-bold text-slate-900 mb-1">Nilai: {{ $submission->score ?? '-' }}</div>
-                                                    <a href="{{ asset('storage/'.$submission->file_path) }}" target="_blank" class="text-xs font-semibold text-primary hover:text-blue-900 min-h-[44px] inline-flex items-center">Buka jawaban</a>
+                                                    @if ($submission->file_path)
+                                                        <div class="flex items-center gap-1.5">
+                                                            <a href="{{ route('waka.monitoring.assignments.submissions.preview', ['assignment' => $assignment, 'submission' => $submission]) }}"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                class="text-xs font-semibold text-primary hover:text-blue-900 min-h-[36px] inline-flex items-center gap-1">
+                                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                </svg>
+                                                                Lihat
+                                                            </a>
+                                                            <span class="text-slate-300">|</span>
+                                                            <a href="{{ route('waka.monitoring.assignments.submissions.download', ['assignment' => $assignment, 'submission' => $submission]) }}"
+                                                                class="text-xs font-semibold text-slate-600 hover:text-slate-900 min-h-[36px] inline-flex items-center">
+                                                                Unduh
+                                                            </a>
+                                                        </div>
+                                                    @elseif ($submission->content)
+                                                        <span class="text-xs text-slate-600 truncate block max-w-xs">{{ Str::limit($submission->content, 30) }}</span>
+                                                    @else
+                                                        <span class="text-xs text-slate-400">-</span>
+                                                    @endif
                                                 @else
                                                     <span class="text-xs text-slate-400">-</span>
                                                 @endif
@@ -95,6 +135,7 @@
                                         </tr>
                                 @empty
                                     <tr><td colspan="4" class="px-6 py-12 text-center text-slate-500">Tidak ada siswa pada kelas aktif. Pastikan tahun ajaran aktif telah ditetapkan.</td></tr>
+                                endforelse
                                 @endforelse
                             </tbody>
                         </table>
@@ -124,9 +165,21 @@
                                 <div class="flex items-center justify-between pt-1 text-xs text-slate-600">
                                     <span>Waktu: {{ $submission ? $submission->submitted_at?->format('d M Y, H:i') : '-' }}</span>
                                     @if ($submission)
-                                        <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-2">
                                             <span class="font-bold text-slate-900">Nilai: {{ $submission->score ?? '-' }}</span>
-                                            <a href="{{ asset('storage/'.$submission->file_path) }}" target="_blank" class="font-bold text-primary hover:text-blue-900 min-h-[44px] flex items-center px-1">Buka jawaban &rarr;</a>
+                                            @if ($submission->file_path)
+                                                <a href="{{ route('waka.monitoring.assignments.submissions.preview', ['assignment' => $assignment, 'submission' => $submission]) }}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="font-bold text-primary hover:text-blue-900 min-h-[36px] flex items-center px-1">
+                                                    Lihat
+                                                </a>
+                                                <span class="text-slate-300">|</span>
+                                                <a href="{{ route('waka.monitoring.assignments.submissions.download', ['assignment' => $assignment, 'submission' => $submission]) }}"
+                                                    class="font-bold text-slate-600 hover:text-slate-900 min-h-[36px] flex items-center px-1">
+                                                    Unduh
+                                                </a>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -139,4 +192,6 @@
             </div>
         </div>
     </div>
+
+    <x-file-preview-modal />
 </x-layouts.app>
