@@ -26,8 +26,15 @@ class EnsurePengawasAccess
             return redirect()->route('pengawas.select-school');
         }
 
-        if (!$request->user()->assignedSchools()->where('school_id', $schoolId)->exists()) {
+        $assignedSchool = $request->user()->assignedSchools()->where('school_id', $schoolId)->first();
+        if (!$assignedSchool) {
+            session()->forget('pengawas_school_id');
             abort(403, 'Anda tidak memiliki akses ke sekolah ini.');
+        }
+
+        if (!$assignedSchool->is_active) {
+            session()->forget('pengawas_school_id');
+            return redirect()->route('pengawas.select-school')->with('error', 'Akses Sekolah Tidak Tersedia: Sekolah ini sedang dalam status nonaktif.');
         }
 
         return $next($request);

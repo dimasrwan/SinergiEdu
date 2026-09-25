@@ -12,7 +12,7 @@
     <meta property="og:type" content="website">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-6">
             <!-- Brand Logo -->
             <a href="{{ route('landing') }}" class="flex items-center gap-3.5 group focus:outline-none focus:ring-2 focus:ring-[#123B82] rounded-xl p-1">
-                <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-9 sm:h-10 w-auto group-hover:scale-105 transition-transform duration-200">
+                <img src="{{ asset('images/logo.svg') }}?v={{ filemtime(public_path('images/logo.svg')) }}" alt="Logo SinergiEdu" class="h-9 sm:h-10 w-auto group-hover:scale-105 transition-transform duration-200">
                 <span class="text-2xl font-extrabold tracking-tight text-[#0B1733]">Sinergi<span class="text-[#119FEA]">Edu</span></span>
             </a>
 
@@ -66,34 +66,36 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
                     
                     <!-- HERO LEFT -->
-                    <div class="lg:col-span-6 space-y-8 text-center lg:text-left">
+                    <div class="lg:col-span-6 space-y-6 sm:space-y-7 text-center lg:text-left">
+                        <!-- 1. EYEBROW -->
                         <x-eyebrow variant="light">
                             PLATFORM MANAJEMEN SEKOLAH
                         </x-eyebrow>
 
+                        <!-- 2. HEADLINE UTAMA -->
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#0B1733] tracking-tight leading-[1.1]">
                             Monitoring Hasil Belajar Siswa <br class="hidden sm:block">
                             <span class="bg-gradient-to-r from-[#119FEA] to-[#123B82] bg-clip-text text-transparent">Lebih Sinergis &amp; Terintegrasi</span>
                         </h1>
 
-                        <p class="text-base sm:text-lg text-[#64748B] font-normal leading-relaxed max-w-xl mx-auto lg:mx-0">
-                            Platform terintegrasi untuk membantu sekolah mengelola pembelajaran, tugas, penilaian, monitoring, dan komunikasi antar pihak sekolah dalam satu sistem terpusat.
+                        <!-- 3. TAGLINE UTAMA -->
+                        <p class="text-xl sm:text-2xl font-bold tracking-tight text-[#123B82] leading-snug">
+                            Peduli Prosesnya, <span class="text-[#119FEA]">Tumbuh Hasilnya.</span>
                         </p>
 
-                        <!-- Micro Trust Text -->
-                        <div class="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-[#123B82] font-semibold tracking-wide uppercase">
-                            <span class="flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-[#119FEA]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                Multi-Tenant
-                            </span>
-                            <span class="flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-[#119FEA]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                Role-Based Access
-                            </span>
-                            <span class="flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-[#119FEA]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
-                                Private File Storage
-                            </span>
+                        <!-- 4. SUPPORTING DESCRIPTION -->
+                        <p class="text-base sm:text-lg text-[#64748B] font-normal leading-relaxed max-w-xl mx-auto lg:mx-0">
+                            Pemantauan dan Dukungan Kolaboratif untuk Hasil Belajar
+                        </p>
+
+                        <!-- 5. HUMAN BRAND STATEMENT (EDITORIAL QUOTE FOCAL POINT) -->
+                        <div class="pt-2 sm:pt-3">
+                            <div class="relative pl-4 sm:pl-5 border-l-3 border-[#119FEA] text-left max-w-xl mx-auto lg:mx-0">
+                                <blockquote class="text-lg sm:text-xl lg:text-2xl font-bold text-[#123B82] tracking-tight leading-[1.3]">
+                                    &ldquo;Dengan <span class="text-[#119FEA]">keikhlasan diri</span> membangun pendidikan,<br>
+                                    dengan <span class="text-[#119FEA]">kepedulian</span> menumbuhkan masa depan.&rdquo;
+                                </blockquote>
+                            </div>
                         </div>
                     </div>
 
@@ -233,24 +235,33 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="lg:col-span-7 bg-white border border-[#DCE8F3] rounded-3xl p-6 shadow-sm">
-                        <div class="bg-[#0B1733] text-white rounded-2xl p-5 space-y-4 font-sans">
+                    <div class="lg:col-span-7 bg-white border border-[#DCE8F3] rounded-3xl p-4 sm:p-6 shadow-sm">
+                        <div class="bg-[#0B1733] text-white rounded-2xl p-3.5 sm:p-5 space-y-3.5 sm:space-y-4 font-sans">
                             <div class="flex items-center justify-between pb-3 border-b border-[#123B82]/50 text-xs text-[#D7E4F3]">
-                                <span>Master Data Sekolah</span>
-                                <span class="text-[#119FEA] font-bold">TP 2026/2027 — Ganjil</span>
+                                <span class="font-medium truncate pr-2">Master Data Sekolah</span>
+                                <span class="text-[#119FEA] font-bold shrink-0">TP 2026/2027 — Ganjil</span>
                             </div>
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="p-3 bg-[#123B82]/40 rounded-xl border border-[#123B82]/50">
-                                    <span class="text-[10px] text-[#D7E4F3] uppercase font-bold">Mata Pelajaran</span>
-                                    <div class="text-lg font-bold text-white mt-1">14 Mapel</div>
+                            <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                                <div class="p-2 sm:p-3 bg-[#123B82]/40 rounded-xl border border-[#123B82]/50 flex flex-col justify-between">
+                                    <span class="text-[9px] sm:text-[10px] md:text-xs text-[#D7E4F3] uppercase font-bold tracking-tight leading-tight block">Mata Pelajaran</span>
+                                    <div class="mt-2 sm:mt-2.5">
+                                        <div class="text-base sm:text-xl font-extrabold text-white leading-none">14</div>
+                                        <div class="text-[10px] sm:text-xs text-[#D7E4F3] font-medium mt-0.5 sm:mt-1 leading-tight">Mapel</div>
+                                    </div>
                                 </div>
-                                <div class="p-3 bg-[#123B82]/40 rounded-xl border border-[#123B82]/50">
-                                    <span class="text-[10px] text-[#D7E4F3] uppercase font-bold">Rombongan Kelas</span>
-                                    <div class="text-lg font-bold text-white mt-1">12 Kelas</div>
+                                <div class="p-2 sm:p-3 bg-[#123B82]/40 rounded-xl border border-[#123B82]/50 flex flex-col justify-between">
+                                    <span class="text-[9px] sm:text-[10px] md:text-xs text-[#D7E4F3] uppercase font-bold tracking-tight leading-tight block">Rombongan Kelas</span>
+                                    <div class="mt-2 sm:mt-2.5">
+                                        <div class="text-base sm:text-xl font-extrabold text-white leading-none">12</div>
+                                        <div class="text-[10px] sm:text-xs text-[#D7E4F3] font-medium mt-0.5 sm:mt-1 leading-tight">Kelas</div>
+                                    </div>
                                 </div>
-                                <div class="p-3 bg-[#123B82]/40 rounded-xl border border-[#123B82]/50">
-                                    <span class="text-[10px] text-[#D7E4F3] uppercase font-bold">Guru Pengampu</span>
-                                    <div class="text-lg font-bold text-white mt-1">32 Pengajar</div>
+                                <div class="p-2 sm:p-3 bg-[#123B82]/40 rounded-xl border border-[#123B82]/50 flex flex-col justify-between">
+                                    <span class="text-[9px] sm:text-[10px] md:text-xs text-[#D7E4F3] uppercase font-bold tracking-tight leading-tight block">Guru Pengampu</span>
+                                    <div class="mt-2 sm:mt-2.5">
+                                        <div class="text-base sm:text-xl font-extrabold text-white leading-none">32</div>
+                                        <div class="text-[10px] sm:text-xs text-[#D7E4F3] font-medium mt-0.5 sm:mt-1 leading-tight">Pengajar</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -572,7 +583,7 @@
                 <!-- Col 1: Brand & Tagline -->
                 <div class="space-y-3">
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto">
+                        <img src="{{ asset('images/logo.svg') }}?v={{ filemtime(public_path('images/logo.svg')) }}" alt="Logo SinergiEdu" class="h-8 w-auto">
                         <span class="text-xl font-extrabold text-white">Sinergi<span class="text-[#119FEA]">Edu</span></span>
                     </div>
                     <p class="text-xs text-[#AFC4DA] leading-relaxed">

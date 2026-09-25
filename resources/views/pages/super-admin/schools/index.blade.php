@@ -155,11 +155,11 @@
                                                 </x-dropdown-link>
                                                 
                                                 @if($school->is_active)
-                                                    <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; deactivateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-slate-700 hover:bg-slate-100 focus:outline-none transition duration-150 ease-in-out">
+                                                    <button type="button" @click="$dispatch('open-school-status-modal', { school: { id: {{ $school->id }}, name: @js($school->name), is_active: true }, variant: 'deactivate' })" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-slate-700 hover:bg-slate-100 focus:outline-none transition duration-150 ease-in-out cursor-pointer">
                                                         Nonaktifkan
                                                     </button>
                                                 @else
-                                                    <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; activateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-green-700 hover:bg-green-50 focus:outline-none transition duration-150 ease-in-out">
+                                                    <button type="button" @click="$dispatch('open-school-status-modal', { school: { id: {{ $school->id }}, name: @js($school->name), is_active: false }, variant: 'activate' })" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-green-700 hover:bg-green-50 focus:outline-none transition duration-150 ease-in-out cursor-pointer">
                                                         Aktifkan
                                                     </button>
                                                 @endif
@@ -276,11 +276,11 @@
                                         </x-slot>
                                         <x-slot name="content">
                                             @if($school->is_active)
-                                                <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; deactivateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-slate-700 hover:bg-slate-100">
+                                                <button type="button" @click="$dispatch('open-school-status-modal', { school: { id: {{ $school->id }}, name: @js($school->name), is_active: true }, variant: 'deactivate' })" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-slate-700 hover:bg-slate-100 cursor-pointer">
                                                     Nonaktifkan
                                                 </button>
                                             @else
-                                                <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; activateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-green-700 hover:bg-green-50">
+                                                <button type="button" @click="$dispatch('open-school-status-modal', { school: { id: {{ $school->id }}, name: @js($school->name), is_active: false }, variant: 'activate' })" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-green-700 hover:bg-green-50 cursor-pointer">
                                                     Aktifkan
                                                 </button>
                                             @endif
@@ -312,63 +312,8 @@
             @endif
         </div>
 
-        <!-- Modal Nonaktifkan Sekolah -->
-        <div x-show="deactivateModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div x-show="deactivateModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/60" @click="deactivateModalOpen = false"></div>
-            <div x-show="deactivateModalOpen" x-transition class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl max-w-md w-full relative z-10 space-y-4">
-                <div class="flex items-center gap-3 text-amber-600">
-                    <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900">Nonaktifkan Sekolah?</h3>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Data sekolah <strong class="text-slate-900" x-text="selectedSchool?.name"></strong> tetap tersimpan di database. Sekolah yang dinonaktifkan tidak dapat diakses sebagai tenant aktif, namun dapat diaktifkan kembali sewaktu-waktu oleh Super Admin.
-                </p>
-                <form :action="'/super-admin/schools/' + selectedSchool?.id + '/toggle-status'" method="POST" class="pt-2 flex justify-end gap-3">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="is_active" value="0">
-                    <button type="button" @click="deactivateModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors">
-                        Nonaktifkan
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal Aktifkan Sekolah -->
-        <div x-show="activateModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
-            <div x-show="activateModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/60" @click="activateModalOpen = false"></div>
-            <div x-show="activateModalOpen" x-transition class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl max-w-md w-full relative z-10 space-y-4">
-                <div class="flex items-center gap-3 text-green-600">
-                    <div class="w-10 h-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center shrink-0">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-900">Aktifkan Kembali Sekolah?</h3>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Sekolah <strong class="text-slate-900" x-text="selectedSchool?.name"></strong> akan diaktifkan kembali dan pengguna tenant dapat mengakses platform secara normal.
-                </p>
-                <form :action="'/super-admin/schools/' + selectedSchool?.id + '/toggle-status'" method="POST" class="pt-2 flex justify-end gap-3">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="is_active" value="1">
-                    <button type="button" @click="activateModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl transition-colors">
-                        Aktifkan
-                    </button>
-                </form>
-            </div>
-        </div>
+        <!-- Reusable Custom School Status Confirmation Modal -->
+        <x-school-status-modal />
 
         <!-- Modal Hapus Permanen / Blocked Warning -->
         <div x-show="deleteModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
@@ -458,7 +403,7 @@
                                 Batal
                             </button>
                             <template x-if="selectedSchool?.is_active">
-                                <button type="button" @click="deleteModalOpen = false; deactivateModalOpen = true" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors">
+                                <button type="button" @click="deleteModalOpen = false; $dispatch('open-school-status-modal', { school: selectedSchool, variant: 'deactivate' })" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors cursor-pointer">
                                     Nonaktifkan Sekolah
                                 </button>
                             </template>

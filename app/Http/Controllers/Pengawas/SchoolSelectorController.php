@@ -36,10 +36,14 @@ class SchoolSelectorController extends Controller
         $user = Auth::user();
         
         // Pastikan sekolah memang di-assign ke pengawas ini
-        $isAssigned = $user->assignedSchools()->where('schools.id', $request->school_id)->exists();
+        $assignedSchool = $user->assignedSchools()->where('schools.id', $request->school_id)->first();
         
-        if (!$isAssigned) {
+        if (!$assignedSchool) {
             return back()->with('error', 'Anda tidak memiliki akses ke sekolah ini.');
+        }
+
+        if (!$assignedSchool->is_active) {
+            return back()->with('error', 'Akses Sekolah Tidak Tersedia: Sekolah ini sedang dalam status nonaktif.');
         }
 
         session(['pengawas_school_id' => $request->school_id]);

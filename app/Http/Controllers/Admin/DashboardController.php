@@ -66,10 +66,20 @@ class DashboardController extends Controller
         // 3. User Growth (Last 6 Months)
         $schoolId = app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()?->school_id;
         $sixMonthsAgo = Carbon::now()->subMonths(5)->startOfMonth();
+        
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'sqlite') {
+            $monthExpr = "CAST(strftime('%m', created_at) AS INTEGER) as month";
+            $yearExpr = "CAST(strftime('%Y', created_at) AS INTEGER) as year";
+        } else {
+            $monthExpr = "MONTH(created_at) as month";
+            $yearExpr = "YEAR(created_at) as year";
+        }
+
         $growthDataQuery = User::select(
                 DB::raw('COUNT(id) as total'), 
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('YEAR(created_at) as year')
+                DB::raw($monthExpr),
+                DB::raw($yearExpr)
             )
             ->where('created_at', '>=', $sixMonthsAgo);
         
