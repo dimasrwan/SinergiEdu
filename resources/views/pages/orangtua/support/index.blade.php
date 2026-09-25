@@ -29,9 +29,16 @@
                         @csrf
                         <input type="hidden" name="student_id" value="{{ $selectedStudentId }}">
 
+                        <!-- Pilihan Minggu Pembelajaran -->
+                        <div>
+                            <x-input-label for="week_number" value="Minggu Pembelajaran *" class="text-slate-700 font-bold mb-2 text-sm" />
+                            <x-select id="week_number" name="week_number" required :selected="old('week_number', 'Minggu 1')" :options="collect($weeks)->map(fn($w) => ['value' => $w, 'label' => $w])->toArray()" />
+                            <x-input-error :messages="$errors->get('week_number')" class="mt-2" />
+                        </div>
+
                         <!-- 1. Dukungan Orang Tua Minggu Ini -->
                         <div>
-                            <x-input-label for="support_description" value="Apa yang Anda lakukan untuk mendukung anak minggu ini?" class="text-slate-700 font-bold mb-2 text-sm" />
+                            <x-input-label for="support_description" value="Apa yang Anda lakukan untuk mendukung anak minggu ini? *" class="text-slate-700 font-bold mb-2 text-sm" />
                             <x-textarea id="support_description" name="support_description" rows="3" class="w-full bg-slate-50 border-slate-200 rounded-xl focus:ring-primary focus:border-primary" placeholder="Contoh: Mengajak anak berdiskusi soal materi, mendaftarkan les tambahan..." required>{{ old('support_description') }}</x-textarea>
                             <x-input-error :messages="$errors->get('support_description')" class="mt-2" />
                         </div>

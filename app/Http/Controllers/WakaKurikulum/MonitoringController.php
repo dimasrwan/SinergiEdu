@@ -494,7 +494,7 @@ class MonitoringController extends Controller
         if (!$studentId) return redirect()->back()->with('error', 'Siswa belum dipilih.');
 
         $activeYear = AcademicYear::where('is_active', true)->first();
-        $student = Student::with('user')->find($studentId);
+        $student = Student::with(['user', 'parent.user'])->find($studentId);
 
         if (!$student) return redirect()->back()->with('error', 'Siswa tidak ditemukan.');
 
@@ -505,48 +505,12 @@ class MonitoringController extends Controller
         });
         $grades = $query->get()->sortBy(fn ($a) => $a->learningMeeting->meeting_date);
 
-        $filename = "Laporan_Perkembangan_" . str_replace(' ', '_', $student->user->name) . "_" . date('Ymd_His') . ".csv";
+        $filename = "Laporan_Perkembangan_" . str_replace(' ', '_', $student->user->name) . "_" . date('Ymd_His') . ".pdf";
 
-        $headers = [
-            "Content-type"        => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
+        $pdf = PdfFacade::loadView('pages.waka.monitoring.pdf-student-progress', compact('student', 'grades', 'activeYear'));
+        $pdf->setPaper('a4', 'landscape');
 
-        $callback = function() use($student, $grades, $activeYear) {
-            $file = fopen('php://output', 'w');
-            fputs($file, "\xEF\xBB\xBF"); 
-
-            fputcsv($file, ['LAPORAN PERKEMBANGAN HASIL BELAJAR SISWA']);
-            fputcsv($file, ['Nama Siswa', $student->user->name]);
-            fputcsv($file, ['NIS', $student->nis ?? '-']);
-            fputcsv($file, ['Tahun Ajaran', $activeYear->year ?? '-']);
-            fputcsv($file, []);
-            fputcsv($file, [
-                'Mata Pelajaran', 'Pertemuan', 'Tanggal', 'Nilai Tes Awal', 'Nilai Tugas',
-                'Nilai Tes Akhir', 'Nilai Karakter', 'Nilai Hafalan',
-                'Rata-Rata', 'Catatan Guru'
-            ]);
-
-            foreach ($grades as $grade) {
-                fputcsv($file, [
-                    $grade->learningMeeting->subject->name ?? '-',
-                    $grade->learningMeeting->meeting_number ?? '-',
-                    $grade->learningMeeting->meeting_date?->format('d-m-Y') ?? '-',
-                    $grade->pre_test_score ?? '-',
-                    $grade->assignment_score ?? '-',
-                    $grade->post_test_score ?? '-',
-                    $grade->character_score ?? '-',
-                    $grade->memorization_score ?? '-',
-                    $grade->average_score,
-                    $grade->notes ?? '-'
-                ]);
-            }
-            fclose($file);
-        };
-        return response()->stream($callback, 200, $headers);
+        return $pdf->stream($filename);
     }
 
     public function exportPdfKlasikal(Request $request)

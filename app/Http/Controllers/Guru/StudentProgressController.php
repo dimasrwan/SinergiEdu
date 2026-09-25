@@ -231,6 +231,17 @@ class StudentProgressController extends Controller
             ->with(['learningMeeting'])
             ->get();
 
-        return view('pages.guru.student-progress.show', compact('student', 'subject', 'classroom', 'assignments', 'avgScore', 'reflections'));
+        $parentSupports = \App\Models\ParentSupport::where('student_id', $student->id)
+            ->where('academic_year_id', $activeAcademicYear->id)
+            ->when($activeSemester, function ($q) use ($activeSemester) {
+                $q->where(function ($q2) use ($activeSemester) {
+                    $q2->where('semester_id', $activeSemester->id)
+                       ->orWhereNull('semester_id');
+                });
+            })
+            ->latest()
+            ->get();
+
+        return view('pages.guru.student-progress.show', compact('student', 'subject', 'classroom', 'assignments', 'avgScore', 'reflections', 'parentSupports'));
     }
 }

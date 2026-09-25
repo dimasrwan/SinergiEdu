@@ -207,6 +207,64 @@
                             </div>
                         @endif
                     </section>
+
+                    <!-- Dukungan & Pesan Orang Tua -->
+                    <section>
+                        <div class="flex items-center justify-between mb-4 px-1">
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-[18px] font-bold text-slate-900">Dukungan Orang Tua</h2>
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">Rumah & Belajar</span>
+                            </div>
+                        </div>
+
+                        @if($parentSupports->isEmpty())
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl py-8 px-4 text-center">
+                                <h3 class="text-[14px] font-bold text-slate-900 mb-1">Belum Ada Catatan Dukungan</h3>
+                                <p class="text-[13px] text-slate-500">Orang tua Anda belum mencatat rencana dukungan minggu ini.</p>
+                            </div>
+                        @else
+                            <div class="space-y-3">
+                                @foreach($parentSupports as $support)
+                                    <div class="bg-emerald-50/40 border border-emerald-100 rounded-2xl p-4 sm:p-5 shadow-xs transition hover:shadow-sm">
+                                        <div class="flex items-center justify-between gap-2 border-b border-emerald-200/50 pb-2.5 mb-3">
+                                            <div class="flex items-center gap-2">
+                                                <span class="px-2.5 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-xs uppercase tracking-wider">
+                                                    {{ $support->week_number }}
+                                                </span>
+                                                <span class="text-xs text-slate-500 font-medium">
+                                                    {{ $support->academicYear->year ?? '' }} {{ $support->semester->name ?? '' }}
+                                                </span>
+                                            </div>
+                                            <span class="text-[11px] text-slate-400 font-medium">
+                                                {{ $support->created_at->format('d M Y') }}
+                                            </span>
+                                        </div>
+
+                                        <div class="space-y-2.5 text-xs">
+                                            <div>
+                                                <p class="font-bold text-emerald-950 uppercase tracking-wider text-[10px] mb-0.5">Dukungan di Rumah:</p>
+                                                <p class="text-slate-700 font-medium leading-relaxed break-words bg-white/80 p-2.5 rounded-xl border border-emerald-100">{{ $support->support_description }}</p>
+                                            </div>
+
+                                            @if($support->general_feedback)
+                                                <div>
+                                                    <p class="font-bold text-emerald-950 uppercase tracking-wider text-[10px] mb-0.5">Catatan Perkembangan:</p>
+                                                    <p class="text-slate-700 font-medium leading-relaxed break-words bg-white/80 p-2.5 rounded-xl border border-emerald-100 italic">{{ $support->general_feedback }}</p>
+                                                </div>
+                                            @endif
+
+                                            @if($support->action_plan)
+                                                <div>
+                                                    <p class="font-bold text-emerald-950 uppercase tracking-wider text-[10px] mb-0.5">Rencana Aksi:</p>
+                                                    <p class="text-slate-700 font-medium leading-relaxed break-words bg-white/80 p-2.5 rounded-xl border border-emerald-100">{{ $support->action_plan }}</p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </section>
                 </div>
             </div>
         @endif

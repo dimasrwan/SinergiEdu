@@ -245,5 +245,56 @@
             </div>
         @endif
     </div>
+
+    <!-- Section Dukungan Belajar Orang Tua -->
+    <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Catatan Dukungan Orang Tua di Rumah</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Informasi pendampingan, les tambahan, kendala, atau rencana aksi orang tua untuk menyelaraskan bimbingan di kelas.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100 shrink-0">Kolaborasi Rumah</span>
+        </div>
+
+        @if(isset($parentSupports) && $parentSupports->isNotEmpty())
+            <div class="space-y-3">
+                @foreach($parentSupports as $support)
+                    <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+                            <span class="px-2.5 py-0.5 rounded bg-primary text-white font-bold text-xs uppercase tracking-wider">
+                                {{ $support->week_number }}
+                            </span>
+                            <span class="text-xs text-slate-400 font-semibold">{{ $support->created_at->format('d M Y') }}</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white p-3 rounded-lg border border-slate-200/70">
+                                <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Dukungan di Rumah:</span>
+                                <p class="text-slate-800 font-medium leading-relaxed break-words">{{ $support->support_description }}</p>
+                            </div>
+
+                            @if($support->general_feedback)
+                                <div class="bg-white p-3 rounded-lg border border-slate-200/70">
+                                    <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Catatan Perkembangan:</span>
+                                    <p class="text-slate-800 font-medium leading-relaxed break-words italic">{{ $support->general_feedback }}</p>
+                                </div>
+                            @endif
+
+                            @if($support->action_plan)
+                                <div class="bg-white p-3 rounded-lg border border-slate-200/70">
+                                    <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px] block mb-1">Rencana Aksi Orang Tua:</span>
+                                    <p class="text-slate-800 font-medium leading-relaxed break-words">{{ $support->action_plan }}</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="p-6 text-center bg-slate-50 rounded-xl border border-slate-200/75">
+                <p class="text-sm text-slate-500 font-medium">Belum ada catatan dukungan belajar yang diisi oleh orang tua untuk siswa ini.</p>
+            </div>
+        @endif
+    </div>
 </div>
 </x-layouts.app>

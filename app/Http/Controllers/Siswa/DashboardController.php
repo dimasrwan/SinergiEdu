@@ -85,12 +85,19 @@ class DashboardController extends Controller
                 ->first();
         }
 
+        $parentSupports = \App\Models\ParentSupport::where('student_id', $student->id)
+            ->with(['academicYear', 'semester'])
+            ->latest()
+            ->take(3)
+            ->get();
+
         return view('pages.siswa.dashboard', compact(
             'classroom',
             'stats',
             'upcomingAssignments',
             'recentMaterials',
-            'recentFeedback'
+            'recentFeedback',
+            'parentSupports'
         ));
     }
 }
