@@ -13,7 +13,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+        .sidebar-mini-mode li.px-2.mt-6, .sidebar-mini-mode li.px-2.mt-4 { border-top: 1px solid #e2e8f0; margin-top: 12px !important; margin-bottom: 8px !important; padding: 0 !important; font-size: 0 !important; }
+        .sidebar-mini-mode li.px-2.mt-6 > div, .sidebar-mini-mode li.px-2.mt-4 > div { display: none !important; }
+    </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         (function() {
@@ -28,9 +32,23 @@
         })();
     </script>
 </head>
-<body class="min-h-full font-sans text-slate-800 antialiased tracking-tight" x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false">
+<body class="min-h-full font-sans text-slate-800 antialiased tracking-tight" 
+      x-data="{ 
+          sidebarOpen: false, 
+          sidebarMini: (localStorage.getItem('desktop_sidebar_mini') === 'true'),
+          toggleSidebar() {
+              if (window.innerWidth >= 1024) {
+                  this.sidebarMini = !this.sidebarMini;
+                  localStorage.setItem('desktop_sidebar_mini', this.sidebarMini);
+                  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 320);
+              } else {
+                  this.sidebarOpen = !this.sidebarOpen;
+              }
+          }
+      }" 
+      @keydown.escape.window="sidebarOpen = false">
     <div>
-        <!-- Off-canvas menu untuk mobile -->
+        <!-- Off-canvas Drawer Sidebar (Khusus Layar Mobile & Tablet < 1024px) -->
         <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-show="sidebarOpen" x-description="Off-canvas menu overlay" style="display: none;">
             <!-- Background overlay -->
             <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300 ease-linear-out" 
@@ -45,7 +63,7 @@
 
             <div class="fixed inset-0 flex" @click="sidebarOpen = false">
                 <!-- Sidebar panel -->
-                <div class="relative flex w-[80vw] max-w-[320px] flex-col bg-white border-r border-slate-200/80 shadow-2xl transition-transform duration-300 ease-in-out h-full"
+                <div class="relative flex w-[85vw] max-w-[300px] flex-col bg-white border-r border-slate-200/80 shadow-2xl transition-transform duration-300 ease-in-out h-full"
                      @click.stop
                      x-show="sidebarOpen"
                      x-transition:enter="transition ease-in-out duration-300 transform"
@@ -56,13 +74,13 @@
                      x-transition:leave-end="-translate-x-full">
                     
                     <!-- Header Drawer -->
-                    <div class="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 shrink-0">
+                    <div class="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 shrink-0 bg-slate-50/50">
                         <div class="flex items-center gap-2.5">
                             <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-7 w-auto">
                             <span class="text-lg font-bold text-slate-900 tracking-tight">SinergiEdu</span>
                         </div>
                         <button type="button" 
-                                class="h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20" 
+                                class="h-9 w-9 inline-flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20" 
                                 aria-label="Tutup menu navigasi"
                                 @click="sidebarOpen = false">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -73,7 +91,7 @@
                     
                     <!-- Navigation Content -->
                     <div class="flex-1 overflow-y-auto px-3 py-4">
-                        <nav class="space-y-1">
+                        <nav class="space-y-1" @click="if ($event.target.closest('a')) sidebarOpen = false">
                             @if(isset($sidebar) && trim((string)$sidebar) !== '')
                                 {{ $sidebar }}
                             @else
@@ -104,17 +122,41 @@
                             @endif
                         </nav>
                     </div>
+
+                    @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
+                    <div class="p-3 border-t border-slate-100 bg-slate-50/50">
+                        <p class="text-xs font-bold text-slate-700">SinergiEdu</p>
+                        <p class="text-[11px] font-medium text-slate-400 mt-0.5">
+                            {{ strtolower(Auth::user()->role->name ?? '') === 'super_admin' ? 'Platform Console' : 'Admin Workspace' }}
+                        </p>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
 
-        <!-- Static sidebar untuk desktop -->
-        <div class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-[230px] lg:flex-col">
-            <div class="flex flex-grow flex-col overflow-y-auto border-r border-slate-200 bg-white px-4 pb-1">
-                <div class="flex h-[60px] flex-shrink-0 items-center gap-3">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto">
-                    <span class="text-xl font-bold text-slate-900 tracking-tight">SinergiEdu</span>
+        <!-- Desktop Sidebar (Full 230px vs Mini 68px) -->
+        <aside class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:flex-col transition-all duration-300 ease-in-out border-r border-slate-200 bg-white"
+               :class="sidebarMini ? 'lg:w-[68px] sidebar-mini-mode' : 'lg:w-[230px]'"
+               x-cloak>
+            <div class="flex flex-grow flex-col overflow-y-auto overflow-x-hidden pb-4 transition-all duration-300"
+                 :class="sidebarMini ? 'px-2' : 'px-4'">
+                <!-- Header Logo -->
+                <div class="flex h-[60px] flex-shrink-0 items-center gap-3 transition-all duration-300"
+                     :class="sidebarMini ? 'justify-center px-0' : 'px-1'">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0" :title="sidebarMini ? 'SinergiEdu' : ''">
+                        <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto shrink-0">
+                        <span x-show="!sidebarMini" 
+                              x-transition:enter="transition ease-out duration-200"
+                              x-transition:enter-start="opacity-0 translate-x-1"
+                              x-transition:enter-end="opacity-100 translate-x-0"
+                              class="text-xl font-bold text-slate-900 tracking-tight truncate">
+                            SinergiEdu
+                        </span>
+                    </a>
                 </div>
+
+                <!-- Navigation List -->
                 <nav class="mt-4 flex flex-1 flex-col">
                     <ul role="list" class="flex flex-1 flex-col gap-y-2">
                         <li>
@@ -145,12 +187,13 @@
                                 @endif
                             </ul>
                         </li>
+
                         @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
-                        <li class="mt-auto pt-4 pb-0">
+                        <li class="mt-auto pt-4 pb-0" x-show="!sidebarMini" x-transition>
                             <!-- Admin Subtle Footer -->
                             <div class="border-t border-slate-200/60 pt-3">
-                                <p class="text-xs font-bold text-slate-700">SinergiEdu</p>
-                                <p class="text-[11px] font-medium text-slate-400 mt-0.5">
+                                <p class="text-xs font-bold text-slate-700 truncate">SinergiEdu</p>
+                                <p class="text-[11px] font-medium text-slate-400 mt-0.5 truncate">
                                     {{ strtolower(Auth::user()->role->name ?? '') === 'super_admin' ? 'Platform Console' : 'Admin Workspace' }}
                                 </p>
                             </div>
@@ -159,26 +202,33 @@
                     </ul>
                 </nav>
             </div>
-        </div>
+        </aside>
 
-        <!-- Main column -->
-        <div class="lg:pl-[230px] flex flex-col min-h-screen min-w-0 w-full overflow-x-clip">
+        <!-- Main column (Padding otomatis menyesuaikan: Full 230px vs Mini 68px) -->
+        <div class="flex flex-col min-h-screen min-w-0 w-full overflow-x-clip transition-all duration-300 ease-in-out"
+             :class="sidebarMini ? 'lg:pl-[68px]' : 'lg:pl-[230px]'">
             <!-- Navbar -->
-            <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-slate-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
-                <button type="button" class="-m-2.5 p-2.5 text-slate-700 lg:hidden" @click="sidebarOpen = true">
-                    <span class="sr-only">Buka sidebar</span>
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 shadow-2xs">
+                <!-- Hamburger Button (Mobile opens Drawer, Desktop toggles Mini Sidebar) -->
+                <button type="button" 
+                        class="inline-flex items-center justify-center h-10 w-10 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shrink-0 cursor-pointer" 
+                        @click="toggleSidebar()"
+                        :title="sidebarMini ? 'Perlebar Sidebar' : 'Kecilkan Sidebar'"
+                        aria-label="Toggle menu navigasi sidebar">
+                    <span class="sr-only">Toggle sidebar</span>
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
                 </button>
 
-                <div class="h-6 w-px bg-slate-200 lg:hidden" aria-hidden="true"></div>
+                <div class="h-6 w-px bg-slate-200 shrink-0" aria-hidden="true"></div>
 
                 <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 items-center justify-between min-w-0">
                     <div class="flex items-center gap-x-3 min-w-0 flex-1">
-                        <!-- Mobile Brand Logo -->
+                        <!-- Mobile Brand Logo (Hanya tampil di mobile) -->
                         <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto shrink-0 lg:hidden object-contain">
                         <h2 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-6 min-w-[9rem] flex-1 truncate">{{ $title ?? 'Dashboard' }}</h2>
+                        
                         @if(strtolower(Auth::user()->role->name ?? '') === 'pengawas')
                             @php
                                 $activePengawasSchoolId = session('pengawas_school_id');
@@ -225,7 +275,8 @@
                             </div>
                         @endif
                     </div>
-<div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
+
+                    <div class="flex items-center gap-x-4 lg:gap-x-6 shrink-0">
                         <div class="hidden md:block relative" x-data="globalSearch()" @click.away="close()">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                 <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -263,7 +314,7 @@
 
                         <!-- Dropdown Menu / Profile -->
                         <div class="relative shrink-0" x-data="{ open: false }">
-                            <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200" @click="open = !open">
+                            <button type="button" class="-m-1.5 flex items-center p-1.5 gap-x-3 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 cursor-pointer" @click="open = !open">
                                 <span class="sr-only">Buka menu user</span>
                                 <x-avatar :user="Auth::user()" size="h-8 w-8" textSize="text-sm" />
                                 <div class="hidden xl:flex xl:items-center">
