@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
+use App\Services\TenantService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class SubjectController extends Controller
 {
@@ -45,12 +47,24 @@ class SubjectController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', \App\Models\Subject::class);
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:subjects,name',
-            'code' => 'required|string|max:50|unique:subjects,code',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('subjects', 'name')->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('subjects', 'code')->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
         ], [
-            'name.unique' => 'Nama mata pelajaran ini sudah terdaftar.',
-            'code.unique' => 'Kode mata pelajaran ini sudah terdaftar.',
+            'name.unique' => 'Nama mata pelajaran ini sudah terdaftar di sekolah Anda.',
+            'code.unique' => 'Kode mata pelajaran ini sudah terdaftar di sekolah Anda.',
         ]);
 
         Subject::create($validated);
@@ -97,12 +111,24 @@ class SubjectController extends Controller
     public function update(Request $request, Subject $subject)
     {
         Gate::authorize('update', $subject);
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:subjects,name,' . $subject->id,
-            'code' => 'required|string|max:50|unique:subjects,code,' . $subject->id,
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('subjects', 'name')->ignore($subject->id)->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
+            'code' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('subjects', 'code')->ignore($subject->id)->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
         ], [
-            'name.unique' => 'Nama mata pelajaran ini sudah terdaftar.',
-            'code.unique' => 'Kode mata pelajaran ini sudah terdaftar.',
+            'name.unique' => 'Nama mata pelajaran ini sudah terdaftar di sekolah Anda.',
+            'code.unique' => 'Kode mata pelajaran ini sudah terdaftar di sekolah Anda.',
         ]);
 
         $subject->update($validated);

@@ -8,26 +8,22 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Siswa\SubmissionRequest;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
-use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class AssignmentController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         $assignments = collect();
         if ($classroom) {
             $assignments = Assignment::where('class_id', $classroom->id)
-                ->with(['teacher.user', 'subject', 'submissions' => function ($q) use ($student) {
+                ->with(['teacher.user', 'subject', 'learningMeeting', 'material', 'submissions' => function ($q) use ($student) {
                     $q->where('student_id', $student->id);
                 }])
                 ->latest()
@@ -39,12 +35,12 @@ class AssignmentController extends Controller
 
     public function show(Assignment $assignment): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
 
-        $assignment->load(['teacher.user', 'subject']);
+        $assignment->load(['teacher.user', 'subject', 'learningMeeting', 'material']);
         
         $submission = AssignmentSubmission::where('assignment_id', $assignment->id)
             ->where('student_id', $student->id)
@@ -55,7 +51,7 @@ class AssignmentController extends Controller
 
     public function submit(SubmissionRequest $request, Assignment $assignment): RedirectResponse
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
@@ -87,9 +83,31 @@ class AssignmentController extends Controller
         return back()->with('success', 'Jawaban tugas Anda berhasil dikumpulkan.');
     }
 
+    public function preview(Assignment $assignment)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $path = $assignment->attachment_path;
+        
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File lampiran tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
     public function download(Assignment $assignment)
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
@@ -103,9 +121,35 @@ class AssignmentController extends Controller
         return \Illuminate\Support\Facades\Storage::disk('local')->download($path);
     }
 
+    public function previewSubmission(Assignment $assignment)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');
+        
+        $submission = AssignmentSubmission::where('assignment_id', $assignment->id)
+            ->where('student_id', $student->id)
+            ->firstOrFail();
+            
+        $path = $submission->file_path;
+        
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File jawaban Anda tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($path) ?? 'application/pdf';
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
     public function downloadSubmission(Assignment $assignment)
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         abort_if(!$classroom || $assignment->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke tugas ini.');

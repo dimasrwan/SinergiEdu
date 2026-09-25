@@ -55,6 +55,14 @@ class Teacher extends Model
         return $this->hasMany(Classroom::class, 'homeroom_teacher_id');
     }
 
+    /**
+     * Relasi ke Penugasan Guru (teacher_subjects).
+     */
+    public function teacherSubjects(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TeacherSubject::class);
+    }
+
 
     public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

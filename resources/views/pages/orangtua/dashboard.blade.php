@@ -1,258 +1,229 @@
 <x-layouts.app>
     <x-slot:title>Portal Orang Tua</x-slot:title>
 
-    <div class="w-full space-y-8">
+    <div class="w-full space-y-6">
         
-        <!-- Child Selector (Jika Anak > 1) -->
-        @if($children->count() > 1)
-        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-center gap-4">
-            <span class="text-sm font-semibold text-slate-700">Pilih Anak:</span>
-            <form action="{{ route('orangtua.dashboard') }}" method="GET" class="shrink-0 flex items-center w-full sm:w-auto">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl flex items-center p-1 relative shadow-sm overflow-hidden w-full sm:w-auto">
-                    <select name="student_id" onchange="this.form.submit()" class="bg-transparent border-none text-sm font-semibold text-slate-700 focus:ring-0 pl-3 pr-8 py-1.5 cursor-pointer outline-none appearance-none z-10 w-full sm:w-48">
-                        @foreach($children as $child)
-                            <option value="{{ $child->id }}" {{ (int)$selectedStudentId === $child->id ? 'selected' : '' }}>
-                                {{ $child->user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
-                </div>
-            </form>
-        </div>
-        @endif
-
+        <!-- Child Profile Snapshot Banner & Selector -->
         @if(!$selectedStudent)
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto">
-            <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+        <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto shadow-2xs">
+            <div class="h-16 w-16 bg-blue-50 border border-blue-100 text-primary rounded-full flex items-center justify-center mb-4 shadow-2xs">
                 <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                 </svg>
             </div>
             <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Anak Terdaftar</h3>
-            <p class="text-sm text-slate-500">Anda belum memiliki anak yang terdaftar pada sistem sekolah ini.</p>
+            <p class="text-sm text-slate-500 font-medium">Anda belum memiliki anak yang terdaftar pada sistem sekolah ini.</p>
         </div>
         @else
 
-        <!-- Student Profile Snapshot Banner -->
-        <div class="bg-primary rounded-3xl p-8 text-white shadow-xl shadow-primary/20 relative overflow-hidden">
-            <!-- Decorative Elements -->
-            <div class="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-            
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="flex items-center gap-6">
-                    <div class="w-20 h-20 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center backdrop-blur-sm overflow-hidden shrink-0">
-                        <svg class="h-12 w-12 text-blue-100" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        <!-- 1. Child Context / Profile Header (With SinergiEdu Blue Accent) -->
+        <div class="bg-gradient-to-r from-blue-50/70 via-blue-50/30 to-white border border-blue-100 border-l-4 border-l-primary rounded-2xl px-4 sm:px-5 py-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
+            <!-- Profile Info -->
+            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-xs shrink-0 font-bold text-base">
+                    {{ strtoupper(substr($selectedStudent->user->name, 0, 2)) }}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-[16px] sm:text-[17px] font-bold text-slate-900 leading-tight truncate" title="{{ $selectedStudent->user->name }}">{{ $selectedStudent->user->name }}</h1>
+                    <p class="text-slate-500 text-[12px] font-medium mt-0.5 truncate">
+                        @if($classroom)
+                            <span class="inline-flex items-center gap-1 text-primary font-bold">Kelas {{ $classroom->name }}</span>
+                        @else
+                            Belum Ada Kelas Aktif
+                        @endif
+                    </p>
+                </div>
+            </div>
+
+            <!-- Selector & Periode -->
+            <div class="flex flex-col sm:items-end gap-1.5 w-full sm:w-auto border-t sm:border-t-0 border-slate-100 pt-3 sm:pt-0 shrink-0">
+                @if($children->count() > 1)
+                <form action="{{ route('orangtua.dashboard') }}" method="GET" class="w-full sm:w-56">
+                    <x-select name="student_id" onchange="this.form.submit()" :selected="$selectedStudentId" :options="$children->map(fn($c) => ['value' => $c->id, 'label' => $c->user->name])->toArray()" />
+                </form>
+                @endif
+                
+                <div class="inline-flex items-center gap-1.5 text-primary text-[11px] font-bold tracking-wide sm:self-end">
+                    @if($activeYear && $activeSemester)
+                        <svg class="w-3.5 h-3.5 text-primary shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                         </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold tracking-tight mb-1">{{ $selectedStudent->user->name }} (Anak Anda)</h1>
-                        <p class="text-slate-300 text-sm mb-3">
-                            @if($classroom)
-                                Kelas {{ $classroom->name }}
-                            @else
-                                Belum Ada Kelas Aktif
-                            @endif
-                            @if($selectedStudent->nisn)
-                                • NISN: {{ $selectedStudent->nisn }}
-                            @elseif($selectedStudent->nis)
-                                • NIS: {{ $selectedStudent->nis }}
-                            @endif
-                        </p>
-                        <div class="flex items-center gap-2 text-xs font-medium bg-white/10 text-white border border-white/20 rounded-full px-3 py-1 w-max">
-                            @if($activeYear && $activeSemester)
-                                TA {{ $activeYear->year }} - {{ $activeSemester->name }}
-                            @else
-                                Tidak Ada Periode Aktif
-                            @endif
-                        </div>
-                    </div>
+                        <span class="truncate">{{ $activeYear->year }} &bull; {{ $activeSemester->name }}</span>
+                    @else
+                        Tidak Ada Periode
+                    @endif
                 </div>
             </div>
         </div>
 
         @if(!$classroom || !$activeYear || !$activeSemester)
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto">
-                <div class="h-16 w-16 bg-slate-200 text-slate-400 rounded-full flex items-center justify-center mb-4">
+            <div class="bg-slate-50 border border-slate-200/75 rounded-2xl py-12 px-6 flex flex-col items-center text-center max-w-2xl mx-auto shadow-2xs">
+                <div class="h-16 w-16 bg-blue-50 border border-blue-100 text-primary rounded-full flex items-center justify-center mb-4 shadow-2xs">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
                 <h3 class="text-lg font-bold text-slate-900 mb-2">Belum Ada Kelas Aktif</h3>
-                <p class="text-sm text-slate-500">Anak Anda belum memiliki penempatan kelas pada periode akademik saat ini.</p>
+                <p class="text-sm text-slate-500 font-medium">Anak Anda belum memiliki penempatan kelas pada periode akademik saat ini.</p>
             </div>
         @else
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- 2. Main Grid (70% Left / 30% Right with 24px gap) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- Left Column: Vitals & Activity -->
-            <div class="lg:col-span-2 space-y-8">
+            <!-- LEFT / PRIMARY CONTENT (≈70% -> col-span-8) -->
+            <div class="lg:col-span-8 space-y-6 min-w-0">
                 
-                <!-- Academic Vitals (Simple Trends) -->
+                <!-- 3. Ringkasan Perkembangan (Exactly 2 Cards with Blue Value Accent) -->
                 <section>
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">Ringkasan Akademik</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-card padding="md" class="relative overflow-hidden">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Rata-rata Nilai</p>
-                                    <h3 class="text-3xl font-bold {{ $stats['rata_nilai'] !== null ? 'text-slate-900' : 'text-slate-400' }}">
-                                        {{ $stats['rata_nilai'] !== null ? $stats['rata_nilai'] : 'N/A' }}
-                                    </h3>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-1 h-3.5 bg-primary rounded-full"></span>
+                        <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider">Ringkasan Perkembangan</h2>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Card 1: Rata-Rata Nilai -->
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between h-full hover:border-blue-200/80 transition-colors">
+                            <div>
+                                <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Rata-Rata Nilai</h3>
+                                @if($stats['rata_nilai'] !== null)
+                                    <div class="text-3xl font-bold text-primary mb-1 leading-none">{{ $stats['rata_nilai'] }}</div>
+                                @else
+                                    <div class="text-2xl font-bold text-slate-400 mb-1 leading-none">N/A</div>
+                                @endif
+                            </div>
+                            <p class="text-[12px] text-slate-500 font-medium mt-3 pt-3 border-t border-slate-100">Dari seluruh mata pelajaran aktif.</p>
+                        </div>
+
+                        <!-- Card 2: Penyelesaian Tugas -->
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between h-full hover:border-blue-200/80 transition-colors">
+                            <div>
+                                <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Penyelesaian Tugas</h3>
+                                <div class="flex items-baseline gap-1 mb-1 leading-none">
+                                    <span class="text-3xl font-bold text-primary">{{ $stats['tugas_selesai'] }}</span>
+                                    <span class="text-lg font-semibold text-slate-400">/ {{ $stats['tugas_selesai'] + $stats['tugas_aktif'] + $stats['menunggu_penilaian'] }}</span>
                                 </div>
                             </div>
-                            <p class="text-sm text-slate-600">
-                                @if($stats['rata_nilai'] !== null)
-                                    Rata-rata nilai untuk seluruh mata pelajaran semester ini.
+                            <p class="text-[12px] text-slate-500 font-medium mt-3 pt-3 border-t border-slate-100">
+                                @if($stats['tugas_aktif'] > 0)
+                                    <span class="text-amber-600 font-semibold">{{ $stats['tugas_aktif'] }} tugas</span> belum dikerjakan.
                                 @else
-                                    Belum ada nilai yang diinputkan guru semester ini.
+                                    Semua tugas telah diselesaikan.
                                 @endif
                             </p>
-                            <a href="{{ route('orangtua.grades.index', ['student_id' => $selectedStudentId]) }}" class="mt-4 inline-block text-sm font-semibold text-accent hover:underline">Lihat Rincian Nilai &rarr;</a>
-                        </x-card>
-
-                        <x-card padding="md">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Penyelesaian Tugas</p>
-                                    <h3 class="text-3xl font-bold text-slate-900">{{ $stats['tugas_selesai'] }}<span class="text-lg text-slate-400">/{{ $stats['tugas_selesai'] + $stats['tugas_aktif'] + $stats['menunggu_penilaian'] }}</span></h3>
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-600">Ada <span class="font-bold text-slate-900">{{ $stats['tugas_aktif'] }} tugas</span> yang belum dikerjakan. <span class="font-bold text-slate-900">{{ $stats['menunggu_penilaian'] }} tugas</span> sedang menunggu penilaian.</p>
-                            <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="mt-4 inline-block text-sm font-semibold text-accent hover:underline">Lihat Daftar Tugas &rarr;</a>
-                        </x-card>
+                        </div>
                     </div>
                 </section>
 
-                <!-- Tugas Terdekat -->
+                <!-- 5. Tugas Terdekat -->
                 <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-slate-900">Tugas Terdekat</h2>
-                        <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="text-sm font-medium text-accent hover:text-accent-hover">Lihat Semua</a>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <span class="w-1 h-3.5 bg-primary rounded-full shrink-0"></span>
+                            <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider truncate">Tugas Terdekat</h2>
+                        </div>
+                        <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="text-[12px] font-bold text-primary hover:text-blue-700 transition shrink-0">Lihat Semua &rarr;</a>
                     </div>
                     
                     @if($upcomingAssignments->isEmpty())
-                        <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center shadow-sm">
-                            <p class="text-sm text-slate-500">Belum ada tugas yang diberikan oleh guru.</p>
+                        <div class="text-center py-8 bg-white rounded-2xl border border-slate-200/75 shadow-2xs">
+                            <p class="text-[12px] text-slate-500 font-medium">Saat ini tidak ada tugas mendatang.</p>
                         </div>
                     @else
-                        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                            <ul class="divide-y divide-slate-100">
-                                @foreach($upcomingAssignments as $assignment)
-                                    @php
-                                        $submission = $assignment->submissions->first();
-                                        $statusText = 'Belum Dikerjakan';
-                                        $statusClass = 'bg-slate-100 text-slate-600';
-                                        
-                                        if ($submission) {
-                                            if ($submission->status === 'submitted' || $submission->status === 'late') {
-                                                $statusText = 'Menunggu Penilaian';
-                                                $statusClass = 'bg-amber-100 text-amber-700';
-                                            } elseif ($submission->status === 'graded') {
-                                                $statusText = 'Dinilai: ' . $submission->score;
-                                                $statusClass = 'bg-green-100 text-green-700';
-                                            }
-                                        } elseif ($assignment->due_date && $assignment->due_date < now()) {
-                                            $statusText = 'Terlambat';
-                                            $statusClass = 'bg-red-100 text-red-700';
+                        <div class="space-y-3">
+                            @foreach($upcomingAssignments->take(3) as $assignment)
+                                @php
+                                    $submission = $assignment->submissions->first();
+                                    $statusText = 'Belum Dikerjakan';
+                                    $statusClass = 'text-slate-600 bg-slate-50 border-slate-200/60';
+                                    
+                                    if ($submission) {
+                                        if ($submission->status === 'submitted' || $submission->status === 'late') {
+                                            $statusText = 'Menunggu Penilaian';
+                                            $statusClass = 'text-blue-700 bg-blue-50 border-blue-200/50';
+                                        } elseif ($submission->status === 'graded') {
+                                            $statusText = 'Dinilai: ' . $submission->score;
+                                            $statusClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/50';
                                         }
-                                    @endphp
-                                    <li class="p-4 sm:p-5 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div>
-                                            <span class="inline-block px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 text-primary uppercase tracking-wider mb-2">
-                                                {{ $assignment->subject->name ?? '-' }}
-                                            </span>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">{{ $assignment->title }}</h4>
+                                    } elseif ($assignment->due_date && $assignment->due_date < now()) {
+                                        $statusText = 'Terlambat';
+                                        $statusClass = 'text-red-700 bg-red-50 border-red-200/50';
+                                    }
+                                @endphp
+                                <a href="{{ route('orangtua.assignments.index', ['student_id' => $selectedStudentId]) }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200/75 rounded-2xl p-4 shadow-2xs hover:border-blue-300 hover:bg-blue-50/20 transition group min-w-0">
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="font-bold text-slate-900 text-[14px] group-hover:text-primary transition-colors truncate mb-1" title="{{ $assignment->title }}">{{ $assignment->title }}</h4>
+                                        <p class="text-[12px] text-slate-500 font-medium flex flex-wrap items-center gap-1.5">
+                                            <span class="font-bold text-primary uppercase tracking-wide shrink-0">{{ $assignment->subject->name ?? '-' }}</span>
                                             @if($assignment->due_date)
-                                                <p class="text-xs text-slate-500">Tenggat: {{ \Carbon\Carbon::parse($assignment->due_date)->format('d M Y, H:i') }}</p>
+                                                <span class="text-slate-300 shrink-0">&bull;</span>
+                                                <span class="truncate">Deadline: {{ \Carbon\Carbon::parse($assignment->due_date)->format('d M Y') }}</span>
                                             @endif
-                                        </div>
-                                        <div class="shrink-0">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium {{ $statusClass }}">
-                                                {{ $statusText }}
-                                            </span>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                </section>
-                
-                <!-- Nilai Terbaru -->
-                <section>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-slate-900">Nilai Terbaru</h2>
-                        <a href="{{ route('orangtua.grades.index', ['student_id' => $selectedStudentId]) }}" class="text-sm font-medium text-accent hover:text-accent-hover">Lihat Semua</a>
-                    </div>
-                    
-                    @if($recentGrades->isEmpty())
-                        <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center shadow-sm">
-                            <p class="text-sm text-slate-500">Belum ada nilai yang dipublikasikan oleh guru.</p>
-                        </div>
-                    @else
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            @foreach($recentGrades as $grade)
-                                @php $avg = $grade->average_score; @endphp
-                                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col items-center justify-center text-center">
-                                    <span class="text-xs font-semibold text-slate-500 mb-2 truncate w-full">{{ $grade->subject->name ?? '-' }}</span>
-                                    <div class="flex items-center justify-center h-12 w-12 rounded-full {{ $avg >= 80 ? 'bg-emerald-50 text-emerald-600' : ($avg >= 60 ? 'bg-amber-50 text-amber-600' : ($avg > 0 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-500')) }}">
-                                        <span class="text-lg font-bold">{{ $avg > 0 ? $avg : '-' }}</span>
+                                        </p>
                                     </div>
-                                </div>
+                                    <div class="self-start sm:self-center shrink-0 inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border {{ $statusClass }}">
+                                        {{ $statusText }}
+                                    </div>
+                                </a>
                             @endforeach
                         </div>
                     @endif
                 </section>
-                
             </div>
 
-            <!-- Right Column: Teacher Communication -->
-            <div class="col-span-1 space-y-8">
+            <!-- RIGHT / SUPPORTING CONTENT (≈30% -> col-span-4) -->
+            <div class="lg:col-span-4 space-y-6 min-w-0">
                 
-                <!-- Feedback Terbaru -->
+                <!-- 4. Catatan Guru -->
                 <section>
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">Catatan & Masukan Guru</h2>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-1 h-3.5 bg-primary rounded-full shrink-0"></span>
+                        <h2 class="text-[12px] font-bold text-slate-700 uppercase tracking-wider">Catatan Guru</h2>
+                    </div>
                     
                     @if($recentFeedbacks->isEmpty())
-                        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm text-center">
-                            <p class="text-sm text-slate-500">Belum ada feedback dari guru.</p>
+                        <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs text-center py-6">
+                            <p class="text-[12px] text-slate-500 font-medium">Belum ada catatan atau masukan.</p>
                         </div>
                     @else
-                        <div class="space-y-4">
-                            @foreach($recentFeedbacks as $feedback)
-                                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm relative">
-                                    <div class="flex items-center gap-3 mb-4 border-b border-slate-100 pb-4">
-                                        <div class="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-500 shrink-0">
-                                            {{ strtoupper(substr($feedback->teacher->user->name ?? 'G', 0, 2)) }}
+                        <div>
+                            @foreach($recentFeedbacks->take(1) as $feedback)
+                                <div class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs flex flex-col justify-between min-w-0">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-3 mb-3 min-w-0">
+                                            <div class="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-[11px] font-bold text-primary shrink-0">
+                                                {{ strtoupper(substr($feedback->teacher->user->name ?? 'G', 0, 2)) }}
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="font-bold text-slate-900 text-[13px] leading-tight truncate">{{ $feedback->teacher->user->name ?? '-' }}</h4>
+                                                <p class="text-[11px] font-semibold text-primary/80 truncate">{{ $feedback->subject->name ?? 'Wali Kelas' }}</p>
+                                            </div>
                                         </div>
-                                        <div class="min-w-0">
-                                            <h4 class="font-bold text-slate-900 text-sm truncate">{{ $feedback->teacher->user->name ?? '-' }}</h4>
-                                            <p class="text-xs text-slate-500 truncate">{{ $feedback->subject->name ?? 'Wali Kelas' }}</p>
-                                        </div>
+                                        <p class="text-[13px] text-slate-700 italic line-clamp-4 leading-relaxed font-medium mb-3 break-words">"{{ $feedback->message }}"</p>
                                     </div>
-                                    <p class="text-sm text-slate-700 italic mb-4 line-clamp-3">"{{ $feedback->message }}"</p>
-                                    
-                                    <p class="text-xs text-slate-400">{{ $feedback->created_at->diffForHumans() }}</p>
+                                    <div class="text-[11px] font-medium text-slate-400 border-t border-slate-100 pt-2.5">
+                                        {{ $feedback->created_at->diffForHumans() }}
+                                    </div>
                                 </div>
                             @endforeach
-                            <a href="{{ route('orangtua.feedbacks.index', ['student_id' => $selectedStudentId]) }}" class="block text-center text-sm font-semibold text-accent hover:underline mt-2">Lihat Semua Feedback</a>
+                            <div class="mt-3">
+                                <a href="{{ route('orangtua.feedbacks.index', ['student_id' => $selectedStudentId]) }}" class="inline-flex items-center text-[12px] font-bold text-primary hover:text-blue-700 transition">
+                                    Lihat Semua Feedback &rarr;
+                                </a>
+                            </div>
                         </div>
                     @endif
                 </section>
 
-                <section>
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
-                        <div class="bg-white p-3 rounded-xl inline-block shadow-sm mb-3 text-accent">
-                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
-                        </div>
-                        <h3 class="font-bold text-slate-900 mb-2">Dukungan Belajar</h3>
-                        <p class="text-sm text-slate-600 mb-4">Berikan umpan balik atau rencana aksi Anda terhadap perkembangan anak.</p>
-                        <a href="{{ route('orangtua.support.index', ['student_id' => $selectedStudentId]) }}" class="text-sm font-semibold text-accent hover:underline">Tulis Dukungan</a>
+                <!-- 6. Dukungan Belajar Anak -->
+                <section class="bg-white border border-slate-200/75 rounded-2xl p-5 shadow-2xs min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-1 h-3 bg-primary rounded-full shrink-0"></span>
+                        <h3 class="text-[12px] font-bold text-slate-900">Dukungan Belajar Anak</h3>
                     </div>
+                    <p class="text-[12px] text-slate-500 font-medium mb-3 leading-relaxed">Catat dukungan yang Anda berikan minggu ini.</p>
+                    <a href="{{ route('orangtua.support.index', ['student_id' => $selectedStudentId]) }}" class="inline-flex items-center text-[12px] font-bold text-primary hover:text-blue-700 transition">
+                        Tulis Dukungan &rarr;
+                    </a>
                 </section>
 
             </div>

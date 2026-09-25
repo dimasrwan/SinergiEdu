@@ -10,7 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active'])]
+use Illuminate\Support\Facades\Storage;
+
+#[Fillable(['name', 'email', 'password', 'role_id', 'school_id', 'is_active', 'profile_photo_path'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -28,6 +30,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relasi ke Preferences.
+     */
+    public function preferences(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -41,25 +51,55 @@ class User extends Authenticatable
     }
 
 
+    public function profilePhotoUrl(): ?string
+    {
+        if ($this->profile_photo_path && Storage::disk('public')->exists($this->profile_photo_path)) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+        return null;
+    }
+
     public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(\App\Models\School::class);
     }
 
+    /**
+     * Relasi many-to-many ke sekolah yang di-assign (untuk pengawas multi-school).
+     */
+    public function assignedSchools(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(\App\Models\School::class, 'pengawas_school', 'user_id', 'school_id');
+    }
+
+    /**
+     * Relasi ke profil Pengawas.
+     */
+    public function pengawas(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Models\Pengawas::class);
+    }
+
     protected static function booted()
     {
-        static::saving(function ($user) {
+        $checkSchoolId = function ($user) {
             $roleName = is_string($user->role) ? $user->role : ($user->role->name ?? null);
 
             if ($roleName === 'super_admin' || $roleName === 'superadmin') {
                 if ($user->school_id !== null) {
                     throw new \Exception('Super Admin must have school_id = NULL');
                 }
+            } elseif ($roleName === 'pengawas') {
+                // Pengawas school_id diabaikan, sekolah diambil dari pivot table pengawas_school
+                // Tidak perlu validasi school_id di sini
             } else {
                 if ($user->school_id === null) {
                     throw new \Exception('Normal user must have a valid school_id');
                 }
             }
-        });
+        };
+
+        static::creating($checkSchoolId);
+        static::updating($checkSchoolId);
     }
 }

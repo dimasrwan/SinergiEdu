@@ -71,14 +71,23 @@
 
 
                         <div>
-                            <x-input-label for="parent_id" :value="__('Orang Tua / Wali')" />
-                            <x-select id="parent_id" name="parent_id">
-                                <option value="">-- Pilih Orang Tua --</option>
-                                @foreach($parents as $parent)
-                                    <option value="{{ $parent->id }}" {{ old('parent_id', $student->parent_id) == $parent->id ? 'selected' : '' }}>{{ $parent->user->name ?? '-' }} (HP: {{ $parent->phone ?? '-' }})</option>
-                                @endforeach
-                            </x-select>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <x-input-label for="parent_id" :value="__('Orang Tua / Wali')" class="mb-0" />
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Opsional</span>
+                            </div>
+                            @php
+                                $parentOptions = collect([['value' => '', 'label' => '-- Kosongkan (Opsional) --']])->concat(
+                                    $parents->map(function($p) {
+                                        return [
+                                            'value' => $p->id, 
+                                            'label' => ($p->user->name ?? '-') . ($p->phone ? ' (HP: '.$p->phone.')' : '')
+                                        ];
+                                    })
+                                )->values()->toArray();
+                            @endphp
+                            <x-searchable-select name="parent_id" :options="$parentOptions" :selected="old('parent_id', $student->parent_id)" />
                             <x-input-error :messages="$errors->get('parent_id')" class="mt-2" />
+                            <p class="mt-1.5 text-xs text-slate-500">Pilih kosongkan untuk menghapus kaitan dengan wali saat ini.</p>
                         </div>
                     </div>
                 </div>

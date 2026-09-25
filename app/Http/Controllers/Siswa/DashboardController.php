@@ -10,23 +10,16 @@ use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Feedback;
 use App\Models\Material;
-use App\Models\Student;
 use App\Models\StudentGrade;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
-    /**
-     * Tampilkan halaman dashboard Siswa.
-     */
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         $stats = [
@@ -92,12 +85,19 @@ class DashboardController extends Controller
                 ->first();
         }
 
+        $parentSupports = \App\Models\ParentSupport::where('student_id', $student->id)
+            ->with(['academicYear', 'semester'])
+            ->latest()
+            ->take(3)
+            ->get();
+
         return view('pages.siswa.dashboard', compact(
             'classroom',
             'stats',
             'upcomingAssignments',
             'recentMaterials',
-            'recentFeedback'
+            'recentFeedback',
+            'parentSupports'
         ));
     }
 }

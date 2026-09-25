@@ -39,12 +39,20 @@ class SupportController extends Controller
             ->latest()
             ->paginate(10);
 
+        $weeks = [
+            'Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4', 
+            'Minggu 5', 'Minggu 6', 'Minggu 7', 'Minggu 8',
+            'Minggu 9', 'Minggu 10', 'Minggu 11', 'Minggu 12',
+            'Minggu 13', 'Minggu 14', 'Minggu 15', 'Minggu 16'
+        ];
+
         return view('pages.orangtua.support.index', compact(
             'children',
             'selectedStudentId',
             'supports',
             'activeYear',
-            'activeSemester'
+            'activeSemester',
+            'weeks'
         ));
     }
 

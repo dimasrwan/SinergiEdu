@@ -15,7 +15,7 @@ class SchoolController extends Controller
     /**
      * Tampilkan daftar sekolah.
      */
-    public function index(Request $request)
+    public function index(Request $request, \App\Services\SchoolDeletionEligibilityService $eligibilityService)
     {
         $query = School::withCount('users');
 
@@ -40,7 +40,13 @@ class SchoolController extends Controller
 
         $schools = $query->latest()->paginate(10)->withQueryString();
 
-        return view('pages.super-admin.schools.index', compact('schools'));
+        // Calculate deletion eligibility for each school on current page
+        $eligibilityMap = [];
+        foreach ($schools as $schoolItem) {
+            $eligibilityMap[$schoolItem->id] = $eligibilityService->check($schoolItem);
+        }
+
+        return view('pages.super-admin.schools.index', compact('schools', 'eligibilityMap'));
     }
 
     /**
@@ -84,7 +90,7 @@ class SchoolController extends Controller
     /**
      * Tampilkan detail sekolah tertentu.
      */
-    public function show(School $school)
+    public function show(School $school, \App\Services\SchoolDeletionEligibilityService $eligibilityService)
     {
         $school->loadCount([
             'users', 
@@ -93,13 +99,28 @@ class SchoolController extends Controller
             'classrooms'
         ]);
 
-        // Daftar admin untuk sekolah ini (dengan menggunakan with('role') untuk efisiensi, 
-        // tapi kita filter user yang punya role 'admin' & 'school_id' = ini.
+        $school->load(['supervisors.pengawas']);
+
+        // Available pengawas for connect modal (pengawas users not yet attached to this school)
+        $attachedUserIds = $school->supervisors->pluck('id')->toArray();
+        $availablePengawas = \App\Models\User::whereHas('role', fn($q) => $q->where('name', 'pengawas'))
+            ->whereNotIn('id', $attachedUserIds)
+            ->where('is_active', true)
+            ->get();
+
+        // Daftar admin untuk sekolah ini
         $admins = $school->users()->whereHas('role', function($q) {
             $q->where('name', 'admin');
         })->get();
 
-        return view('pages.super-admin.schools.show', compact('school', 'admins'));
+        // Daftar komite untuk sekolah ini
+        $komites = $school->users()->whereHas('role', function($q) {
+            $q->where('name', 'komite');
+        })->get();
+
+        $deletionEligibility = $eligibilityService->check($school);
+
+        return view('pages.super-admin.schools.show', compact('school', 'admins', 'komites', 'availablePengawas', 'deletionEligibility'));
     }
 
     /**
@@ -107,7 +128,10 @@ class SchoolController extends Controller
      */
     public function edit(School $school)
     {
-        return view('pages.super-admin.schools.edit', compact('school'));
+        $pengawas = \App\Models\User::whereHas('role', function($q) {
+            $q->where('name', 'pengawas');
+        })->get();
+        return view('pages.super-admin.schools.edit', compact('school', 'pengawas'));
     }
 
     /**
@@ -123,26 +147,41 @@ class SchoolController extends Controller
             'address' => 'nullable|string',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'is_active' => 'required|boolean',
+            'pengawas_ids' => 'nullable|array',
+            'pengawas_ids.*' => 'exists:users,id',
         ]);
 
         $data = $request->only(['name', 'npsn', 'email', 'phone', 'address', 'is_active']);
 
+        $oldLogo = $school->logo;
         if ($request->hasFile('logo')) {
-            // Hapus logo lama jika ada, DENGAN CATATAN kita menyimpannya dulu setelah yang baru berhasil disalin
-            // Namun yang paling aman adalah menyimpan yang baru dulu, baru menghapus yang lama.
             $file = $request->file('logo');
             $filename = Str::random(40) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('schools/logos', $filename, 'public');
             
             if ($path) {
-                if ($school->logo) {
-                    Storage::disk('public')->delete($school->logo);
-                }
                 $data['logo'] = $path;
             }
         }
 
-        $school->update($data);
+        try {
+            $school->update($data);
+            
+            if ($request->has('pengawas_ids')) {
+                $school->supervisors()->sync($request->pengawas_ids);
+            } else {
+                $school->supervisors()->sync([]);
+            }
+            
+            if ($request->hasFile('logo') && $oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+        } catch (\Exception $e) {
+            if (isset($data['logo']) && Storage::disk('public')->exists($data['logo'])) {
+                Storage::disk('public')->delete($data['logo']);
+            }
+            throw $e;
+        }
 
         return redirect()->route('super_admin.schools.index')
             ->with('success', 'Data Sekolah berhasil diperbarui.');
@@ -163,7 +202,74 @@ class SchoolController extends Controller
         ]);
 
         $statusText = $school->is_active ? 'diaktifkan' : 'dinonaktifkan';
-
         return redirect()->back()->with('success', "Sekolah berhasil $statusText.");
+    }
+
+    /**
+     * Hubungkan Pengawas ke Sekolah (tanpa merusak assignment sekolah lain).
+     */
+    public function attachSupervisor(Request $request, School $school)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = \App\Models\User::where('id', $request->user_id)
+            ->whereHas('role', fn($q) => $q->where('name', 'pengawas'))
+            ->firstOrFail();
+
+        // Attach safely without detaching existing schools
+        $school->supervisors()->syncWithoutDetaching([$user->id]);
+
+        return redirect()->back()->with('success', 'Pengawas berhasil dihubungkan ke sekolah ini.');
+    }
+
+    /**
+     * Lepas Pengawas dari Sekolah (hanya menghapus pivot sekolah ini).
+     */
+    public function detachSupervisor(School $school, \App\Models\User $user)
+    {
+        $school->supervisors()->detach($user->id);
+
+        return redirect()->back()->with('success', 'Pengawas berhasil dilepas dari sekolah ini.');
+    }
+
+    /**
+     * Hapus permanen sekolah jika eligible (0 dependency data penting).
+     */
+    public function destroy(Request $request, School $school, \App\Services\SchoolDeletionEligibilityService $eligibilityService)
+    {
+        $check = $eligibilityService->check($school);
+
+        if (!$check['eligible']) {
+            return redirect()->back()->with('error', 'Sekolah tidak dapat dihapus permanen karena masih memiliki data terkait: ' . implode(', ', $check['reasons']));
+        }
+
+        // Type-to-confirm verification
+        $request->validate([
+            'confirm_school_name' => 'required|string',
+        ]);
+
+        if (trim($request->input('confirm_school_name')) !== trim($school->name)) {
+            return redirect()->back()->with('error', 'Konfirmasi nama sekolah tidak cocok. Penghapusan dibatalkan.');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($school) {
+            // 1. Detach all supervisor pivot relations (pengawas_school) - leaves Pengawas users intact!
+            $school->supervisors()->detach();
+
+            // 2. Clean logo storage file if exists
+            if ($school->logo && Storage::disk('public')->exists($school->logo)) {
+                Storage::disk('public')->delete($school->logo);
+            }
+
+            // 3. Delete settings if any
+            $school->settings()->delete();
+
+            // 4. Delete the school record
+            $school->delete();
+        });
+
+        return redirect()->route('super_admin.schools.index')->with('success', "Sekolah '{$school->name}' berhasil dihapus permanen.");
     }
 }

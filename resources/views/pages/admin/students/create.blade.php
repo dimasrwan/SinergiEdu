@@ -33,16 +33,20 @@
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
-                        <div>
-                            <x-input-label for="password" :value="__('Password')" />
-                            <x-password-input id="password" name="password" required />
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
-                            <x-password-input id="password_confirmation" name="password_confirmation" required />
-                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                        @php $tempPassword = \Illuminate\Support\Str::random(8); @endphp
+                        <div x-data="{ pwd: '{{ old('password', $tempPassword) }}' }" class="grid grid-cols-1 gap-6">
+                            <div>
+                                <x-input-label for="password" :value="__('Password Sementara')" />
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="text" id="password" name="password" x-model="pwd" required class="block w-full px-3 py-2 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent sm:text-sm font-mono">
+                                    <button type="button" @click="navigator.clipboard.writeText(pwd); alert('Password disalin!')" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">
+                                        Salin
+                                    </button>
+                                </div>
+                                <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                                <p class="mt-1.5 text-xs text-slate-500">Dibuat otomatis. Admin dapat mengubahnya jika perlu.</p>
+                            </div>
+                            <input type="hidden" name="password_confirmation" :value="pwd">
                         </div>
                     </div>
 
@@ -76,14 +80,23 @@
 
 
                         <div>
-                            <x-input-label for="parent_id" :value="__('Orang Tua / Wali')" />
-                            <x-select id="parent_id" name="parent_id">
-                                <option value="">-- Pilih Orang Tua --</option>
-                                @foreach($parents as $parent)
-                                    <option value="{{ $parent->id }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>{{ $parent->user->name ?? '-' }} (HP: {{ $parent->phone ?? '-' }})</option>
-                                @endforeach
-                            </x-select>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <x-input-label for="parent_id" :value="__('Orang Tua / Wali')" class="mb-0" />
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Opsional</span>
+                            </div>
+                            @php
+                                $parentOptions = collect([['value' => '', 'label' => '-- Kosongkan (Opsional) --']])->concat(
+                                    $parents->map(function($p) {
+                                        return [
+                                            'value' => $p->id, 
+                                            'label' => ($p->user->name ?? '-') . ($p->phone ? ' (HP: '.$p->phone.')' : '')
+                                        ];
+                                    })
+                                )->values()->toArray();
+                            @endphp
+                            <x-searchable-select name="parent_id" :options="$parentOptions" :selected="old('parent_id')" />
                             <x-input-error :messages="$errors->get('parent_id')" class="mt-2" />
+                            <p class="mt-1.5 text-xs text-slate-500">Anda dapat mencari berdasarkan nama atau nomor HP.</p>
                         </div>
                     </div>
                 </div>

@@ -36,7 +36,7 @@ class StudentController extends Controller
 
         if ($classId = $request->input('class_id')) {
             $query->whereHas('classes', function ($q) use ($classId) {
-                $q->where('class_id', $classId);
+                $q->where('student_classes.class_id', $classId);
             });
         }
 
@@ -70,10 +70,17 @@ class StudentController extends Controller
                 'role_id' => $roleSiswa->id,
             ]);
 
+            // Validasi Parent secara eksplisit
+            $parentId = $request->parent_id;
+            if ($parentId) {
+                $validParent = StudentParent::find($parentId);
+                $parentId = $validParent ? $validParent->id : null;
+            }
+
             // 2. Buat Profil Siswa
             $student = Student::create([
                 'user_id' => $user->id,
-                'parent_id' => $request->parent_id,
+                'parent_id' => $parentId,
                 'nis' => $request->nis,
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,
@@ -128,9 +135,16 @@ class StudentController extends Controller
             }
             $user->update($userData);
 
+            // Validasi Parent secara eksplisit
+            $parentId = $request->parent_id;
+            if ($parentId) {
+                $validParent = StudentParent::find($parentId);
+                $parentId = $validParent ? $validParent->id : null;
+            }
+
             // 2. Update Profil Siswa
             $student->update([
-                'parent_id' => $request->parent_id,
+                'parent_id' => $parentId,
                 'nis' => $request->nis,
                 'gender' => $request->gender,
                 'date_of_birth' => $request->date_of_birth,

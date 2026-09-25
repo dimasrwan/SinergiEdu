@@ -42,8 +42,17 @@ class AcademicYearController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', \App\Models\AcademicYear::class);
+
+        $schoolId = app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'year' => 'required|string|max:20|unique:academic_years,year',
+            'year' => [
+                'required',
+                'string',
+                'max:20',
+                \Illuminate\Validation\Rule::unique('academic_years', 'year')
+                    ->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
             'is_active' => 'nullable|boolean',
         ], [
             'year.unique' => 'Tahun ajaran ini sudah terdaftar.',
@@ -52,15 +61,20 @@ class AcademicYearController extends Controller
 
         $isActive = $request->has('is_active');
 
-        // Business rule: Hanya satu tahun ajaran yang boleh aktif
-        if ($isActive) {
-            AcademicYear::where('is_active', true)->update(['is_active' => false]);
-        }
+        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $isActive, $schoolId) {
+            // Business rule: Hanya satu tahun ajaran yang boleh aktif dalam satu sekolah
+            if ($isActive) {
+                AcademicYear::where('school_id', $schoolId)
+                    ->where('is_active', true)
+                    ->update(['is_active' => false]);
+            }
 
-        AcademicYear::create([
-            'year' => $validated['year'],
-            'is_active' => $isActive,
-        ]);
+            AcademicYear::create([
+                'school_id' => $schoolId,
+                'year' => $validated['year'],
+                'is_active' => $isActive,
+            ]);
+        });
 
         return redirect()->route('admin.academic-years.index')->with('success', 'Tahun ajaran berhasil ditambahkan.');
     }
@@ -91,8 +105,18 @@ class AcademicYearController extends Controller
     public function update(Request $request, AcademicYear $academicYear)
     {
         Gate::authorize('update', $academicYear);
+
+        $schoolId = $academicYear->school_id ?? app(\App\Services\TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'year' => 'required|string|max:20|unique:academic_years,year,' . $academicYear->id,
+            'year' => [
+                'required',
+                'string',
+                'max:20',
+                \Illuminate\Validation\Rule::unique('academic_years', 'year')
+                    ->ignore($academicYear->id)
+                    ->where(fn ($query) => $query->where('school_id', $schoolId)),
+            ],
             'is_active' => 'nullable|boolean',
         ], [
             'year.unique' => 'Tahun ajaran ini sudah terdaftar.',
@@ -101,17 +125,20 @@ class AcademicYearController extends Controller
 
         $isActive = $request->has('is_active');
 
-        // Business rule: Hanya satu tahun ajaran yang boleh aktif
-        if ($isActive && !$academicYear->is_active) {
-            AcademicYear::where('id', '!=', $academicYear->id)
-                ->where('is_active', true)
-                ->update(['is_active' => false]);
-        }
+        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $isActive, $schoolId, $academicYear) {
+            // Business rule: Hanya satu tahun ajaran yang boleh aktif dalam satu sekolah
+            if ($isActive && !$academicYear->is_active) {
+                AcademicYear::where('school_id', $schoolId)
+                    ->where('id', '!=', $academicYear->id)
+                    ->where('is_active', true)
+                    ->update(['is_active' => false]);
+            }
 
-        $academicYear->update([
-            'year' => $validated['year'],
-            'is_active' => $isActive,
-        ]);
+            $academicYear->update([
+                'year' => $validated['year'],
+                'is_active' => $isActive,
+            ]);
+        });
 
         return redirect()->route('admin.academic-years.index')->with('success', 'Tahun ajaran berhasil diperbarui.');
     }

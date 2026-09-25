@@ -13,7 +13,7 @@
 
         <div class="space-y-4">
             @forelse($evaluations as $evaluation)
-                <a href="{{ route('kepala-sekolah.evaluasi.show', $evaluation) }}" class="block p-5 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                <a href="{{ route('kepala-sekolah.evaluasi.show', $evaluation) }}" class="block p-5 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-sm transition group">
                     <div class="flex items-center justify-between gap-4 mb-2">
                         <span class="text-xs text-slate-400">{{ $evaluation->created_at->format('d M Y H:i') }}</span>
                     </div>

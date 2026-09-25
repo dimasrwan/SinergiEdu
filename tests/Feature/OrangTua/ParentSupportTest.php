@@ -247,7 +247,7 @@ class ParentSupportTest extends TestCase
     public function test_empty_state_works(): void
     {
         $response = $this->actingAs($this->parentUser)->get(route('orangtua.support.index'));
-        $response->assertSee('Belum ada riwayat dukungan yang diinput.');
+        $response->assertSee('Belum ada riwayat dukungan.');
     }
 
     public function test_unauthorized_access_is_blocked(): void

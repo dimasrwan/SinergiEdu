@@ -61,17 +61,19 @@ class AcademicSeeder extends Seeder
         app(TenantService::class)->setSchool($school);
 
         foreach ($this->academicData as $year => $semesters) {
+            $yearStr = $year . ' (' . $school->name . ')';
             $academicYear = AcademicYear::firstOrCreate(
-                ['school_id' => $school->id, 'year' => $year],
+                ['school_id' => $school->id, 'year' => $yearStr],
                 ['is_active' => $year === self::ACTIVE_YEAR]
             );
 
             foreach ($semesters as $semester) {
+                $semesterName = $semester['name'] . ' (' . $school->name . ')';
                 Semester::updateOrCreate(
                     [
                         'school_id' => $school->id,
                         'academic_year_id' => $academicYear->id,
-                        'name' => $semester['name'],
+                        'name' => $semesterName,
                     ],
                     ['is_active' => $semester['is_active']]
                 );
@@ -79,12 +81,17 @@ class AcademicSeeder extends Seeder
         }
 
         // Jamin tepat satu tahun ajaran aktif (2026/2027) dan satu semester aktif (Ganjil).
-        $activeYear = AcademicYear::where('year', self::ACTIVE_YEAR)->first();
-        AcademicYear::where('id', '!=', $activeYear?->id)->update(['is_active' => false]);
-        $activeYear?->update(['is_active' => true]);
+        $activeYearStr = self::ACTIVE_YEAR . ' (' . $school->name . ')';
+        $activeYear = AcademicYear::where('year', $activeYearStr)->first();
+        AcademicYear::where('school_id', $school->id)->where('id', '!=', $activeYear?->id)->update(['is_active' => false]);
+        if ($activeYear) {
+            $activeYear->update(['is_active' => true]);
+        }
 
-        $activeSemester = Semester::where('is_active', true)->first();
-        Semester::where('id', '!=', $activeSemester?->id)->update(['is_active' => false]);
-        $activeSemester?->update(['is_active' => true]);
+        $activeSemester = Semester::where('school_id', $school->id)->where('is_active', true)->first();
+        if ($activeSemester) {
+            Semester::where('school_id', $school->id)->where('id', '!=', $activeSemester->id)->update(['is_active' => false]);
+            $activeSemester->update(['is_active' => true]);
+        }
     }
 }

@@ -28,9 +28,12 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="flex-1">
                 {{ $slot }}
             </main>
+
+            <!-- Footer -->
+            <x-layouts.footer />
         </div>
     </body>
 </html>

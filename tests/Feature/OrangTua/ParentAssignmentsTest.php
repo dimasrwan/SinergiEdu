@@ -109,7 +109,7 @@ class ParentAssignmentsTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($childUser->name);
         $response->assertSee('Tugas Aljabar');
-        $response->assertSee('Belum Mengumpulkan');
+        $response->assertSee('Belum Dikerjakan');
     }
 
     public function test_parent_cannot_view_assignments_of_unrelated_student(): void
@@ -228,7 +228,7 @@ class ParentAssignmentsTest extends TestCase
         $response->assertSee('Menunggu Penilaian');
         
         $response->assertSee('Tugas 3 (Belum)');
-        $response->assertSee('Belum Mengumpulkan');
+        $response->assertSee('Belum Dikerjakan');
         
         $response->assertSee('Tugas 4 (Terlewat)');
         $response->assertSee('Terlewat');

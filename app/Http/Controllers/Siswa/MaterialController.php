@@ -6,19 +6,15 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Material;
-use App\Models\Student;
 use Illuminate\View\View;
 
 class MaterialController extends Controller
 {
-    private function getStudentProfile(): Student
-    {
-        return Student::where('user_id', auth()->id())->firstOrFail();
-    }
+    use Concerns\HasStudentProfile;
 
     public function index(): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         $materials = collect();
@@ -34,7 +30,7 @@ class MaterialController extends Controller
 
     public function show(Material $material): View
     {
-        $student = $this->getStudentProfile();
+        $student = $this->requireStudentProfile();
         $classroom = $student->activeClassroom();
 
         // Pastikan materi ditujukan untuk kelas siswa tersebut
@@ -43,5 +39,45 @@ class MaterialController extends Controller
         $material->load(['teacher.user', 'subject']);
 
         return view('pages.siswa.materials.show', compact('material'));
+    }
+
+    public function preview(Material $material)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $material->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke materi ini.');
+
+        $type = request()->query('type', 'file');
+        $path = $type === 'video' ? $material->video_path : $material->file_path;
+
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        $filename = basename($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('local')->mimeType($path) ?? ($type === 'video' ? 'video/mp4' : 'application/pdf');
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->response($path, $filename, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+        ]);
+    }
+
+    public function download(Material $material)
+    {
+        $student = $this->requireStudentProfile();
+        $classroom = $student->activeClassroom();
+
+        abort_if(!$classroom || $material->class_id !== $classroom->id, 403, 'Anda tidak memiliki akses ke materi ini.');
+
+        $type = request()->query('type', 'file');
+        $path = $type === 'video' ? $material->video_path : $material->file_path;
+
+        if (!$path || !\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($path);
     }
 }

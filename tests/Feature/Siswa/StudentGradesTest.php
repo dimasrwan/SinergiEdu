@@ -67,6 +67,7 @@ class StudentGradesTest extends TestCase
     public function test_student_can_see_their_own_grades_index()
     {
         StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -86,6 +87,7 @@ class StudentGradesTest extends TestCase
     {
         $otherStudent = Student::create(['user_id' => User::create(['name' => 'S2', 'email' => 's2@test.com', 'password' => bcrypt('123'), 'school_id' => $this->school->id, 'role_id' => Role::where('name', 'siswa')->first()->id])->id, 'nis' => '222', 'school_id' => $this->school->id]);
         StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $otherStudent->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -102,6 +104,7 @@ class StudentGradesTest extends TestCase
     public function test_student_can_view_grade_detail()
     {
         $grade = StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -121,6 +124,7 @@ class StudentGradesTest extends TestCase
     {
         $otherStudent = Student::create(['user_id' => User::create(['name' => 'S2', 'email' => 's2@test.com', 'password' => bcrypt('123'), 'school_id' => $this->school->id, 'role_id' => Role::where('name', 'siswa')->first()->id])->id, 'nis' => '222', 'school_id' => $this->school->id]);
         $otherGrade = StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $otherStudent->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -146,6 +150,7 @@ class StudentGradesTest extends TestCase
         $otherTeacher = Teacher::create(['user_id' => User::create(['name' => 'B', 'email' => 'ba@test.com', 'password' => bcrypt('123'), 'school_id' => $otherSchool->id, 'role_id' => Role::where('name', 'guru')->first()->id])->id, 'nip' => '9', 'school_id' => $otherSchool->id]);
         
         $otherGrade = StudentGrade::create([
+            'school_id' => $otherSchool->id,
             'student_id' => $otherStudent->id,
             'teacher_id' => $otherTeacher->id,
             'class_id' => $otherClass->id,
@@ -161,6 +166,7 @@ class StudentGradesTest extends TestCase
     public function test_ungraded_task_shows_as_menunggu_penilaian()
     {
         $grade = StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -193,6 +199,7 @@ class StudentGradesTest extends TestCase
     public function test_unsubmitted_task_shows_as_belum_mengumpulkan()
     {
         $grade = StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -217,6 +224,7 @@ class StudentGradesTest extends TestCase
     public function test_feedback_is_displayed_if_available()
     {
         $grade = StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
@@ -251,6 +259,7 @@ class StudentGradesTest extends TestCase
     public function test_assignment_of_other_student_not_mixed_up()
     {
         $grade = StudentGrade::create([
+            'school_id' => $this->school->id,
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,

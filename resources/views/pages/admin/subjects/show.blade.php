@@ -1,19 +1,19 @@
 <x-layouts.app>
     <x-slot:title>Detail Mata Pelajaran - {{ $subject->name }}</x-slot:title>
 
-    <div class="w-full max-w-4xl">
+    <div class="w-full space-y-6">
         <!-- Header & Breadcrumb -->
-        <div class="mb-6 flex flex-col items-start gap-4">
-            <a href="{{ route('admin.subjects.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
+        <div class="flex flex-col items-start gap-4 border-b border-slate-200 pb-5">
+            <a href="{{ route('admin.subjects.index') }}" class="inline-flex items-center text-xs sm:text-sm font-semibold text-slate-500 hover:text-slate-800 gap-1.5 transition">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
-                Kembali ke Daftar
+                Kembali ke Manajemen Mata Pelajaran
             </a>
             <div class="w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-slate-900">Detail Mata Pelajaran</h1>
-                    <p class="mt-1 text-sm text-slate-500">Informasi rekap mata pelajaran beserta penugasan gurunya.</p>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Detail Mata Pelajaran {{ $subject->name }}</h1>
+                    <p class="mt-1 text-xs sm:text-sm text-slate-500">Informasi rekap mata pelajaran beserta penugasan gurunya.</p>
                 </div>
                 <div class="flex gap-2 w-full sm:w-auto shrink-0">
                     <x-button variant="secondary" href="{{ route('admin.subjects.edit', $subject) }}" class="flex-1 sm:flex-none justify-center">Edit Mata Pelajaran</x-button>
@@ -21,24 +21,26 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Informasi Mata Pelajaran -->
-            <div class="space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Informasi Mata Pelajaran (Left Column) -->
+            <div class="lg:col-span-4 space-y-6">
                 <x-card padding="lg">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-primary font-bold text-lg shadow-sm shrink-0">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-primary font-bold text-base sm:text-lg shadow-2xs shrink-0">
                             {{ $subject->code }}
                         </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900">{{ $subject->name }}</h2>
-                            <p class="text-sm font-semibold text-slate-500 mt-1">Master Data</p>
+                        <div class="min-w-0 flex-1">
+                            <h2 class="text-lg sm:text-xl font-bold text-slate-900 leading-snug break-words">{{ $subject->name }}</h2>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200/80 mt-2">
+                                Master Data
+                            </span>
                         </div>
                     </div>
                 </x-card>
             </div>
 
-            <!-- Distribusi Guru & Kelas -->
-            <div class="space-y-6">
+            <!-- Distribusi Guru & Kelas (Right Column) -->
+            <div class="lg:col-span-8 space-y-6">
                 <x-card padding="none" class="overflow-hidden">
                     <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                         <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
@@ -47,16 +49,16 @@
                         </h3>
                     </div>
 
-                    <div class="p-5">
+                    <div class="p-5 sm:p-6">
                         @if(count($groupedTeachers) > 0)
                             <div class="space-y-4">
                                 @foreach($groupedTeachers as $teacherName => $classes)
-                                    <div class="flex flex-col sm:flex-row sm:items-start p-4 bg-slate-50 border border-slate-100 rounded-xl gap-3">
-                                        <div class="flex-1">
-                                            <p class="text-sm font-bold text-slate-900 mb-2">{{ $teacherName }}</p>
+                                    <div class="flex flex-col sm:flex-row sm:items-start p-4 bg-slate-50/70 border border-slate-200/80 rounded-xl gap-3">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-slate-900 mb-2 break-words">{{ $teacherName }}</p>
                                             <div class="flex flex-wrap gap-1.5">
-                                                @foreach($classes as $className)
-                                                    <span class="inline-flex text-[10px] font-bold text-slate-600 bg-white px-2 py-1 rounded-md border border-slate-200">
+                                                @foreach(array_unique($classes) as $className)
+                                                    <span class="inline-flex items-center text-xs font-bold text-slate-700 bg-white px-2.5 py-1 rounded-lg border border-slate-200/80 shadow-2xs">
                                                         {{ $className }}
                                                     </span>
                                                 @endforeach

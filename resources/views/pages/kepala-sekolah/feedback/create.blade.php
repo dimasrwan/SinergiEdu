@@ -1,7 +1,7 @@
 <x-layouts.app>
     <x-slot:title>Kirim Feedback Strategis</x-slot:title>
 
-    <div class="max-w-3xl space-y-6 mx-auto">
+    <div class="w-full space-y-6">
         <div>
             <a href="{{ route('kepala-sekolah.feedback.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary gap-1.5 transition-colors mb-4">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
@@ -78,7 +78,7 @@
                 <div>
                     <x-input-label for="message" :value="__('Isi Feedback')" />
                     <textarea id="message" name="message" rows="5" required placeholder="Tuliskan umpan balik Anda secara mendetail..."
-                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('message') }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('message') }}</textarea>
                     @error('message') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 
@@ -86,12 +86,12 @@
                     <div>
                         <x-input-label for="action_plan" :value="__('Rencana Tindak Lanjut (Opsional)')" />
                         <textarea id="action_plan" name="action_plan" rows="3" placeholder="Langkah tindak lanjut yang diharapkan..."
-                            class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('action_plan') }}</textarea>
+                            class="w-full px-4 py-2.5 bg-slate-50 hover:bg-white border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">{{ old('action_plan') }}</textarea>
                         @error('action_plan') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <x-input-label for="action_deadline" :value="__('Tenggat Tindak Lanjut (Opsional)')" />
-                        <x-text-input id="action_deadline" name="action_deadline" type="date" value="{{ old('action_deadline') }}" class="w-full" />
+                        <x-date-picker id="action_deadline" name="action_deadline" value="{{ old('action_deadline') }}" placeholder="Pilih tanggal tenggat..." />
                         @error('action_deadline') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>

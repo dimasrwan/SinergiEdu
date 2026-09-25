@@ -149,6 +149,26 @@ class TeacherMaterialsTest extends TestCase
 
         $response = $this->actingAs($this->guruA)->get(route('guru.materials.download', $materialA));
         $response->assertStatus(200);
+        $this->assertStringContainsString('attachment', $response->headers->get('content-disposition') ?? '');
+    }
+
+    public function test_guru_can_preview_own_material_inline()
+    {
+        Storage::fake('local');
+        $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
+        $path = $file->store('materials/pdfs', 'local');
+
+        $materialA = Material::create([
+            'teacher_id' => $this->teacherProfileA->id,
+            'class_id' => $this->classA->id,
+            'subject_id' => $this->subjectA->id,
+            'title' => 'Materi A',
+            'file_path' => $path,
+        ]);
+
+        $response = $this->actingAs($this->guruA)->get(route('guru.materials.preview', $materialA));
+        $response->assertStatus(200);
+        $this->assertStringContainsString('inline', $response->headers->get('content-disposition') ?? '');
     }
 
     public function test_guru_cannot_download_other_guru_material()
@@ -166,6 +186,9 @@ class TeacherMaterialsTest extends TestCase
 
         $response = $this->actingAs($this->guruB)->get(route('guru.materials.download', $materialA));
         $response->assertStatus(403);
+
+        $responsePreview = $this->actingAs($this->guruB)->get(route('guru.materials.preview', $materialA));
+        $responsePreview->assertStatus(403);
     }
 
     public function test_guru_can_delete_own_material_and_file_is_removed()

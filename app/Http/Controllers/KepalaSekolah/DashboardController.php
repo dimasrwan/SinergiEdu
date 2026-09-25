@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $totalAssignments = $gradingStatus->count();
 
         $feedbacksCount = Feedback::where('sender_id', auth()->id())->count();
-        $actionPlanCount = \App\Models\ActionPlan::where('user_id', auth()->id())->count();
+        $actionPlanCount = \App\Models\SchoolActionPlan::where('user_id', auth()->id())->count();
 
         $belowTargetClasses = $classRankings->where('avg', '>', 0)
             ->filter(fn ($row) => $row['avg'] < 75)

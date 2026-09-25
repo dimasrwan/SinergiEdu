@@ -158,13 +158,11 @@ class AcademicAggregatorService
 
     public function getRekapList(int $schoolId, ?int $academicYearId = null, ?int $semesterId = null, ?int $classId = null, ?int $subjectId = null): Collection
     {
-        $semesterId = $semesterId ?? $this->activeSemester?->id;
-        if ($semesterId === null) {
-            return collect([]);
-        }
+        $query = StudentGrade::with(['student.user', 'classroom', 'subject']);
 
-        $query = StudentGrade::with(['student.user', 'classroom', 'subject'])
-            ->where('semester_id', $semesterId);
+        if ($semesterId !== null) {
+            $query->where('semester_id', $semesterId);
+        }
 
         if ($classId) {
             $query->where('class_id', $classId);

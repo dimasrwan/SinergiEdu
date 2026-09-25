@@ -14,104 +14,63 @@ class ActionPlan extends Model
     use HasFactory, TenantScoped;
 
     protected $fillable = [
-        'school_id',
-        'user_id',
+        'pengawas_user_id',
+        'class_id',
+        'academic_year_id',
+        'semester_id',
         'title',
-        'description',
-        'target_role',
-        'target_user_id',
-        'category',
+        'content',
         'priority',
         'status',
-        'start_date',
-        'due_date',
-        'completed_at',
-        'notes',
     ];
 
-    protected $casts = [
-        'start_date' => 'date',
-        'due_date' => 'date',
-        'completed_at' => 'datetime',
-    ];
-
-    public function creator(): BelongsTo
+    public function pengawas(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'pengawas_user_id');
     }
 
-    public function target(): BelongsTo
+    public function classroom(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'target_user_id');
+        return $this->belongsTo(Classroom::class, 'class_id');
     }
 
-    public function school(): BelongsTo
+    public function academicYear(): BelongsTo
     {
-        return $this->belongsTo(School::class);
+        return $this->belongsTo(AcademicYear::class);
+    }
+
+    public function semester(): BelongsTo
+    {
+        return $this->belongsTo(Semester::class);
     }
 
     public function getStatusLabelAttribute(): string
     {
-        return match ($this->status) {
-            'draft' => 'Draft',
-            'in_progress' => 'Dikerjakan',
-            'completed' => 'Selesai',
-            'cancelled' => 'Dibatalkan',
-            default => $this->status ? ucfirst($this->status) : '-',
-        };
+        return $this->status === 'published' ? 'Diterbitkan' : 'Draft';
     }
 
-    public function getStatusColorAttribute(): string
+    public function getStatusBadgeClassAttribute(): string
     {
-        return match ($this->status) {
-            'draft' => 'bg-slate-100 text-slate-700',
-            'in_progress' => 'bg-blue-100 text-blue-700',
-            'completed' => 'bg-emerald-100 text-emerald-700',
-            'cancelled' => 'bg-red-100 text-red-700',
-            default => 'bg-slate-100 text-slate-700',
-        };
+        return $this->status === 'published'
+            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+            : 'bg-slate-100 text-slate-500 border border-slate-200';
     }
 
     public function getPriorityLabelAttribute(): string
     {
         return match ($this->priority) {
-            'low' => 'Rendah',
-            'medium' => 'Sedang',
-            'high' => 'Tinggi',
-            'urgent' => 'Mendesak',
-            default => $this->priority ? ucfirst($this->priority) : '-',
+            'high'   => 'Tinggi',
+            'low'    => 'Rendah',
+            default  => 'Sedang',
         };
     }
 
-    public function getPriorityColorAttribute(): string
+    public function getPriorityBadgeClassAttribute(): string
     {
         return match ($this->priority) {
-            'low' => 'bg-slate-100 text-slate-600',
-            'medium' => 'bg-blue-100 text-blue-700',
-            'high' => 'bg-orange-100 text-orange-700',
-            'urgent' => 'bg-red-100 text-red-700',
-            default => 'bg-slate-100 text-slate-600',
-        };
-    }
-
-    public function getCategoryLabelAttribute(): string
-    {
-        return match ($this->category) {
-            'academic' => 'Akademik',
-            'character' => 'Karakter',
-            'memorization' => 'Hafalan',
-            'operational' => 'Operasional',
-            default => $this->category ? ucfirst($this->category) : '-',
-        };
-    }
-
-    public function getTargetRoleLabelAttribute(): string
-    {
-        return match ($this->target_role) {
-            'guru' => 'Guru',
-            'waka' => 'Waka Kurikulum',
-            'pengawas' => 'Pengawas',
-            default => 'Umum',
+            'high'   => 'bg-red-100 text-red-700 border border-red-200',
+            'low'    => 'bg-slate-100 text-slate-600 border border-slate-200',
+            default  => 'bg-amber-100 text-amber-700 border border-amber-200',
         };
     }
 }

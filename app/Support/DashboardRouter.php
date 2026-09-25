@@ -27,6 +27,7 @@ class DashboardRouter
         'orangtua' => 'orangtua.dashboard',
         'pengawas' => 'pengawas.dashboard',
         'kepala_sekolah' => 'kepala-sekolah.dashboard',
+        'komite' => 'komite.dashboard',
     ];
 
     public static function forUser(?User $user): ?string

@@ -1,78 +1,114 @@
+@props(['title' => 'Masuk ke Sistem — SinergiEdu'])
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#F5FAFF]">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'SinergiEdu') }}</title>
+    <title>{{ $title }}</title>
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.svg') }}">
 
-    <!-- Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Scripts -->
+    <!-- Scripts & Styles -->
+    <style>[x-cloak] { display: none !important; }</style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-full font-sans text-slate-900 antialiased tracking-tight bg-slate-50">
+<body class="h-full font-['Outfit'] text-[#0B1733] antialiased selection:bg-[#123B82] selection:text-white bg-[#F5FAFF]">
     <div class="min-h-screen flex flex-col md:flex-row">
-        <!-- Brand Identity / Pattern Area (Sisi Kiri) -->
-        <div class="hidden md:flex flex-1 relative bg-[#123B82] flex-col justify-between overflow-hidden p-12 lg:p-20">
-            <!-- Pola Geometris Abstrak -->
-            <div class="absolute top-0 right-0 p-12 opacity-20 pointer-events-none transform translate-x-1/4 -translate-y-1/4">
-                <svg width="400" height="400" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="40" stroke="#119FEA" stroke-width="2"/>
-                    <path d="M50 10L90 50L50 90L10 50L50 10Z" stroke="#FFFFFF" stroke-width="2"/>
-                    <circle cx="50" cy="50" r="20" fill="#119FEA"/>
+        
+        <!-- LEFT BRAND PANEL (Desktop 50% split) -->
+        <div class="hidden md:flex md:w-1/2 relative bg-[#123B82] flex-col justify-between overflow-hidden p-10 lg:p-16 text-white">
+            
+            <!-- Geometric Decorative Elements (SinergiEdu Brand Inspired) -->
+            <div class="absolute top-0 right-0 p-12 opacity-15 pointer-events-none transform translate-x-1/4 -translate-y-1/4">
+                <svg width="450" height="450" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="20" width="60" height="60" rx="16" transform="rotate(45 50 50)" stroke="#119FEA" stroke-width="2.5"/>
+                    <circle cx="50" cy="50" r="28" stroke="#FFFFFF" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="14" fill="#119FEA"/>
                 </svg>
             </div>
             
             <div class="absolute bottom-0 left-0 p-12 opacity-10 pointer-events-none transform -translate-x-1/4 translate-y-1/4">
                 <svg width="500" height="500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="45" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="2 2"/>
-                    <path d="M20 20L80 80M80 20L20 80" stroke="#119FEA" stroke-width="1"/>
+                    <circle cx="50" cy="50" r="42" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="3 3"/>
+                    <path d="M15 50 H85 M50 15 V85" stroke="#119FEA" stroke-width="1.5"/>
                 </svg>
             </div>
 
-            <!-- Konten Merek Utama -->
-            <div class="relative z-10 flex items-center gap-4">
-                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-2 shadow-lg shadow-[#119FEA]/20">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-full h-full object-contain">
+            <!-- Header Brand Logo -->
+            <div class="relative z-10 flex items-center gap-3.5">
+                <div class="w-11 h-11 bg-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-[#0B1733]/20">
+                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="w-full h-full object-contain">
                 </div>
-                <span class="text-3xl font-bold text-white tracking-tight">SinergiEdu</span>
+                <span class="text-2xl font-extrabold text-white tracking-tight">Sinergi<span class="text-[#119FEA]">Edu</span></span>
             </div>
 
-            <div class="relative z-10 mt-auto">
-                <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
-                    Pusat Ekosistem<br/>Pendidikan Modern.
+            <!-- Content Area -->
+            <div class="relative z-10 my-auto py-8">
+                <x-eyebrow variant="dark" class="mb-6">
+                    PLATFORM TERINTEGRASI
+                </x-eyebrow>
+
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4 tracking-tight">
+                    Platform Manajemen Sekolah Terintegrasi
                 </h1>
-                <p class="text-lg text-blue-100 max-w-md leading-relaxed">
-                    Akses terpusat untuk memantau nilai, mengelola pembelajaran, dan menjalin sinergi antara guru, siswa, dan orang tua.
+                
+                <p class="text-base text-[#EAF6FF] max-w-md leading-relaxed mb-8">
+                    Kelola pembelajaran, penilaian, dan monitoring sekolah dalam satu platform terpusat.
                 </p>
-                <div class="mt-8 flex items-center gap-2 text-blue-200/80 text-sm">
-                    <span>&copy; {{ date('Y') }} SinergiEdu. Semua Hak Cipta Dilindungi.</span>
+
+                <!-- 3 Micro Highlights -->
+                <div class="space-y-3.5 text-sm font-semibold text-white">
+                    <div class="flex items-center gap-3">
+                        <span class="w-5 h-5 rounded-full bg-[#119FEA] flex items-center justify-center text-[#0B1733] text-xs font-extrabold shrink-0">✓</span>
+                        <span>Manajemen Akademik Terpusat</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-5 h-5 rounded-full bg-[#119FEA] flex items-center justify-center text-[#0B1733] text-xs font-extrabold shrink-0">✓</span>
+                        <span>Monitoring Real-Time Transparan</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-5 h-5 rounded-full bg-[#119FEA] flex items-center justify-center text-[#0B1733] text-xs font-extrabold shrink-0">✓</span>
+                        <span>Hak Akses Multi-Role Terproteksi</span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Footer Note -->
+            <x-layouts.footer variant="dark" as="div" class="relative z-10 !pt-4 !pb-0 !px-0 bg-transparent border-t-0 text-[#EAF6FF]/80" />
         </div>
 
-        <!-- Form Area (Sisi Kanan) -->
-        <div class="flex-1 flex flex-col justify-center px-6 py-12 lg:px-20 bg-white">
-            <!-- Header Mobile (Hanya muncul jika di mobile) -->
-            <div class="md:hidden flex flex-col items-center mb-8">
-                <div class="w-16 h-16 bg-[#123B82] rounded-2xl flex items-center justify-center p-3 shadow-lg shadow-[#123B82]/20 mb-4">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-full h-full object-contain drop-shadow-md">
+        <!-- RIGHT FORM AREA (Desktop 50% split, Mobile compact) -->
+        <div class="md:w-1/2 flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 bg-white">
+            
+            <!-- Mobile Brand Header -->
+            <div class="md:hidden flex flex-col items-center mb-8 text-center">
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-2.5 shadow-md border border-[#DCE8F3] mb-3">
+                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="w-full h-full object-contain">
                 </div>
-                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">SinergiEdu</h1>
+                <span class="text-2xl font-extrabold text-[#0B1733] tracking-tight">Sinergi<span class="text-[#119FEA]">Edu</span></span>
+                <span class="text-xs font-semibold text-[#64748B] mt-1">Platform Manajemen Sekolah</span>
             </div>
 
-            <!-- Kontainer Slot -->
-            <div class="w-full max-w-sm mx-auto">
+            <!-- Form Container Slot -->
+            <div class="w-full max-w-md mx-auto">
                 {{ $slot }}
             </div>
+
+            <!-- Mobile Footer Note -->
+            <div class="mt-8 md:hidden">
+                <x-layouts.footer as="div" class="bg-transparent border-t-0 !p-0" />
+            </div>
+
         </div>
+
     </div>
 </body>
 </html>

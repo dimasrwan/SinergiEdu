@@ -1,7 +1,13 @@
 <x-layouts.app>
     <x-slot:title>Manajemen Sekolah</x-slot:title>
 
-    <div class="space-y-6" x-data="{}">
+    <div class="space-y-6" x-data="{
+        deleteModalOpen: false,
+        deactivateModalOpen: false,
+        activateModalOpen: false,
+        selectedSchool: null,
+        confirmName: ''
+    }">
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-5 gap-4">
             <div>
@@ -9,7 +15,7 @@
                 <p class="mt-2 text-sm text-slate-500 max-w-2xl">
                     Kelola direktori sekolah dan tenant di platform SinergiEdu.
                     @if($schools->total() > 0)
-                        <span class="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
+                        <span class="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200">
                             {{ $schools->total() }} sekolah terdaftar
                         </span>
                     @endif
@@ -34,6 +40,15 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-sm text-red-800 flex items-center gap-3">
+                <svg class="h-5 w-5 text-red-600 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
         <!-- Toolbar (Search & Filter) -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center justify-between gap-4">
             <form action="{{ route('super_admin.schools.index') }}" method="GET" class="w-full flex flex-col sm:flex-row gap-4">
@@ -45,50 +60,49 @@
                         </svg>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari sekolah atau NPSN..." 
-                        class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-shadow">
+                        class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-shadow">
                 </div>
                 
                 <!-- Filter Status (Compact) -->
-                <div class="relative w-full sm:w-56 shrink-0">
-                    <select name="status" onchange="this.form.submit()" class="block w-full pl-3 pr-10 py-2.5 text-sm border border-slate-300 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent appearance-none cursor-pointer font-medium">
-                        <option value="">Semua Status</option>
-                        <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif</option>
-                        <option value="nonaktif" {{ request('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                    </div>
+                <div class="w-full sm:w-56 shrink-0">
+                    <x-select name="status" onchange="this.form.submit()" placeholder="Semua Status" :selected="request('status')" :options="[
+                        ['value' => 'aktif', 'label' => 'Aktif'],
+                        ['value' => 'nonaktif', 'label' => 'Nonaktif']
+                    ]" />
                 </div>
             </form>
         </div>
 
-        <!-- Table Container -->
-        <x-card padding="none" class="overflow-visible">
+        <!-- Table Container (Desktop / Tablet) -->
+        <x-card padding="none" class="hidden md:block overflow-visible">
             <div class="overflow-x-auto lg:overflow-visible w-full">
-                <table class="w-full text-left border-collapse min-w-[900px] table-fixed">
+                <table class="w-full text-left border-collapse min-w-[768px] table-fixed">
                     <thead>
                         <tr class="bg-slate-50/70 border-b border-slate-200">
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[32%]">Sekolah</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[12%]">NPSN</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[25%]">Email</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[23%]">Email</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[12%]">Pengguna</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-[10%]">Status</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right w-[9%]">Aksi</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right w-[11%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 w-full">
                         @forelse($schools as $school)
+                            @php
+                                $eligibility = $eligibilityMap[$school->id] ?? ['eligible' => false, 'reasons' => []];
+                            @endphp
                             <tr class="hover:bg-slate-50/50 transition-colors group">
                                 <td class="px-6 py-4 flex items-center gap-3">
                                     @if($school->logo)
                                         <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
                                     @else
-                                        <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
+                                        <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
                                         </div>
                                     @endif
                                     <div class="min-w-0 flex-1">
-                                        <div class="font-bold text-slate-900 text-sm truncate group-hover:text-primary transition-colors">
+                                        <div class="font-bold text-slate-900 text-sm break-words whitespace-normal group-hover:text-primary transition-colors">
                                             <a href="{{ route('super_admin.schools.show', $school) }}" class="focus:outline-none">{{ $school->name }}</a>
                                         </div>
                                     </div>
@@ -104,23 +118,59 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($school->is_active)
-                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider">
                                             <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200">
                                             <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
                                         </span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-1.5">
+                                    <div class="flex items-center justify-end gap-1">
                                         <a href="{{ route('super_admin.schools.show', $school) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                         </a>
                                         <a href="{{ route('super_admin.schools.edit', $school) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                                         </a>
+
+                                        <!-- Menu Dropdown [ ⋮ ] -->
+                                        <x-dropdown align="right" width="48">
+                                            <x-slot name="trigger">
+                                                <button type="button" class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors focus:outline-none" title="Menu Opsi">
+                                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                                                    </svg>
+                                                </button>
+                                            </x-slot>
+
+                                            <x-slot name="content">
+                                                <x-dropdown-link :href="route('super_admin.schools.show', $school)">
+                                                    Lihat Detail
+                                                </x-dropdown-link>
+                                                <x-dropdown-link :href="route('super_admin.schools.edit', $school)">
+                                                    Edit Sekolah
+                                                </x-dropdown-link>
+                                                
+                                                @if($school->is_active)
+                                                    <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; deactivateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-slate-700 hover:bg-slate-100 focus:outline-none transition duration-150 ease-in-out">
+                                                        Nonaktifkan
+                                                    </button>
+                                                @else
+                                                    <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; activateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-green-700 hover:bg-green-50 focus:outline-none transition duration-150 ease-in-out">
+                                                        Aktifkan
+                                                    </button>
+                                                @endif
+
+                                                <div class="border-t border-slate-100 my-1"></div>
+
+                                                <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name), is_active: @js($school->is_active), eligible: @js($eligibility['eligible']), reasons: @js($eligibility['reasons']) }; confirmName = ''; deleteModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-semibold leading-5 text-red-600 hover:bg-red-50 focus:outline-none transition duration-150 ease-in-out">
+                                                    Hapus Permanen
+                                                </button>
+                                            </x-slot>
+                                        </x-dropdown>
                                     </div>
                                 </td>
                             </tr>
@@ -160,5 +210,263 @@
                 </div>
             @endif
         </x-card>
+
+        <!-- Mobile Card List Container -->
+        <div class="block md:hidden space-y-4">
+            @forelse($schools as $school)
+                @php
+                    $eligibility = $eligibilityMap[$school->id] ?? ['eligible' => false, 'reasons' => []];
+                @endphp
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex items-start gap-3">
+                        @if($school->logo)
+                            <img src="{{ Storage::url($school->logo) }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0">
+                        @else
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M9 8h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" /></svg>
+                            </div>
+                        @endif
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-start justify-between gap-2">
+                                <a href="{{ route('super_admin.schools.show', $school) }}" class="font-bold text-slate-900 text-sm hover:text-primary leading-snug break-words whitespace-normal">
+                                    {{ $school->name }}
+                                </a>
+                                @if($school->is_active)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 text-green-700 text-[10px] font-bold uppercase tracking-wider shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Aktif
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider border border-slate-200 shrink-0">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <p class="text-xs font-semibold text-slate-500 mt-1">
+                                NPSN: <span class="text-slate-700">{{ $school->npsn ?? '-' }}</span>
+                            </p>
+                            
+                            @if($school->email)
+                                <p class="text-xs text-slate-500 truncate mt-0.5">
+                                    {{ $school->email }}
+                                </p>
+                            @endif
+
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                                <span class="text-xs font-medium text-slate-500">
+                                    {{ number_format($school->users_count) }} akun
+                                </span>
+
+                                <div class="flex items-center gap-1.5">
+                                    <a href="{{ route('super_admin.schools.show', $school) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                                        <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        Lihat
+                                    </a>
+                                    <a href="{{ route('super_admin.schools.edit', $school) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                                        <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                                        Edit
+                                    </a>
+                                    <x-dropdown align="right" width="48">
+                                        <x-slot name="trigger">
+                                            <button type="button" class="p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg border border-slate-200">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                                                </svg>
+                                            </button>
+                                        </x-slot>
+                                        <x-slot name="content">
+                                            @if($school->is_active)
+                                                <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; deactivateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-slate-700 hover:bg-slate-100">
+                                                    Nonaktifkan
+                                                </button>
+                                            @else
+                                                <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name) }; activateModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-medium leading-5 text-green-700 hover:bg-green-50">
+                                                    Aktifkan
+                                                </button>
+                                            @endif
+                                            <div class="border-t border-slate-100 my-1"></div>
+                                            <button type="button" @click="selectedSchool = { id: {{ $school->id }}, name: @js($school->name), is_active: @js($school->is_active), eligible: @js($eligibility['eligible']), reasons: @js($eligibility['reasons']) }; confirmName = ''; deleteModalOpen = true" class="block w-full px-4 py-2 text-left text-xs font-semibold leading-5 text-red-600 hover:bg-red-50">
+                                                Hapus Permanen
+                                            </button>
+                                        </x-slot>
+                                    </x-dropdown>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white border border-slate-200 rounded-xl p-8 text-center">
+                    <div class="w-12 h-12 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-900 mb-1">Belum Ada Data Sekolah</h3>
+                    <p class="text-xs text-slate-500 mb-4">Belum terdapat data sekolah yang sesuai kriteria.</p>
+                </div>
+            @endforelse
+
+            @if($schools->hasPages())
+                <div class="pt-2">
+                    {{ $schools->links() }}
+                </div>
+            @endif
+        </div>
+
+        <!-- Modal Nonaktifkan Sekolah -->
+        <div x-show="deactivateModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
+            <div x-show="deactivateModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/60" @click="deactivateModalOpen = false"></div>
+            <div x-show="deactivateModalOpen" x-transition class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl max-w-md w-full relative z-10 space-y-4">
+                <div class="flex items-center gap-3 text-amber-600">
+                    <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Nonaktifkan Sekolah?</h3>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Data sekolah <strong class="text-slate-900" x-text="selectedSchool?.name"></strong> tetap tersimpan di database. Sekolah yang dinonaktifkan tidak dapat diakses sebagai tenant aktif, namun dapat diaktifkan kembali sewaktu-waktu oleh Super Admin.
+                </p>
+                <form :action="'/super-admin/schools/' + selectedSchool?.id + '/toggle-status'" method="POST" class="pt-2 flex justify-end gap-3">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="is_active" value="0">
+                    <button type="button" @click="deactivateModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors">
+                        Nonaktifkan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Aktifkan Sekolah -->
+        <div x-show="activateModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
+            <div x-show="activateModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/60" @click="activateModalOpen = false"></div>
+            <div x-show="activateModalOpen" x-transition class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl max-w-md w-full relative z-10 space-y-4">
+                <div class="flex items-center gap-3 text-green-600">
+                    <div class="w-10 h-10 rounded-full bg-green-50 border border-green-100 flex items-center justify-center shrink-0">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900">Aktifkan Kembali Sekolah?</h3>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                    Sekolah <strong class="text-slate-900" x-text="selectedSchool?.name"></strong> akan diaktifkan kembali dan pengguna tenant dapat mengakses platform secara normal.
+                </p>
+                <form :action="'/super-admin/schools/' + selectedSchool?.id + '/toggle-status'" method="POST" class="pt-2 flex justify-end gap-3">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="is_active" value="1">
+                    <button type="button" @click="activateModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl transition-colors">
+                        Aktifkan
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Hapus Permanen / Blocked Warning -->
+        <div x-show="deleteModalOpen" x-cloak class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0 flex items-center justify-center">
+            <div x-show="deleteModalOpen" x-transition.opacity class="fixed inset-0 bg-slate-900/60" @click="deleteModalOpen = false"></div>
+            <div x-show="deleteModalOpen" x-transition class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl max-w-lg w-full relative z-10 space-y-5">
+                <!-- If Eligible -->
+                <template x-if="selectedSchool?.eligible">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-red-600">
+                            <div class="w-10 h-10 rounded-full bg-red-50 border border-red-100 flex items-center justify-center shrink-0">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">Hapus Sekolah Permanen?</h3>
+                                <p class="text-xs text-slate-500">Tindakan ini destruktif dan tidak dapat dibatalkan.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs sm:text-sm text-slate-700">
+                            Sekolah: <strong class="text-slate-900" x-text="selectedSchool?.name"></strong>
+                        </div>
+
+                        <div class="text-xs text-slate-600 leading-relaxed">
+                            <p class="font-semibold text-slate-800">Tindakan ini akan menghapus data sekolah secara permanen.</p>
+                            <p class="mt-1">Ketik nama sekolah persis di bawah ini untuk mengonfirmasi penghapusan:</p>
+                        </div>
+
+                        <form :action="'/super-admin/schools/' + selectedSchool?.id" method="POST" class="space-y-4 pt-1">
+                            @csrf
+                            @method('DELETE')
+                            <input type="text" name="confirm_school_name" x-model="confirmName" :placeholder="selectedSchool?.name" required class="block w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:ring-red-500 focus:border-red-500">
+                            
+                            <div class="flex items-center justify-end gap-3 pt-2">
+                                <button type="button" @click="deleteModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                                    Batal
+                                </button>
+                                <button type="submit" :disabled="confirmName.trim() !== (selectedSchool?.name || '').trim()" :class="confirmName.trim() === (selectedSchool?.name || '').trim() ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer' : 'bg-slate-200 text-slate-400 cursor-not-allowed'" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-colors">
+                                    Hapus Permanen
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </template>
+
+                <!-- If Blocked -->
+                <template x-if="selectedSchool && !selectedSchool.eligible">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 text-amber-600">
+                            <div class="w-10 h-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">Penghapusan Permanen Tidak Tersedia</h3>
+                                <p class="text-xs text-amber-700 font-medium">Sekolah masih memiliki data terkait di sistem.</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-700">
+                            Sekolah: <strong class="text-slate-900" x-text="selectedSchool?.name"></strong>
+                        </div>
+
+                        <div class="space-y-2">
+                            <p class="text-xs font-semibold text-slate-700">Rincian dependency yang memblokir penghapusan:</p>
+                            <div class="max-h-48 overflow-y-auto p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1.5">
+                                <template x-for="reason in selectedSchool.reasons">
+                                    <div class="flex items-start gap-2 text-xs text-slate-600">
+                                        <span class="text-amber-500 font-bold">•</span>
+                                        <span x-text="reason"></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-800 flex items-start gap-2.5">
+                            <svg class="h-4 w-4 text-blue-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Untuk menjaga integritas data tenant dan riwayat historis, gunakan fitur <strong>Nonaktifkan Sekolah</strong> sebagai gantinya.</span>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 pt-2">
+                            <button type="button" @click="deleteModalOpen = false" class="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                                Batal
+                            </button>
+                            <template x-if="selectedSchool?.is_active">
+                                <button type="button" @click="deleteModalOpen = false; deactivateModalOpen = true" class="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-colors">
+                                    Nonaktifkan Sekolah
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
     </div>
 </x-layouts.app>
+

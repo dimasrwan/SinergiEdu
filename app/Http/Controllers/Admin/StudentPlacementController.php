@@ -10,7 +10,9 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\StudentClass;
+use App\Services\TenantService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentPlacementController extends Controller
 {
@@ -56,56 +58,125 @@ class StudentPlacementController extends Controller
     public function create()
     {
         Gate::authorize('create', \App\Models\StudentClass::class);
-        $students = Student::with('user')->get()->sortBy('user.name');
-        $classrooms = Classroom::orderBy('name')->get();
-        $academicYears = AcademicYear::orderByDesc('year')->get();
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        
+        if (!$activeAcademicYear) {
+            return redirect()->route('admin.student-placements.index')->with('error', 'Tidak ada Tahun Ajaran Aktif. Silakan atur Tahun Ajaran terlebih dahulu.');
+        }
+
+        $students = Student::with('user')
+            ->whereDoesntHave('classes', function ($query) use ($activeAcademicYear) {
+                $query->where('student_classes.academic_year_id', $activeAcademicYear->id);
+            })
+            ->get()
+            ->sortBy(fn($s) => $s->user->name ?? '');
+
+        $classrooms = Classroom::where('academic_year_id', $activeAcademicYear->id)->orderBy('name')->get();
+        $academicYears = collect([$activeAcademicYear]); // Only pass the active one for UI readonly
 
         return view('pages.admin.student-placements.create', compact(
             'students',
             'classrooms',
-            'academicYears'
+            'academicYears',
+            'activeAcademicYear'
         ));
     }
 
     public function store(Request $request)
     {
         Gate::authorize('create', \App\Models\StudentClass::class);
-        $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'class_id' => 'required|exists:classes,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
-        ], [
-            'student_id.required' => 'Siswa wajib dipilih.',
-            'class_id.required' => 'Kelas wajib dipilih.',
-            'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
-        ]);
 
-        // Duplicate assignment validation: One student can only have one class per academic year
-        $existingPlacement = StudentClass::with('classroom')
-            ->where('student_id', $validated['student_id'])
-            ->where('academic_year_id', $validated['academic_year_id'])
-            ->first();
-
-        if ($existingPlacement) {
-            return back()->withInput()->withErrors([
-                'duplicate' => "Siswa sudah ditempatkan pada kelas {$existingPlacement->classroom->name} untuk tahun ajaran tersebut."
+        if ($request->has('student_id') && (!$request->has('student_ids') || empty($request->input('student_ids')))) {
+            $request->merge([
+                'student_ids' => [$request->input('student_id')]
             ]);
         }
 
-        StudentClass::create($validated);
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+        
+        $validated = $request->validate([
+            'student_ids' => 'required|array|min:1',
+            'student_ids.*' => [
+                'required',
+                'numeric',
+                Rule::exists('students', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'class_id' => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'academic_year_id' => [
+                'required',
+                Rule::exists('academic_years', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+        ], [
+            'student_ids.required' => 'Pilih minimal satu siswa.',
+            'student_ids.min' => 'Pilih minimal satu siswa.',
+            'student_ids.*.exists' => 'Siswa yang dipilih tidak valid atau bukan milik sekolah Anda.',
+            'class_id.required' => 'Kelas wajib dipilih.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid atau bukan milik sekolah Anda.',
+            'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
+            'academic_year_id.exists' => 'Tahun ajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
+        ]);
 
-        if ($request->input('redirect_to') === 'student') {
-            return redirect()->route('admin.students.show', $validated['student_id'])
-                ->with('success', 'Penempatan siswa berhasil ditambahkan.');
+        $successCount = 0;
+        $failedStudents = [];
+
+        \Illuminate\Support\Facades\DB::beginTransaction();
+        try {
+            foreach ($validated['student_ids'] as $studentId) {
+                // Fetch student (applies TenantScope automatically)
+                $student = Student::with('user')->find($studentId);
+                
+                if (!$student) {
+                    $failedStudents[] = "ID Siswa {$studentId} tidak ditemukan atau bukan milik sekolah ini.";
+                    continue;
+                }
+
+                $existingPlacement = StudentClass::with('classroom')
+                    ->where('student_id', $student->id)
+                    ->where('academic_year_id', $validated['academic_year_id'])
+                    ->first();
+
+                if ($existingPlacement) {
+                    $failedStudents[] = "{$student->user->name} (Sudah di kelas {$existingPlacement->classroom->name})";
+                    continue;
+                }
+
+                StudentClass::create([
+                    'student_id' => $student->id,
+                    'class_id' => $validated['class_id'],
+                    'academic_year_id' => $validated['academic_year_id'],
+                ]);
+                $successCount++;
+            }
+            \Illuminate\Support\Facades\DB::commit();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            return back()->withInput()->with('error', 'Terjadi kesalahan sistem saat menyimpan data: ' . $e->getMessage());
+        }
+
+        $message = "Berhasil menempatkan {$successCount} siswa.";
+        if (count($failedStudents) > 0) {
+            $message .= " Gagal menempatkan " . count($failedStudents) . " siswa: " . implode(', ', $failedStudents);
+
+            if ($request->input('redirect_to') === 'students_index') {
+                return redirect()->route('admin.students.index')->with('warning', $message);
+            }
+            if ($request->input('redirect_to') === 'student' && $request->input('student_id')) {
+                return redirect()->route('admin.students.show', $request->input('student_id'))->with('warning', $message);
+            }
+            return redirect()->route('admin.student-placements.index')->with('warning', $message);
         }
 
         if ($request->input('redirect_to') === 'students_index') {
-            return redirect()->route('admin.students.index')
-                ->with('success', 'Penempatan siswa berhasil ditambahkan.');
+            return redirect()->route('admin.students.index')->with('success', $message);
+        }
+        if ($request->input('redirect_to') === 'student' && $request->input('student_id')) {
+            return redirect()->route('admin.students.show', $request->input('student_id'))->with('success', $message);
         }
 
-        return redirect()->route('admin.student-placements.index')
-            ->with('success', 'Penempatan siswa berhasil ditambahkan.');
+        return redirect()->route('admin.student-placements.index')->with('success', $message);
     }
 
     public function edit(StudentClass $studentPlacement)
@@ -126,14 +197,28 @@ class StudentPlacementController extends Controller
     public function update(Request $request, StudentClass $studentPlacement)
     {
         Gate::authorize('update', $studentPlacement);
+        $schoolId = app(TenantService::class)->getSchoolId() ?? auth()->user()->school_id;
+
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'class_id' => 'required|exists:classes,id',
-            'academic_year_id' => 'required|exists:academic_years,id',
+            'student_id' => [
+                'required',
+                Rule::exists('students', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'class_id' => [
+                'required',
+                Rule::exists('classes', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
+            'academic_year_id' => [
+                'required',
+                Rule::exists('academic_years', 'id')->where(fn ($q) => $q->where('school_id', $schoolId)),
+            ],
         ], [
             'student_id.required' => 'Siswa wajib dipilih.',
+            'student_id.exists' => 'Siswa yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'class_id.required' => 'Kelas wajib dipilih.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid atau bukan milik sekolah Anda.',
             'academic_year_id.required' => 'Tahun ajaran wajib dipilih.',
+            'academic_year_id.exists' => 'Tahun ajaran yang dipilih tidak valid atau bukan milik sekolah Anda.',
         ]);
 
         // Duplicate validation (excluding current record)

@@ -33,7 +33,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Logo Upload Section -->
-                            <div class="md:col-span-2 flex flex-col sm:flex-row items-start gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100" x-data="logoPreview()">
+                            <div class="md:col-span-2 flex flex-col sm:flex-row items-start gap-6 bg-slate-50 p-6 rounded-lg border border-slate-100" x-data="logoPreview()">
                                 <div class="shrink-0 relative group">
                                     <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-xl bg-white border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden shadow-sm relative">
                                         <!-- Current/Preview Logo -->
@@ -59,7 +59,7 @@
                                     </div>
                                     <div class="relative">
                                         <input type="file" id="school_logo" name="school_logo" accept="image/jpeg,image/png,image/jpg,image/webp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" @change="fileChosen" />
-                                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 focus-within:ring-2 focus-within:ring-accent focus-within:border-accent transition cursor-pointer shadow-sm">
+                                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg-lg text-sm font-medium text-slate-700 hover:bg-slate-50 focus-within:ring-2 focus-within:ring-accent focus-within:border-accent transition cursor-pointer shadow-sm">
                                             <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
                                             <span x-text="fileName ? fileName : 'Pilih File Logo'">Pilih File Logo</span>
                                         </div>

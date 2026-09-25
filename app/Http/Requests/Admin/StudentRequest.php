@@ -24,7 +24,7 @@ class StudentRequest extends FormRequest
             'email' => 'required|email|max:100|unique:users,email,' . $userId,
             'nis' => 'required|string|max:50|unique:students,nis,' . $studentId,
             'gender' => 'required|in:L,P',
-            'date_of_birth' => 'required|date',
+            'date_of_birth' => 'required|date|before_or_equal:today',
             'parent_id' => 'nullable|exists:parents,id',
             'password' => $student ? 'nullable|string|min:8' : 'required|string|min:8',
         ];
@@ -41,6 +41,8 @@ class StudentRequest extends FormRequest
             'nis.unique' => 'NIS sudah terdaftar.',
             'gender.required' => 'Jenis kelamin wajib dipilih.',
             'date_of_birth.required' => 'Tanggal lahir wajib diisi.',
+            'date_of_birth.date' => 'Tanggal lahir tidak valid.',
+            'date_of_birth.before_or_equal' => 'Tanggal lahir tidak boleh melebihi hari ini.',
             'class_id.required' => 'Kelas wajib dipilih.',
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal terdiri dari 8 karakter.',

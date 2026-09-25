@@ -13,10 +13,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 Route::get('/materials', [MaterialController::class, 'index'])->name('materials.index');
 Route::get('/materials/{material}', [MaterialController::class, 'show'])->name('materials.show');
+Route::get('/materials/{material}/preview', [MaterialController::class, 'preview'])->name('materials.preview');
+Route::get('/materials/{material}/download', [MaterialController::class, 'download'])->name('materials.download');
 
 Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');
 Route::get('/assignments/{assignment}', [AssignmentController::class, 'show'])->name('assignments.show');
+Route::get('/assignments/{assignment}/preview', [AssignmentController::class, 'preview'])->name('assignments.preview');
 Route::get('/assignments/{assignment}/download', [AssignmentController::class, 'download'])->name('assignments.download');
+Route::get('/assignments/{assignment}/submissions/preview', [AssignmentController::class, 'previewSubmission'])->name('assignments.submissions.preview');
 Route::get('/assignments/{assignment}/submissions/download', [AssignmentController::class, 'downloadSubmission'])->name('assignments.submissions.download');
 Route::post('/assignments/{assignment}/submit', [AssignmentController::class, 'submit'])->name('assignments.submit');
 
@@ -25,4 +29,7 @@ Route::get('/grades/{grade}', [\App\Http\Controllers\Siswa\GradeController::clas
 
 Route::get('/feedbacks', [\App\Http\Controllers\Siswa\FeedbackController::class, 'index'])->name('feedbacks.index');
 Route::get('/feedbacks/{feedback}', [\App\Http\Controllers\Siswa\FeedbackController::class, 'show'])->name('feedbacks.show');
+
+Route::get('/reflections', [\App\Http\Controllers\Siswa\ReflectionController::class, 'index'])->name('reflections.index');
+Route::post('/reflections', [\App\Http\Controllers\Siswa\ReflectionController::class, 'store'])->name('reflections.store');
 

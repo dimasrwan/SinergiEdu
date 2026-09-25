@@ -20,6 +20,8 @@ class AssignmentRequest extends FormRequest
             'description' => 'required|string',
             'class_id' => 'required|exists:classes,id',
             'subject_id' => 'required|exists:subjects,id',
+            'learning_meeting_id' => 'nullable|exists:learning_meetings,id',
+            'material_id' => 'nullable|exists:materials,id',
             'deadline' => 'required|date|after_or_equal:today',
             'attachment' => 'nullable|file|max:20480', // Maks 20MB untuk lampiran tugas
         ];

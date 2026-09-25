@@ -13,20 +13,29 @@ class PengawasPolicy
      */
     public function before(User $user, string $ability, $model = null): bool|null
     {
+        if ($user->role && $user->role->name === 'super_admin') {
+            return true;
+        }
+
         if ($user->role && $user->role->name === 'admin') {
+            // Admin Sekolah cannot create new Pengawas identity or delete Pengawas account
+            if (in_array($ability, ['create', 'update', 'delete', 'restore', 'forceDelete'])) {
+                return false;
+            }
+
             if ($model) {
                 if (is_string($model)) {
                     return true;
                 }
-                $modelSchoolId = null;
                 if ($model instanceof \App\Models\Pengawas) {
-                    $relatedUser = \App\Models\User::find($model->user_id);
-                    $modelSchoolId = $relatedUser ? $relatedUser->school_id : null;
-                } else if (isset($model->school_id)) {
-                    $modelSchoolId = $model->school_id;
-                }
-                
-                if ($modelSchoolId === null || $user->school_id !== $modelSchoolId) {
+                    $relatedUser = $model->user ?? \App\Models\User::find($model->user_id);
+                    if ($relatedUser) {
+                        $isAssignedToAdminSchool = $relatedUser->assignedSchools()->where('schools.id', $user->school_id)->exists();
+                        if (!$isAssignedToAdminSchool) {
+                            return false;
+                        }
+                    }
+                } else if (isset($model->school_id) && $user->school_id !== $model->school_id) {
                     return false;
                 }
             }

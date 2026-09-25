@@ -13,10 +13,31 @@ class PengawasRequest extends FormRequest
 
     public function rules(): array
     {
-        $pengawas = $this->route('pengawa'); // Wait, default resource parameter for 'pengawas' is 'pengawa' because Laravel singularizes 'pengawas' to 'pengawa' or 'pengawas'. Let me check. Actually it usually singularizes 'pengawas' to 'pengawa'. Let's explicitly check the parameter name or use `$this->route('pengawas') ?? $this->route('pengawa')`. Let's just use `$this->route('pengawa') ?? $this->route('pengawas')`.
-        $pengawasModel = $this->route('pengawa') ?? $this->route('pengawas');
+        $param = $this->route('pengawas') ?? $this->route('pengawa');
+        $pengawasModel = $param instanceof \App\Models\Pengawas ? $param : ($param ? \App\Models\Pengawas::find($param) : null);
         $userId = $pengawasModel ? $pengawasModel->user_id : null;
         $pengawasId = $pengawasModel ? $pengawasModel->id : null;
+
+        $user = auth()->user();
+        $isSchoolAdmin = $user && $user->role && $user->role->name === 'admin';
+
+        $schoolsRules = [
+            'nullable',
+            'array',
+            function ($attribute, $value, $fail) use ($isSchoolAdmin, $user) {
+                if ($isSchoolAdmin) {
+                    if (empty($value) || !is_array($value) || count($value) < 1) {
+                        $fail('Pengawas harus memiliki minimal satu sekolah penugasan.');
+                    } else {
+                        foreach ($value as $schoolId) {
+                            if ((int) $schoolId !== (int) $user->school_id) {
+                                $fail('Admin Sekolah tidak diperbolehkan memberikan akses sekolah lain.');
+                            }
+                        }
+                    }
+                }
+            }
+        ];
 
         return [
             'name' => 'required|string|max:100',
@@ -25,6 +46,8 @@ class PengawasRequest extends FormRequest
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'password' => $pengawasModel ? 'nullable|string|min:8|confirmed' : 'required|string|min:8|confirmed',
+            'schools' => $schoolsRules,
+            'schools.*' => 'exists:schools,id',
         ];
     }
 
@@ -39,6 +62,8 @@ class PengawasRequest extends FormRequest
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal terdiri dari 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'schools.required' => 'Pengawas harus memiliki minimal satu sekolah penugasan.',
+            'schools.min' => 'Pengawas harus memiliki minimal satu sekolah penugasan.',
         ];
     }
 }

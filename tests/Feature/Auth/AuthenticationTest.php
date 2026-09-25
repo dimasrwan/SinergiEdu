@@ -34,12 +34,48 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $response = $this->post('/login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+        $response->assertSessionHasErrors([
+            'email' => 'Email atau Password anda salah. Silahkan coba lagi.',
+        ]);
+    }
+
+    public function test_users_can_not_authenticate_when_inactive(): void
+    {
+        $user = User::factory()->create([
+            'is_active' => false,
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertGuest();
+        $response->assertSessionHasErrors('email');
+    }
+
+    public function test_super_admin_can_authenticate(): void
+    {
+        $role = \App\Models\Role::firstOrCreate(['name' => 'super_admin'], ['display_name' => 'Super Admin']);
+        $superAdmin = User::factory()->create([
+            'role_id' => $role->id,
+            'school_id' => null,
+            'is_active' => true,
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => $superAdmin->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect('/super-admin/dashboard');
     }
 
     public function test_users_can_logout(): void

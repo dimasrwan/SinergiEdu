@@ -41,9 +41,9 @@ class EvaluationController extends Controller
             ->with('success', 'Evaluasi sekolah berhasil disimpan.');
     }
 
-    public function show(SchoolEvaluation $evaluation): View
+    public function show(SchoolEvaluation $evaluasi): View
     {
-        $evaluation->load('user');
-        return view('pages.kepala-sekolah.evaluasi.show', compact('evaluation'));
+        $evaluasi->load('user');
+        return view('pages.kepala-sekolah.evaluasi.show', ['evaluation' => $evaluasi]);
     }
 }

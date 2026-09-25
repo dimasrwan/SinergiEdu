@@ -8,4 +8,5 @@ return [
     AppServiceProvider::class,
     DomPDFServiceProvider::class,
     ExcelServiceProvider::class,
+    Laravel\Socialite\SocialiteServiceProvider::class,
 ];

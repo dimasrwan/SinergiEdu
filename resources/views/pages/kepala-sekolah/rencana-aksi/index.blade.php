@@ -33,12 +33,12 @@
 
         <div class="space-y-4">
             @forelse($actionPlans as $actionPlan)
-                <a href="{{ route('kepala-sekolah.rencana-aksi.show', $actionPlan) }}" class="block p-5 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-md transition group">
+                <a href="{{ route('kepala-sekolah.rencana-aksi.show', $actionPlan) }}" class="block p-5 bg-white border border-slate-200 rounded-xl hover:border-primary hover:shadow-sm transition group">
                     <div class="flex items-center justify-between gap-4 mb-2">
                         <div class="flex items-center gap-3 flex-wrap">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $actionPlan->priority_color }}">{{ ucfirst($actionPlan->priority) }}</span>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">{{ $actionPlan->category_label }}</span>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $actionPlan->status_color }}">{{ $actionPlan->status_label }}</span>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $actionPlan->priority_color }}">{{ ucfirst($actionPlan->priority) }}</span>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">{{ $actionPlan->category_label }}</span>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold {{ $actionPlan->status_color }}">{{ $actionPlan->status_label }}</span>
                         </div>
                         <span class="text-xs text-slate-400">{{ $actionPlan->created_at->diffForHumans() }}</span>
                     </div>

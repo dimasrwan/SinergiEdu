@@ -40,7 +40,7 @@ class AcademicYearPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -48,7 +48,7 @@ class AcademicYearPolicy
      */
     public function view(User $user, AcademicYear $academicYear): bool
     {
-        return true;
+        return false;
     }
 
     /**

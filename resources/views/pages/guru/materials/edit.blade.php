@@ -42,6 +42,20 @@
                 </div>
 
                 <div>
+                    <x-input-label for="learning_meeting_id" :value="__('Pertemuan Pembelajaran (Opsional)')" />
+                    <x-select id="learning_meeting_id" name="learning_meeting_id">
+                        <option value="">-- Belum dikaitkan ke pertemuan --</option>
+                        @foreach($meetings as $meeting)
+                            <option value="{{ $meeting->id }}" @selected(old('learning_meeting_id', $material->learning_meeting_id) == $meeting->id)>
+                                P{{ $meeting->meeting_number }} · {{ $meeting->meeting_date->format('d M Y') }} · {{ $meeting->classroom->name }} · {{ $meeting->subject->name }}
+                            </option>
+                        @endforeach
+                    </x-select>
+                    <p class="mt-1 text-xs text-slate-500">Pertemuan harus memakai kelas dan mata pelajaran yang sama dengan materi.</p>
+                    <x-input-error :messages="$errors->get('learning_meeting_id')" class="mt-2" />
+                </div>
+
+                <div>
                     <x-input-label for="title" :value="__('Judul Materi')" />
                     <x-text-input id="title" name="title" type="text" :value="old('title', $material->title)" required placeholder="Contoh: Pengenalan Aljabar Linear" />
                     <x-input-error :messages="$errors->get('title')" class="mt-2" />
@@ -50,7 +64,7 @@
                 <div>
                     <x-input-label for="description" :value="__('Deskripsi / Instruksi')" />
                     <textarea id="description" name="description" rows="4" placeholder="Tuliskan petunjuk pembelajaran bagi siswa..."
-                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white transition duration-150">{{ old('description', $material->description) }}</textarea>
+                        class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:bg-white transition duration-150">{{ old('description', $material->description) }}</textarea>
                     <x-input-error :messages="$errors->get('description')" class="mt-2" />
                 </div>
 
@@ -63,7 +77,7 @@
                             @dragleave.prevent="dragover = false"
                             @drop.prevent="drop($event)"
                             :class="{'border-accent bg-blue-50/50': dragover, 'border-slate-200 bg-slate-50': !dragover}"
-                            class="mt-2 flex justify-center rounded-xl border-2 border-dashed px-6 pt-5 pb-6 transition-colors"
+                            class="mt-2 flex justify-center rounded-lg border-2 border-dashed px-6 pt-5 pb-6 transition-colors"
                         >
                             <div class="space-y-1 text-center">
                                 <svg class="mx-auto h-12 w-12 text-slate-300" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -80,7 +94,7 @@
                             </div>
                         </div>
                         
-                        <div x-show="fileName" style="display: none;" class="mt-3 flex items-center p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div x-show="fileName" style="display: none;" class="mt-3 flex items-center p-3 bg-slate-50 border border-slate-200 rounded-lg-lg">
                             <svg class="h-6 w-6 text-danger mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
@@ -96,12 +110,28 @@
                         </div>
                         
                         @if($material->file_path)
-                            <div x-show="!fileName" class="mt-3">
-                                <a href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-2 rounded-lg hover:bg-blue-100 transition">
+                            <div x-show="!fileName" class="mt-3 inline-flex items-center rounded-xl bg-red-50 border border-red-100 overflow-hidden text-xs">
+                                <a
+                                    href="{{ route('guru.materials.preview', ['material' => $material->id, 'type' => 'file']) }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex items-center gap-1.5 font-semibold text-danger hover:text-red-700 hover:bg-red-100/60 px-3 py-2 transition"
+                                >
                                     <svg class="h-4 w-4 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                     Lihat PDF Saat Ini
+                                </a>
+                                <span class="w-px h-4 bg-red-200"></span>
+                                <a
+                                    href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'file']) }}"
+                                    class="p-2 text-danger hover:text-red-700 hover:bg-red-100/60 transition"
+                                    title="Unduh PDF"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
                                 </a>
                             </div>
                         @endif
@@ -116,7 +146,7 @@
                             @dragleave.prevent="dragover = false"
                             @drop.prevent="drop($event)"
                             :class="{'border-accent bg-blue-50/50': dragover, 'border-slate-200 bg-slate-50': !dragover}"
-                            class="mt-2 flex justify-center rounded-xl border-2 border-dashed px-6 pt-5 pb-6 transition-colors"
+                            class="mt-2 flex justify-center rounded-lg border-2 border-dashed px-6 pt-5 pb-6 transition-colors"
                         >
                             <div class="space-y-1 text-center">
                                 <svg class="mx-auto h-12 w-12 text-slate-300" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -133,7 +163,7 @@
                             </div>
                         </div>
                         
-                        <div x-show="fileName" style="display: none;" class="mt-3 flex items-center p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                        <div x-show="fileName" style="display: none;" class="mt-3 flex items-center p-3 bg-slate-50 border border-slate-200 rounded-lg-lg">
                             <svg class="h-6 w-6 text-accent mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
@@ -149,13 +179,32 @@
                         </div>
                         
                         @if($material->video_path)
-                            <div x-show="!fileName" class="mt-3">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-100 px-3 py-2 rounded-lg">
-                                    <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            <div x-show="!fileName" class="mt-3 inline-flex items-center rounded-xl bg-blue-50 border border-blue-100 overflow-hidden text-xs">
+                                <button
+                                    type="button"
+                                    @click="$dispatch('open-preview', {
+                                        title: 'Video Materi: {{ addslashes($material->title) }}',
+                                        fileUrl: '{{ route('guru.materials.preview', ['material' => $material->id, 'type' => 'video']) }}',
+                                        downloadUrl: '{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}',
+                                        fileName: '{{ basename($material->video_path) }}'
+                                    })"
+                                    class="inline-flex items-center gap-1.5 font-semibold text-blue-700 hover:text-blue-900 hover:bg-blue-100/60 px-3 py-2 transition"
+                                >
+                                    <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     </svg>
-                                    Video saat ini terdaftar
-                                </span>
+                                    Putar Video Saat Ini
+                                </button>
+                                <span class="w-px h-4 bg-blue-200"></span>
+                                <a
+                                    href="{{ route('guru.materials.download', ['material' => $material->id, 'type' => 'video']) }}"
+                                    class="p-2 text-blue-700 hover:text-blue-900 hover:bg-blue-100/60 transition"
+                                    title="Unduh Video"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
                             </div>
                         @endif
                         <x-input-error :messages="$errors->get('video')" class="mt-2" />
@@ -168,6 +217,8 @@
                 </div>
             </form>
         </x-card>
+
+        <x-file-preview-modal />
     </div>
 
     <script>

@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Material extends Model
 {
@@ -16,6 +17,7 @@ class Material extends Model
         'teacher_id',
         'class_id',
         'subject_id',
+        'learning_meeting_id',
         'title',
         'description',
         'file_path',
@@ -44,5 +46,15 @@ class Material extends Model
     public function subject(): BelongsTo
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function learningMeeting(): BelongsTo
+    {
+        return $this->belongsTo(LearningMeeting::class);
+    }
+
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class);
     }
 }
