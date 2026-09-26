@@ -16,6 +16,7 @@
     <style>
         [x-cloak] { display: none !important; }
 
+<<<<<<< HEAD
         /* Unified CSS Grid Layout for SinergiEdu App Shell */
         :root {
             --sidebar-speed: 250ms;
@@ -77,6 +78,35 @@
         html.sidebar-preload-mini aside nav ul li.px-3:not(:has(a)),
         html.sidebar-preload-mini aside nav ul li.border-t,
         html.sidebar-preload-mini .sidebar-text-hide {
+=======
+        /* Smooth Easing for Sidebar & Layout Transitions */
+        :root {
+            --sidebar-speed: 250ms;
+        }
+
+        .sidebar-transition {
+            transition: width var(--sidebar-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        padding var(--sidebar-speed) cubic-bezier(0.4, 0, 0.2, 1),
+                        transform var(--sidebar-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .layout-transition {
+            transition: padding-left var(--sidebar-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Collapsed / Mini Sidebar Global Rules */
+        .sidebar-mini-mode nav ul li > span,
+        .sidebar-mini-mode nav ul li > div.uppercase,
+        .sidebar-mini-mode nav ul li span.uppercase,
+        .sidebar-mini-mode nav ul li div[class*="tracking-wide"],
+        .sidebar-mini-mode nav ul li span[class*="tracking-wide"],
+        .sidebar-mini-mode nav ul li.pt-1,
+        .sidebar-mini-mode nav ul li.pt-3,
+        .sidebar-mini-mode nav ul li.mt-4:not(:has(a)),
+        .sidebar-mini-mode nav ul li.mt-6:not(:has(a)),
+        .sidebar-mini-mode nav ul li.px-2:not(:has(a)),
+        .sidebar-mini-mode nav ul li.px-3:not(:has(a)) {
+>>>>>>> origin/main
             display: none !important;
             height: 0 !important;
             margin: 0 !important;
@@ -85,14 +115,19 @@
             overflow: hidden !important;
         }
 
+<<<<<<< HEAD
         .sidebar-collapsed aside nav ul li a,
         html.sidebar-preload-mini aside nav ul li a {
+=======
+        .sidebar-mini-mode nav ul li a {
+>>>>>>> origin/main
             width: 100% !important;
             justify-content: center !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
         }
 
+<<<<<<< HEAD
         .sidebar-collapsed aside nav ul li a > span:not([class*="sr-only"]),
         html.sidebar-preload-mini aside nav ul li a > span:not([class*="sr-only"]) {
             display: none !important;
@@ -103,6 +138,17 @@
             from {
                 opacity: 0.96;
                 transform: translateY(2px);
+=======
+        .sidebar-mini-mode nav ul li a > span:not([class*="sr-only"]) {
+            display: none !important;
+        }
+
+        /* Subtle Page Enter Transition (180ms ease-out) */
+        @keyframes pageFadeIn {
+            from {
+                opacity: 0.88;
+                transform: translateY(3px);
+>>>>>>> origin/main
             }
             to {
                 opacity: 1;
@@ -111,14 +157,23 @@
         }
 
         .page-content-enter {
+<<<<<<< HEAD
             animation: pageFadeIn 160ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+=======
+            animation: pageFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+>>>>>>> origin/main
             will-change: opacity, transform;
         }
 
         /* Accessibility: Reduced Motion Support */
         @media (prefers-reduced-motion: reduce) {
+<<<<<<< HEAD
             .app-shell-grid,
             .sidebar-panel-transition,
+=======
+            .sidebar-transition,
+            .layout-transition,
+>>>>>>> origin/main
             .page-content-enter,
             * {
                 animation-duration: 0.01ms !important;
@@ -147,7 +202,11 @@
         })();
     </script>
 </head>
+<<<<<<< HEAD
 <body class="min-h-full font-sans text-slate-800 antialiased tracking-tight bg-slate-50" 
+=======
+<body class="min-h-full font-sans text-slate-800 antialiased tracking-tight" 
+>>>>>>> origin/main
       x-data="{ 
           sidebarOpen: false, 
           sidebarMini: (localStorage.getItem('desktop_sidebar_mini') === 'true'),
@@ -155,19 +214,27 @@
               if (window.innerWidth >= 1024) {
                   this.sidebarMini = !this.sidebarMini;
                   localStorage.setItem('desktop_sidebar_mini', this.sidebarMini);
+<<<<<<< HEAD
                   if (this.sidebarMini) {
                       document.documentElement.classList.add('sidebar-preload-mini');
                   } else {
                       document.documentElement.classList.remove('sidebar-preload-mini');
                   }
                   setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 280);
+=======
+                  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 320);
+>>>>>>> origin/main
               } else {
                   this.sidebarOpen = !this.sidebarOpen;
               }
           }
       }" 
       @keydown.escape.window="sidebarOpen = false">
+<<<<<<< HEAD
     <div class="app-shell-grid" :class="sidebarMini ? 'sidebar-collapsed' : ''">
+=======
+    <div>
+>>>>>>> origin/main
         <!-- Off-canvas Drawer Sidebar (Khusus Layar Mobile & Tablet < 1024px) -->
         <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-show="sidebarOpen" x-description="Off-canvas menu overlay" style="display: none;">
             <!-- Background overlay -->
@@ -255,6 +322,7 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         <!-- Desktop Sidebar (Sticky Column inside Grid) -->
         <aside class="hidden lg:flex lg:flex-col lg:sticky lg:top-0 lg:h-screen lg:z-40 border-r border-slate-200 bg-white min-w-0 w-full overflow-hidden"
                x-cloak>
@@ -262,6 +330,16 @@
                  :class="sidebarMini ? 'px-2' : 'px-4'">
                 <!-- Header Logo -->
                 <div class="flex h-16 flex-shrink-0 items-center gap-3 sidebar-panel-transition border-b border-slate-100"
+=======
+        <!-- Desktop Sidebar (Full 230px vs Mini 68px) -->
+        <aside class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:flex-col sidebar-transition border-r border-slate-200 bg-white"
+               :class="sidebarMini ? 'lg:w-[68px] sidebar-mini-mode' : 'lg:w-[230px]'"
+               x-cloak>
+            <div class="flex flex-grow flex-col overflow-y-auto overflow-x-hidden pb-4 sidebar-transition"
+                 :class="sidebarMini ? 'px-2' : 'px-4'">
+                <!-- Header Logo -->
+                <div class="flex h-[60px] flex-shrink-0 items-center gap-3 sidebar-transition"
+>>>>>>> origin/main
                      :class="sidebarMini ? 'justify-center px-0' : 'px-1'">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0" :title="sidebarMini ? 'SinergiEdu' : ''">
                         <img src="{{ asset('images/logo.svg') }}?v=3" alt="Logo SinergiEdu" class="h-8 w-auto shrink-0 transition-transform duration-200">
@@ -269,7 +347,11 @@
                               x-transition:enter="transition ease-out duration-200"
                               x-transition:enter-start="opacity-0 translate-x-1"
                               x-transition:enter-end="opacity-100 translate-x-0"
+<<<<<<< HEAD
                               class="text-xl font-bold text-slate-900 tracking-tight truncate sidebar-text-hide">
+=======
+                              class="text-xl font-bold text-slate-900 tracking-tight truncate">
+>>>>>>> origin/main
                             SinergiEdu
                         </span>
                     </a>
@@ -308,7 +390,11 @@
                         </li>
 
                         @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
+<<<<<<< HEAD
                         <li class="mt-auto pt-4 pb-0 sidebar-text-hide" x-show="!sidebarMini" x-transition>
+=======
+                        <li class="mt-auto pt-4 pb-0" x-show="!sidebarMini" x-transition>
+>>>>>>> origin/main
                             <!-- Admin Subtle Footer -->
                             <div class="border-t border-slate-200/60 pt-3">
                                 <p class="text-xs font-bold text-slate-700 truncate">SinergiEdu</p>
@@ -323,17 +409,29 @@
             </div>
         </aside>
 
+<<<<<<< HEAD
         <!-- Main column (Takes natural remaining grid column without artificial margins/paddings) -->
         <div class="flex flex-col min-h-screen min-w-0 w-full">
             <!-- Navbar -->
             <header class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 shadow-2xs">
+=======
+        <!-- Main column (Padding otomatis menyesuaikan: Full 230px vs Mini 68px) -->
+        <div class="flex flex-col min-h-screen min-w-0 w-full overflow-x-clip layout-transition"
+             :class="sidebarMini ? 'lg:pl-[68px]' : 'lg:pl-[230px]'">
+            <!-- Navbar -->
+            <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 shadow-2xs">
+>>>>>>> origin/main
                 <!-- Hamburger Button (Mobile opens Drawer, Desktop toggles Mini Sidebar) -->
                 <button type="button" 
                         class="inline-flex items-center justify-center h-10 w-10 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shrink-0 cursor-pointer" 
                         @click="toggleSidebar()"
                         :title="sidebarMini ? 'Perlebar Sidebar' : 'Kecilkan Sidebar'"
+<<<<<<< HEAD
                         :aria-label="sidebarMini ? 'Perlebar menu navigasi sidebar' : 'Kecilkan menu navigasi sidebar'"
                         :aria-expanded="!sidebarMini">
+=======
+                        aria-label="Toggle menu navigasi sidebar">
+>>>>>>> origin/main
                     <span class="sr-only">Toggle sidebar</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -473,8 +571,13 @@
                 </div>
             </header>
 
+<<<<<<< HEAD
             <main class="py-6 sm:py-8 flex-1 min-w-0">
                 <div class="px-4 sm:px-6 lg:px-8 page-content-enter max-w-full">
+=======
+            <main class="py-10 flex-1 min-w-0">
+                <div class="px-4 sm:px-6 lg:px-8 page-content-enter">
+>>>>>>> origin/main
                     {{ $slot }}
                 </div>
             </main>
