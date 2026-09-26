@@ -32,10 +32,16 @@ class PengawasSchoolScope
             }
 
             // Validasi apakah sekolah tersebut di-assign ke pengawas ini
-            $isAssigned = $user->assignedSchools()->where('schools.id', $schoolId)->exists();
-            if (!$isAssigned) {
+            $assignedSchool = $user->assignedSchools()->where('schools.id', $schoolId)->first();
+            if (!$assignedSchool) {
                 session()->forget('pengawas_school_id');
                 return redirect()->route('pengawas.select-school')->with('error', 'Anda tidak memiliki akses ke sekolah tersebut.');
+            }
+
+            // Validasi apakah sekolah tersebut masih aktif
+            if (!$assignedSchool->is_active) {
+                session()->forget('pengawas_school_id');
+                return redirect()->route('pengawas.select-school')->with('error', 'Akses Sekolah Tidak Tersedia: Sekolah yang sebelumnya dipilih saat ini berstatus nonaktif. Silakan pilih sekolah binaan lain yang aktif.');
             }
         }
 

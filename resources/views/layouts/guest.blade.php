@@ -9,7 +9,7 @@
     <title>{{ $title }}</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,18 +43,18 @@
             </div>
 
             <!-- Header Brand Logo -->
-            <div class="relative z-10 flex items-center gap-3.5">
-                <div class="w-11 h-11 bg-white rounded-xl flex items-center justify-center p-2 shadow-md shadow-[#0B1733]/20">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="w-full h-full object-contain">
+            <a href="{{ route('landing') }}" class="relative z-10 inline-flex items-center gap-3.5 focus:outline-none focus:ring-2 focus:ring-[#119FEA] rounded-2xl p-1 group">
+                <div class="h-12 sm:h-14 w-12 sm:w-14 bg-white rounded-2xl flex items-center justify-center p-2 sm:p-2.5 shadow-md shadow-[#0B1733]/30 transition-transform duration-200 group-hover:scale-105 shrink-0">
+                    <img src="{{ asset('images/logo.svg') }}?v={{ filemtime(public_path('images/logo.svg')) }}" alt="Logo SinergiEdu" class="w-full h-full object-contain">
                 </div>
-                <span class="text-2xl font-extrabold text-white tracking-tight">Sinergi<span class="text-[#119FEA]">Edu</span></span>
-            </div>
+                <span class="text-[26px] sm:text-[28px] font-extrabold text-white tracking-tight">Sinergi<span class="text-[#119FEA]">Edu</span></span>
+            </a>
 
             <!-- Content Area -->
             <div class="relative z-10 my-auto py-8">
-                <x-eyebrow variant="dark" class="mb-6">
+                <div class="inline-block text-xs font-bold tracking-[0.1em] uppercase text-[#119FEA] mb-6">
                     PLATFORM TERINTEGRASI
-                </x-eyebrow>
+                </div>
 
                 <h1 class="text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4 tracking-tight">
                     Platform Manajemen Sekolah Terintegrasi
@@ -90,11 +90,11 @@
             
             <!-- Mobile Brand Header -->
             <div class="md:hidden flex flex-col items-center mb-8 text-center">
-                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center p-2.5 shadow-md border border-[#DCE8F3] mb-3">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="w-full h-full object-contain">
-                </div>
-                <span class="text-2xl font-extrabold text-[#0B1733] tracking-tight">Sinergi<span class="text-[#119FEA]">Edu</span></span>
-                <span class="text-xs font-semibold text-[#64748B] mt-1">Platform Manajemen Sekolah</span>
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-2.5 mb-2 focus:outline-none">
+                    <img src="{{ asset('images/logo.svg') }}?v={{ filemtime(public_path('images/logo.svg')) }}" alt="Logo SinergiEdu" class="h-9 sm:h-10 w-auto object-contain">
+                    <span class="text-2xl font-extrabold text-[#0B1733] tracking-tight">Sinergi<span class="text-[#119FEA]">Edu</span></span>
+                </a>
+                <span class="text-xs font-semibold text-[#64748B]">Platform Manajemen Sekolah</span>
             </div>
 
             <!-- Form Container Slot -->

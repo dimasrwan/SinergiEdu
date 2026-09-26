@@ -93,6 +93,11 @@ class GoogleAuthController extends Controller
                     'email' => 'Konfigurasi sekolah akun tidak valid. Silakan hubungi Administrator Sekolah.',
                 ]);
             }
+
+            $school = \App\Models\School::find($user->school_id);
+            if (! $school || ! $school->is_active) {
+                abort(403, 'Forbidden: Your school is inactive.');
+            }
         }
 
         // Authenticate and regenerate session

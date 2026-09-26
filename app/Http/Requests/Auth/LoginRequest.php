@@ -52,6 +52,31 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+        if ($user) {
+            if (! $user->relationLoaded('role')) {
+                $user->load('role');
+            }
+
+            $roleName = strtolower($user->role->name ?? '');
+
+            // Super Admin and Pengawas do not have a single tenant school binding requirement at login
+            if (! in_array($roleName, ['super_admin', 'superadmin', 'pengawas'])) {
+                if (! $user->school_id) {
+                    Auth::logout();
+                    RateLimiter::hit($this->throttleKey());
+                    abort(403, 'Forbidden: You do not have an associated school.');
+                }
+
+                $school = \App\Models\School::find($user->school_id);
+                if (! $school || ! $school->is_active) {
+                    Auth::logout();
+                    RateLimiter::hit($this->throttleKey());
+                    abort(403, 'Forbidden: Your school is inactive.');
+                }
+            }
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

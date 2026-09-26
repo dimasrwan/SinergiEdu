@@ -10,6 +10,11 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
+// Halaman Khusus Akses Sekolah Nonaktif
+Route::get('/inactive-school', function () {
+    return response()->view('errors.403', [], 403);
+})->name('inactive-school');
+
 // Rute Autentikasi (Breeze)
 require __DIR__.'/auth.php';
 

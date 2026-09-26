@@ -17,6 +17,12 @@ class TenantMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Exclude public & authentication routes so inactive school users can view landing page, login, logout, inactive-school, and OAuth flows
+        if ($request->routeIs('landing', 'login', 'logout', 'inactive-school', 'auth.google', 'auth.google.callback', 'password.*', 'verification.*') 
+            || $request->is('/', 'login', 'logout', 'inactive-school', 'auth/*', 'forgot-password', 'reset-password')) {
+            return $next($request);
+        }
+
         // Pastikan user sudah login
         if (Auth::check()) {
             $user = Auth::user();
@@ -47,8 +53,8 @@ class TenantMiddleware
                     abort(403, 'Forbidden: You do not have an associated school.');
                 }
 
-                // Pastikan school valid
-                $school = $user->school;
+                // Pastikan school valid dan ambil data terbaru dari database
+                $school = \App\Models\School::find($user->school_id);
                 if (!$school) {
                     abort(403, 'Forbidden: Associated school does not exist.');
                 }

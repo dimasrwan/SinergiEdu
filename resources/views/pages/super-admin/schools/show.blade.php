@@ -41,14 +41,9 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 sm:flex sm:items-center sm:gap-2 w-full sm:w-auto shrink-0 pt-2 sm:pt-0" x-data="{ deleteModalOpen: false, confirmName: '' }">
-                    <form action="{{ route('super_admin.schools.toggle-status', $school) }}" method="POST" class="flex-1 sm:flex-initial h-full" onsubmit="return confirm('Yakin ingin {{ $school->is_active ? 'menonaktifkan' : 'mengaktifkan' }} sekolah ini?')">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="is_active" value="{{ $school->is_active ? '0' : '1' }}">
-                        <button type="submit" class="w-full sm:w-auto h-full px-4 py-2 text-xs sm:text-sm font-semibold {{ $school->is_active ? 'text-slate-700 hover:bg-slate-50 bg-white border border-slate-200' : 'text-white bg-green-600 hover:bg-green-700' }} rounded-xl transition duration-150 text-center shadow-2xs">
-                            {{ $school->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
-                        </button>
-                    </form>
+                    <button type="button" @click="$dispatch('open-school-status-modal', { school: { id: {{ $school->id }}, name: @js($school->name), is_active: @js($school->is_active) }, variant: '{{ $school->is_active ? 'deactivate' : 'activate' }}' })" class="w-full sm:w-auto h-full px-4 py-2 text-xs sm:text-sm font-semibold {{ $school->is_active ? 'text-slate-700 hover:bg-slate-50 bg-white border border-slate-200' : 'text-white bg-green-600 hover:bg-green-700' }} rounded-xl transition duration-150 text-center shadow-2xs cursor-pointer">
+                        {{ $school->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                    </button>
                     <a href="{{ route('super_admin.schools.edit', $school) }}" class="flex-1 sm:flex-initial px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition duration-150 inline-flex items-center justify-center gap-1.5 shadow-2xs whitespace-nowrap">
                         <svg class="hidden sm:block h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -605,6 +600,9 @@
             @endif
         </form>
     </x-modal>
+
+    <!-- Custom School Status Confirmation Modal -->
+    <x-school-status-modal />
 </x-layouts.app>
 
 

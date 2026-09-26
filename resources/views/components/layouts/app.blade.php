@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Dashboard' }} - SinergiEdu</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo.svg?v=2') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}?v=3">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,24 +15,139 @@
     
     <style>
         [x-cloak] { display: none !important; }
-        .sidebar-mini-mode li.px-2.mt-6, .sidebar-mini-mode li.px-2.mt-4 { border-top: 1px solid #e2e8f0; margin-top: 12px !important; margin-bottom: 8px !important; padding: 0 !important; font-size: 0 !important; }
-        .sidebar-mini-mode li.px-2.mt-6 > div, .sidebar-mini-mode li.px-2.mt-4 > div { display: none !important; }
+
+        /* Unified CSS Grid Layout for SinergiEdu App Shell */
+        :root {
+            --sidebar-speed: 250ms;
+            --sidebar-easing: cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 230px;
+        }
+
+        .app-shell-grid {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .app-shell-grid {
+                display: grid;
+                grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+                transition: grid-template-columns var(--sidebar-speed) var(--sidebar-easing);
+                width: 100%;
+                min-height: 100vh;
+            }
+
+            .app-shell-grid.sidebar-collapsed,
+            html.sidebar-preload-mini .app-shell-grid {
+                --sidebar-width: 68px;
+            }
+        }
+
+        .sidebar-panel-transition {
+            transition: width var(--sidebar-speed) var(--sidebar-easing),
+                        padding var(--sidebar-speed) var(--sidebar-easing);
+        }
+        
+        /* Collapsed / Mini Sidebar Global Rules (Hides non-icon navigation and section headers cleanly) */
+        .sidebar-collapsed aside nav ul li > span,
+        .sidebar-collapsed aside nav ul li > div.uppercase,
+        .sidebar-collapsed aside nav ul li span.uppercase,
+        .sidebar-collapsed aside nav ul li div[class*="tracking-wide"],
+        .sidebar-collapsed aside nav ul li span[class*="tracking-wide"],
+        .sidebar-collapsed aside nav ul li.pt-1,
+        .sidebar-collapsed aside nav ul li.pt-3,
+        .sidebar-collapsed aside nav ul li.mt-4:not(:has(a)),
+        .sidebar-collapsed aside nav ul li.mt-6:not(:has(a)),
+        .sidebar-collapsed aside nav ul li.px-2:not(:has(a)),
+        .sidebar-collapsed aside nav ul li.px-3:not(:has(a)),
+        .sidebar-collapsed aside nav ul li.border-t,
+        .sidebar-collapsed .sidebar-text-hide,
+        html.sidebar-preload-mini aside nav ul li > span,
+        html.sidebar-preload-mini aside nav ul li > div.uppercase,
+        html.sidebar-preload-mini aside nav ul li span.uppercase,
+        html.sidebar-preload-mini aside nav ul li div[class*="tracking-wide"],
+        html.sidebar-preload-mini aside nav ul li span[class*="tracking-wide"],
+        html.sidebar-preload-mini aside nav ul li.pt-1,
+        html.sidebar-preload-mini aside nav ul li.pt-3,
+        html.sidebar-preload-mini aside nav ul li.mt-4:not(:has(a)),
+        html.sidebar-preload-mini aside nav ul li.mt-6:not(:has(a)),
+        html.sidebar-preload-mini aside nav ul li.px-2:not(:has(a)),
+        html.sidebar-preload-mini aside nav ul li.px-3:not(:has(a)),
+        html.sidebar-preload-mini aside nav ul li.border-t,
+        html.sidebar-preload-mini .sidebar-text-hide {
+            display: none !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            overflow: hidden !important;
+        }
+
+        .sidebar-collapsed aside nav ul li a,
+        html.sidebar-preload-mini aside nav ul li a {
+            width: 100% !important;
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .sidebar-collapsed aside nav ul li a > span:not([class*="sr-only"]),
+        html.sidebar-preload-mini aside nav ul li a > span:not([class*="sr-only"]) {
+            display: none !important;
+        }
+
+        /* Subtle Page Enter Transition (160ms ease-out) */
+        @keyframes pageFadeIn {
+            from {
+                opacity: 0.96;
+                transform: translateY(2px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-content-enter {
+            animation: pageFadeIn 160ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            will-change: opacity, transform;
+        }
+
+        /* Accessibility: Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            .app-shell-grid,
+            .sidebar-panel-transition,
+            .page-content-enter,
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         (function() {
             try {
+                // Theme pre-init
                 var theme = '{{ auth()->check() && auth()->user()->preferences ? auth()->user()->preferences->theme : 'system' }}';
                 if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 } else {
                     document.documentElement.classList.remove('dark');
                 }
+
+                // Sidebar mini state pre-init (Prevents layout shift / flicker on page navigation)
+                if (window.innerWidth >= 1024 && localStorage.getItem('desktop_sidebar_mini') === 'true') {
+                    document.documentElement.classList.add('sidebar-preload-mini');
+                }
             } catch (e) {}
         })();
     </script>
 </head>
-<body class="min-h-full font-sans text-slate-800 antialiased tracking-tight" 
+<body class="min-h-full font-sans text-slate-800 antialiased tracking-tight bg-slate-50" 
       x-data="{ 
           sidebarOpen: false, 
           sidebarMini: (localStorage.getItem('desktop_sidebar_mini') === 'true'),
@@ -40,14 +155,19 @@
               if (window.innerWidth >= 1024) {
                   this.sidebarMini = !this.sidebarMini;
                   localStorage.setItem('desktop_sidebar_mini', this.sidebarMini);
-                  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 320);
+                  if (this.sidebarMini) {
+                      document.documentElement.classList.add('sidebar-preload-mini');
+                  } else {
+                      document.documentElement.classList.remove('sidebar-preload-mini');
+                  }
+                  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 280);
               } else {
                   this.sidebarOpen = !this.sidebarOpen;
               }
           }
       }" 
       @keydown.escape.window="sidebarOpen = false">
-    <div>
+    <div class="app-shell-grid" :class="sidebarMini ? 'sidebar-collapsed' : ''">
         <!-- Off-canvas Drawer Sidebar (Khusus Layar Mobile & Tablet < 1024px) -->
         <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true" x-show="sidebarOpen" x-description="Off-canvas menu overlay" style="display: none;">
             <!-- Background overlay -->
@@ -76,7 +196,7 @@
                     <!-- Header Drawer -->
                     <div class="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 shrink-0 bg-slate-50/50">
                         <div class="flex items-center gap-2.5">
-                            <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-7 w-auto">
+                            <img src="{{ asset('images/logo.svg') }}?v=3" alt="Logo SinergiEdu" class="h-7 w-auto">
                             <span class="text-lg font-bold text-slate-900 tracking-tight">SinergiEdu</span>
                         </div>
                         <button type="button" 
@@ -135,22 +255,21 @@
             </div>
         </div>
 
-        <!-- Desktop Sidebar (Full 230px vs Mini 68px) -->
-        <aside class="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:flex-col transition-all duration-300 ease-in-out border-r border-slate-200 bg-white"
-               :class="sidebarMini ? 'lg:w-[68px] sidebar-mini-mode' : 'lg:w-[230px]'"
+        <!-- Desktop Sidebar (Sticky Column inside Grid) -->
+        <aside class="hidden lg:flex lg:flex-col lg:sticky lg:top-0 lg:h-screen lg:z-40 border-r border-slate-200 bg-white min-w-0 w-full overflow-hidden"
                x-cloak>
-            <div class="flex flex-grow flex-col overflow-y-auto overflow-x-hidden pb-4 transition-all duration-300"
+            <div class="flex flex-grow flex-col overflow-y-auto overflow-x-hidden pb-4 sidebar-panel-transition w-full"
                  :class="sidebarMini ? 'px-2' : 'px-4'">
                 <!-- Header Logo -->
-                <div class="flex h-[60px] flex-shrink-0 items-center gap-3 transition-all duration-300"
+                <div class="flex h-16 flex-shrink-0 items-center gap-3 sidebar-panel-transition border-b border-slate-100"
                      :class="sidebarMini ? 'justify-center px-0' : 'px-1'">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 min-w-0" :title="sidebarMini ? 'SinergiEdu' : ''">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Logo SinergiEdu" class="h-8 w-auto shrink-0">
+                        <img src="{{ asset('images/logo.svg') }}?v=3" alt="Logo SinergiEdu" class="h-8 w-auto shrink-0 transition-transform duration-200">
                         <span x-show="!sidebarMini" 
                               x-transition:enter="transition ease-out duration-200"
                               x-transition:enter-start="opacity-0 translate-x-1"
                               x-transition:enter-end="opacity-100 translate-x-0"
-                              class="text-xl font-bold text-slate-900 tracking-tight truncate">
+                              class="text-xl font-bold text-slate-900 tracking-tight truncate sidebar-text-hide">
                             SinergiEdu
                         </span>
                     </a>
@@ -189,7 +308,7 @@
                         </li>
 
                         @if(in_array(strtolower(Auth::user()->role->name ?? ''), ['admin', 'super_admin']))
-                        <li class="mt-auto pt-4 pb-0" x-show="!sidebarMini" x-transition>
+                        <li class="mt-auto pt-4 pb-0 sidebar-text-hide" x-show="!sidebarMini" x-transition>
                             <!-- Admin Subtle Footer -->
                             <div class="border-t border-slate-200/60 pt-3">
                                 <p class="text-xs font-bold text-slate-700 truncate">SinergiEdu</p>
@@ -204,17 +323,17 @@
             </div>
         </aside>
 
-        <!-- Main column (Padding otomatis menyesuaikan: Full 230px vs Mini 68px) -->
-        <div class="flex flex-col min-h-screen min-w-0 w-full overflow-x-clip transition-all duration-300 ease-in-out"
-             :class="sidebarMini ? 'lg:pl-[68px]' : 'lg:pl-[230px]'">
+        <!-- Main column (Takes natural remaining grid column without artificial margins/paddings) -->
+        <div class="flex flex-col min-h-screen min-w-0 w-full">
             <!-- Navbar -->
-            <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 shadow-2xs">
+            <header class="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 shadow-2xs">
                 <!-- Hamburger Button (Mobile opens Drawer, Desktop toggles Mini Sidebar) -->
                 <button type="button" 
                         class="inline-flex items-center justify-center h-10 w-10 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shrink-0 cursor-pointer" 
                         @click="toggleSidebar()"
                         :title="sidebarMini ? 'Perlebar Sidebar' : 'Kecilkan Sidebar'"
-                        aria-label="Toggle menu navigasi sidebar">
+                        :aria-label="sidebarMini ? 'Perlebar menu navigasi sidebar' : 'Kecilkan menu navigasi sidebar'"
+                        :aria-expanded="!sidebarMini">
                     <span class="sr-only">Toggle sidebar</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -354,8 +473,8 @@
                 </div>
             </header>
 
-            <main class="py-10 flex-1 min-w-0">
-                <div class="px-4 sm:px-6 lg:px-8">
+            <main class="py-6 sm:py-8 flex-1 min-w-0">
+                <div class="px-4 sm:px-6 lg:px-8 page-content-enter max-w-full">
                     {{ $slot }}
                 </div>
             </main>
@@ -364,6 +483,10 @@
             <x-layouts.footer />
         </div>
     </div>
+
+    @if(isset($modals))
+        {{ $modals }}
+    @endif
     
     @stack('scripts')
     <script>
