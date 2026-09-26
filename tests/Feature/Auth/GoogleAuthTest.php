@@ -249,4 +249,23 @@ class GoogleAuthTest extends TestCase
         $response->assertRedirect(route('login'));
         $response->assertSessionHasErrors('email');
     }
+
+    public function test_google_login_with_inactive_school_is_rejected(): void
+    {
+        $school = School::create(['name' => 'Inactive Test School', 'npsn' => '999111', 'is_active' => false]);
+        $role = Role::firstOrCreate(['name' => 'guru'], ['display_name' => 'Guru']);
+        User::factory()->create([
+            'email' => 'guru_inactive_oauth@school.com',
+            'is_active' => true,
+            'role_id' => $role->id,
+            'school_id' => $school->id,
+        ]);
+
+        $this->mockGoogleUser('guru_inactive_oauth@school.com');
+
+        $response = $this->get('/auth/google/callback');
+
+        $response->assertStatus(403);
+        $this->assertGuest();
+    }
 }

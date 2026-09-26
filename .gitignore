@@ -25,7 +25,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# File bantu lokal / debris (jangan di-push)
+# File bantu lokal / debris / deployment / sensitive (jangan di-push)
 /debug_update.php
 /test_scope.php
 /add_tenant_scope.py
@@ -33,5 +33,28 @@ Thumbs.db
 /update_policies.py
 /skills-lock.json
 /.npmrc
+/cookies.txt
+/deploy.ps1
+/deploy.sh
+/create_admin.php
+/create_demo_pengawas.php
+/create_pengawas2.php
+/reset_admin.php
+/test_runner.php
+/test_upload.php
+/update_admin_email.php
+/check_urls.php
+/find_orphans.php
+/audit_results.json
+/audit_script.py
+/login_page.html
+/login_page2.html
+/page_output.html
+/replace_pengawas_icons_all.py
+/replace_phase2.py
+/replace_styles.py
+/replace_styles_2.py
+/scratch/
+/test_output.txt
 
 AGENTS.md

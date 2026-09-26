@@ -85,20 +85,21 @@ class StudentGradesTest extends TestCase
 
     public function test_student_cannot_see_other_students_grades_in_index()
     {
+        $otherSubject = Subject::create(['name' => 'Biologi Rahasia', 'code' => 'BIO', 'school_id' => $this->school->id]);
         $otherStudent = Student::create(['user_id' => User::create(['name' => 'S2', 'email' => 's2@test.com', 'password' => bcrypt('123'), 'school_id' => $this->school->id, 'role_id' => Role::where('name', 'siswa')->first()->id])->id, 'nis' => '222', 'school_id' => $this->school->id]);
         StudentGrade::create([
             'school_id' => $this->school->id,
             'student_id' => $otherStudent->id,
             'teacher_id' => $this->teacher->id,
             'class_id' => $this->classroom->id,
-            'subject_id' => $this->subject->id,
+            'subject_id' => $otherSubject->id,
             'academic_year_id' => $this->academicYear->id,
             'semester_id' => $this->semester->id,
-            'assignment_score' => 88, // Unique score
+            'assignment_score' => 77,
         ]);
 
         $response = $this->actingAs($this->studentUser)->get(route('siswa.grades.index'));
-        $response->assertDontSee('88');
+        $response->assertDontSee('Biologi Rahasia');
     }
 
     public function test_student_can_view_grade_detail()
@@ -283,13 +284,13 @@ class StudentGradesTest extends TestCase
         AssignmentSubmission::create([
             'assignment_id' => $assignment->id,
             'student_id' => $otherStudent->id,
-            'score' => 88,
+            'score' => 79,
             'file_path' => 'dummy.pdf',
         ]);
 
         // Siswa 1 belum mengumpulkan
         $response = $this->actingAs($this->studentUser)->get(route('siswa.grades.show', $grade));
         $response->assertSee('Belum Mengumpulkan');
-        $response->assertDontSee('88'); // Jangan sampai lihat nilai temannya
+        $response->assertDontSee('79'); // Jangan sampai lihat nilai temannya
     }
 }
