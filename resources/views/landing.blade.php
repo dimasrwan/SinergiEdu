@@ -6,7 +6,11 @@
     <title>SinergiEdu — Platform Manajemen Sekolah Terintegrasi</title>
     <meta name="description" content="Satu platform terintegrasi untuk membantu sekolah mengelola pembelajaran, penilaian, monitoring, dan komunikasi antar pihak sekolah dalam satu sistem yang aman dan terisolasi.">
 
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://sinergiedu.com/">
+
     <!-- Open Graph Tags -->
+    <meta property="og:url" content="https://sinergiedu.com/">
     <meta property="og:title" content="SinergiEdu — Platform Manajemen Sekolah Terintegrasi">
     <meta property="og:description" content="Platform terintegrasi untuk membantu sekolah mengelola KBM, tugas, penilaian, monitoring, dan komunikasi antar pihak sekolah.">
     <meta property="og:type" content="website">

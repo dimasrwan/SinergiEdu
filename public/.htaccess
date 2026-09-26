@@ -5,6 +5,15 @@
 
     RewriteEngine On
 
+    # 1. Redirect www to non-www (HTTP / HTTPS)
+    RewriteCond %{HTTP_HOST} ^www\.sinergiedu\.com$ [NC]
+    RewriteRule ^(.*)$ https://sinergiedu.com/$1 [L,R=301]
+
+    # 2. Force HTTPS for non-www
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} ^sinergiedu\.com$ [NC]
+    RewriteRule ^(.*)$ https://sinergiedu.com/$1 [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
