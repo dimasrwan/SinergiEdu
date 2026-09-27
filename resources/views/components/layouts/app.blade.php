@@ -348,8 +348,9 @@
          :class="{ 'desktop-sidebar-open': sidebarDesktopOpen }">
 
         <!-- Desktop Sidebar (Scrollbar #1: Independent scroll container, min-h-0 h-full overflow-hidden) -->
-        <aside class="desktop-sidebar-pane hidden lg:flex lg:flex-col border-r border-slate-200 bg-white h-full min-h-0 w-[230px] min-w-[230px] overflow-hidden">
-            <div class="flex flex-grow flex-col overflow-y-auto overflow-x-hidden py-4 px-3.5 w-[230px] h-full min-h-0">
+        <aside class="desktop-sidebar-pane hidden lg:flex lg:flex-col bg-white h-full min-h-0 min-w-0 overflow-hidden"
+               :class="sidebarDesktopOpen ? 'border-r border-slate-200' : ''">
+            <div class="flex flex-grow flex-col overflow-y-auto overflow-x-hidden py-4 px-3.5 w-full h-full min-h-0">
                 <nav class="flex flex-1 flex-col">
                     <ul role="list" class="flex flex-1 flex-col gap-y-2">
                         <li>
