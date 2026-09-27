@@ -83,18 +83,24 @@
 <body class="h-full overflow-hidden font-sans text-slate-800 antialiased tracking-tight bg-slate-50 flex flex-col"
       x-data="{
           sidebarOpen: false,
-          sidebarDesktopOpen: (localStorage.getItem('desktop_sidebar_open') === 'true'),
+          sidebarDesktopOpen: false,
           toggleSidebar() {
               if (window.innerWidth >= 1024) {
                   this.sidebarDesktopOpen = !this.sidebarDesktopOpen;
-                  localStorage.setItem('desktop_sidebar_open', this.sidebarDesktopOpen ? 'true' : 'false');
                   setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 220);
               } else {
                   this.sidebarOpen = !this.sidebarOpen;
               }
-          }
+          },
+          closeSidebar() {
+            this.sidebarOpen = false;
+
+            if (this.sidebarDesktopOpen) {
+                this.sidebarDesktopOpen = false;
+            }
+        }
       }"
-      @keydown.escape.window="sidebarOpen = false">
+      @keydown.escape.window="closeSidebar()">
 
     <!-- 1. TOP GLOBAL HEADER (Fixed Stationary, h-16, w-full, z-40, shrink-0) -->
     <header class="sticky top-0 z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 shadow-2xs">
