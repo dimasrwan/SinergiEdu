@@ -27,10 +27,25 @@
                     @error('description') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                 </div>
 
+                <script>
+                    window.KS_ACTION_PLAN_TARGETS = @js($targetOptions);
+                    window.KS_ACTION_PLAN_FILTER = function (role) {
+                        var root = document.getElementById('target_user_id').closest('[x-data]');
+                        if (!root || !window.Alpine) return;
+                        var state = window.Alpine.$data(root);
+                        state.options = (window.KS_ACTION_PLAN_TARGETS || []).filter(function (opt) {
+                            return opt.value === '' || !role || opt.role === role;
+                        });
+                        state.selectedVal = '';
+                        state.syncLabel();
+                        state.$refs.hiddenInput.value = '';
+                    };
+                </script>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <x-input-label for="target_role" :value="__('Target Role')" />
-                        <x-select id="target_role" name="target_role">
+                        <x-select id="target_role" name="target_role" onchange="window.KS_ACTION_PLAN_FILTER && window.KS_ACTION_PLAN_FILTER(this.value)">
                             <option value="">-- Umum --</option>
                             <option value="guru" {{ old('target_role') === 'guru' ? 'selected' : '' }}>Guru</option>
                             <option value="waka" {{ old('target_role') === 'waka' ? 'selected' : '' }}>Waka Kurikulum</option>
@@ -41,12 +56,12 @@
 
                     <div>
                         <x-input-label for="target_user_id" :value="__('Target Orang (Opsional)')" />
-                        <x-select id="target_user_id" name="target_user_id">
+                        <x-select id="target_user_id" name="target_user_id" :selected="$selectedTarget">
                             <option value="">-- Semua sesuai role --</option>
-                            @foreach($targets as $roleKey => $people)
-                                <optgroup label="{{ ucfirst($roleKey) }}">
+                            @foreach($groups as $roleKey => $people)
+                                <optgroup label="{{ $roleLabels[$roleKey] ?? ucfirst((string) $roleKey) }}">
                                     @foreach($people as $person)
-                                        <option value="{{ $person['id'] }}" {{ (string) old('target_user_id') === (string) $person['id'] ? 'selected' : '' }}>{{ $person['label'] }}</option>
+                                        <option value="{{ $person->id }}">{{ $person->name }}</option>
                                     @endforeach
                                 </optgroup>
                             @endforeach

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\KepalaSekolah;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classroom;
 use App\Models\Semester;
+use App\Models\Subject;
 use App\Services\KepalaSekolah\AcademicAggregatorService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use OpenSpout\Writer\XLSX\Writer;
 use OpenSpout\Common\Entity\Row;
@@ -69,9 +72,34 @@ class ReportController extends Controller
         return $pdf->download('rekap-semester.pdf');
     }
 
-    public function exportRekapExcel(AcademicAggregatorService $aggregator)
+    public function exportRekapExcel(Request $request, AcademicAggregatorService $aggregator)
     {
-        $rows = $aggregator->getRekapList(auth()->user()->school_id);
+        $schoolId = (int) auth()->user()->school_id;
+
+        // ponytail: parsing filter duplikat dari AcademicController::rekap;
+        // pindahkan ke resolver bersama kalau bertambah jenis filternya.
+        if ($request->has('semester_id')) {
+            $rawSemesterId = $request->input('semester_id');
+            $semesterId = ($rawSemesterId === null || $rawSemesterId === '') ? null : (int) $rawSemesterId;
+            if ($semesterId !== null && ! Semester::where('id', $semesterId)->exists()) {
+                abort(404);
+            }
+        } else {
+            $semesterId = $aggregator->activeSemester()?->id ? (int) $aggregator->activeSemester()->id : null;
+        }
+
+        $classId = $request->filled('class_id') ? (int) $request->input('class_id') : null;
+        $subjectId = $request->filled('subject_id') ? (int) $request->input('subject_id') : null;
+
+        if ($classId && ! Classroom::where('id', $classId)->exists()) {
+            abort(404);
+        }
+
+        if ($subjectId && ! Subject::where('id', $subjectId)->exists()) {
+            abort(404);
+        }
+
+        $rows = $aggregator->getRekapList($schoolId, null, $semesterId, $classId, $subjectId);
 
         $filePath = tempnam(sys_get_temp_dir(), 'excel_') . '.xlsx';
 

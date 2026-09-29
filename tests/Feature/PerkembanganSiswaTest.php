@@ -203,4 +203,203 @@ class PerkembanganSiswaTest extends TestCase
         $response->assertSee('Siswa Sekolah A');
         $response->assertDontSee('Siswa Sekolah B');
     }
+
+    public function test_class_change_with_incompatible_student_resets_selection_instead_of_404(): void
+    {
+        [$year, $classA, $classB] = $this->makeClasses();
+        $alpha = $this->createStudent($this->schoolA, 'Siswa Alpha');
+        $this->attachToClass($alpha, $classA, $year);
+
+        // Siswa dipilih dulu, lalu kelas diganti ke kelas yang tidak memilikinya.
+        $response = $this->actingAs($this->kepalaSekolah)->get(route('kepala-sekolah.academic.perkembangan', [
+            'class_id' => $classB->id,
+            'student_id' => $alpha->id,
+        ]));
+
+        $response->assertOk();
+
+        $state = $this->selectState($response->getContent(), 'student_id');
+        $this->assertSame('', $state['value'], 'student_id lama harus di-reset saat kelas berubah.');
+        // Label tombol di-resolve Alpine dari opsi value='' saat init (syncOptions()).
+        $placeholders = array_values(array_filter($state['options'], fn ($o) => ($o['value'] ?? null) === ''));
+        $this->assertNotEmpty($placeholders, 'Opsi placeholder reset harus tersedia.');
+        $this->assertSame('-- Pilih Siswa --', $placeholders[0]['label'] ?? null);
+        $this->assertNotContains('Siswa Alpha', array_column($state['options'], 'label'), 'Siswa yang bukan anggota kelas tidak boleh tersisa di dropdown.');
+        $response->assertDontSee('Lihat Detail Penuh');
+    }
+
+    public function test_student_dropdown_lists_only_members_of_selected_class(): void
+    {
+        [$year, $classA, $classB] = $this->makeClasses();
+        $alpha = $this->createStudent($this->schoolA, 'Siswa Alpha');
+        $beta = $this->createStudent($this->schoolA, 'Siswa Beta');
+        $this->attachToClass($alpha, $classA, $year);
+        $this->attachToClass($beta, $classB, $year);
+
+        $response = $this->actingAs($this->kepalaSekolah)
+            ->get(route('kepala-sekolah.academic.perkembangan', ['class_id' => $classB->id]));
+
+        $response->assertOk();
+
+        $state = $this->selectState($response->getContent(), 'student_id');
+        $labels = array_column($state['options'], 'label');
+        $this->assertSame('', $state['value']);
+        $this->assertContains('Siswa Beta', $labels);
+        $this->assertNotContains('Siswa Alpha', $labels);
+    }
+
+    public function test_valid_class_and_student_combination_shows_detail(): void
+    {
+        [$year, $classA] = $this->makeClasses();
+        $alpha = $this->createStudent($this->schoolA, 'Siswa Alpha');
+        $this->attachToClass($alpha, $classA, $year);
+
+        $response = $this->actingAs($this->kepalaSekolah)->get(route('kepala-sekolah.academic.perkembangan', [
+            'class_id' => $classA->id,
+            'student_id' => $alpha->id,
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('Lihat Detail Penuh');
+
+        $state = $this->selectState($response->getContent(), 'student_id');
+        $this->assertSame((string) $alpha->id, $state['value']);
+    }
+
+    public function test_repeated_class_switching_keeps_student_selection_consistent(): void
+    {
+        [$year, $classA, $classB] = $this->makeClasses();
+        $alpha = $this->createStudent($this->schoolA, 'Siswa Alpha');
+        $this->attachToClass($alpha, $classA, $year);
+
+        $sequence = [$classB->id, $classA->id, $classB->id];
+
+        foreach ($sequence as $classId) {
+            $response = $this->actingAs($this->kepalaSekolah)->get(route('kepala-sekolah.academic.perkembangan', [
+                'class_id' => $classId,
+                'student_id' => $alpha->id,
+            ]));
+
+            $response->assertOk();
+            $state = $this->selectState($response->getContent(), 'student_id');
+
+            if ($classId === $classA->id) {
+                $this->assertSame((string) $alpha->id, $state['value'], 'Siswa anggota kelas harus tetap terpilih.');
+                $response->assertSee('Lihat Detail Penuh');
+            } else {
+                $this->assertSame('', $state['value'], 'Pilihan siswa harus di-reset untuk kelas yang tidak memilikinya.');
+                $response->assertDontSee('Lihat Detail Penuh');
+            }
+        }
+    }
+
+    public function test_class_change_handler_clears_student_before_submitting_form(): void
+    {
+        $response = $this->actingAs($this->kepalaSekolah)
+            ->get(route('kepala-sekolah.academic.perkembangan'));
+
+        $response->assertOk();
+        $this->assertStringContainsString(
+            "document.getElementById('student_id').value = ''",
+            $response->getContent(),
+            'Dropdown Kelas harus mereset student_id sebelum submit.'
+        );
+    }
+
+    public function test_student_from_another_school_with_class_filter_still_returns_404(): void
+    {
+        [, $classA] = $this->makeClasses();
+        $foreign = $this->createStudent($this->schoolB, 'Siswa Sekolah Lain');
+
+        $response = $this->actingAs($this->kepalaSekolah)->get(route('kepala-sekolah.academic.perkembangan', [
+            'class_id' => $classA->id,
+            'student_id' => $foreign->id,
+        ]));
+
+        $response->assertNotFound();
+    }
+
+    public function test_non_kepala_sekolah_role_cannot_access_perkembangan(): void
+    {
+        $siswaRole = Role::firstOrCreate(['name' => 'siswa'], ['display_name' => 'Siswa']);
+        $user = User::create([
+            'role_id' => $siswaRole->id,
+            'school_id' => $this->schoolA->id,
+            'name' => 'Siswa Biasa',
+            'email' => 'siswa.biasa@test.com',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('kepala-sekolah.academic.perkembangan'))
+            ->assertForbidden();
+    }
+
+    /**
+     * @return array{0: AcademicYear, 1: Classroom, 2: Classroom}
+     */
+    private function makeClasses(): array
+    {
+        $year = AcademicYear::create([
+            'school_id' => $this->schoolA->id,
+            'year' => '2025/2026',
+            'is_active' => true,
+        ]);
+
+        $classA = Classroom::create([
+            'school_id' => $this->schoolA->id,
+            'name' => 'Kelas VII A',
+            'grade_level' => '7',
+            'academic_year_id' => $year->id,
+        ]);
+
+        $classB = Classroom::create([
+            'school_id' => $this->schoolA->id,
+            'name' => 'Kelas VII B',
+            'grade_level' => '7',
+            'academic_year_id' => $year->id,
+        ]);
+
+        return [$year, $classA, $classB];
+    }
+
+    private function attachToClass(Student $student, Classroom $class, AcademicYear $academicYear): void
+    {
+        $student->classes()->attach($class->id, [
+            'school_id' => $this->schoolA->id,
+            'academic_year_id' => $academicYear->id,
+        ]);
+    }
+
+    /**
+     * Baca state Alpine dari select berdasarkan id input hidden-nya.
+     *
+     * @return array{value: ?string, label: ?string, options: array<int, array{value: string, label: string}>}
+     */
+    private function selectState(string $html, string $id): array
+    {
+        $pos = strpos($html, 'id="'.$id.'"');
+        $this->assertNotFalse($pos, "Select #{$id} tidak dirender di halaman.");
+        $start = strrpos(substr($html, 0, $pos), 'x-data="{');
+        $this->assertNotFalse($start, "x-data untuk #{$id} tidak ditemukan.");
+        $block = substr($html, $start, $pos - $start);
+
+        preg_match("/selectedVal: '((?:\\\\.|[^'])*)'/", $block, $value);
+        preg_match("/selectedLabel: '((?:\\\\.|[^'])*)'/", $block, $label);
+        preg_match("/options: JSON\.parse\('((?:\\\\.|[^'])*)'\)/", $block, $opts);
+
+        $options = [];
+        if (isset($opts[1])) {
+            $decoded = json_decode(str_replace('\u0022', '"', $opts[1]), true);
+            $this->assertIsArray($decoded, "Opsi #{$id} gagal dibaca: json_decode error.");
+            $options = $decoded;
+        }
+
+        return [
+            'value' => $value[1] ?? null,
+            'label' => $label[1] ?? null,
+            'options' => $options,
+        ];
+    }
 }
