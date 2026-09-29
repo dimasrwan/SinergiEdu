@@ -14,10 +14,25 @@
             <form action="{{ route('kepala-sekolah.feedback.store') }}" method="POST" class="space-y-6">
                 @csrf
 
+                <script>
+                    window.KS_FEEDBACK_RECIPIENTS = @js($recipientOptions);
+                    window.KS_FEEDBACK_FILTER = function (role) {
+                        var root = document.getElementById('recipient_id').closest('[x-data]');
+                        if (!root || !window.Alpine) return;
+                        var state = window.Alpine.$data(root);
+                        state.options = (window.KS_FEEDBACK_RECIPIENTS || []).filter(function (opt) {
+                            return opt.value === '' || !role || opt.role === role;
+                        });
+                        state.selectedVal = '';
+                        state.syncLabel();
+                        state.$refs.hiddenInput.value = '';
+                    };
+                </script>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         <x-input-label for="recipient_role" :value="__('Tujuan')" />
-                        <x-select id="recipient_role" name="recipient_role" required>
+                        <x-select id="recipient_role" name="recipient_role" required onchange="window.KS_FEEDBACK_FILTER && window.KS_FEEDBACK_FILTER(this.value)">
                             <option value="">-- Pilih Role Penerima --</option>
                             <option value="guru" {{ old('recipient_role') === 'guru' ? 'selected' : '' }}>Guru</option>
                             <option value="waka" {{ old('recipient_role') === 'waka' ? 'selected' : '' }}>Waka Kurikulum</option>
@@ -28,13 +43,12 @@
 
                     <div>
                         <x-input-label for="recipient_id" :value="__('Penerima (Opsional)')" />
-                        <x-select id="recipient_id" name="recipient_id">
+                        <x-select id="recipient_id" name="recipient_id" :selected="$selectedRecipient">
                             <option value="">-- Semua (Umum) --</option>
-                            @php $groups = ['guru' => $teachers, 'waka' => $wakas, 'pengawas' => $pengawas]; @endphp
                             @foreach($groups as $roleKey => $people)
-                                <optgroup label="{{ ucfirst($roleKey) }}">
+                                <optgroup label="{{ $roleLabels[$roleKey] ?? ucfirst((string) $roleKey) }}">
                                     @foreach($people as $person)
-                                        <option value="{{ $person['id'] }}" {{ (string) old('recipient_id') === (string) $person['id'] ? 'selected' : '' }}>{{ $person['label'] }}</option>
+                                        <option value="{{ $person->id }}">{{ $person->name }}</option>
                                     @endforeach
                                 </optgroup>
                             @endforeach

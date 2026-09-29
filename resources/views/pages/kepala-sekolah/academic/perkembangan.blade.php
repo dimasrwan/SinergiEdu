@@ -9,7 +9,7 @@
             <form method="GET" action="{{ route('kepala-sekolah.academic.perkembangan') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                     <x-input-label for="class_id" :value="__('Kelas')" />
-                    <x-select id="class_id" name="class_id" onchange="this.form.submit()">
+                    <x-select id="class_id" name="class_id" onchange="document.getElementById('student_id').value = ''; this.form.submit()">
                         <option value="">-- Semua Kelas --</option>
                         @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ (string) $classId === (string) $class->id ? 'selected' : '' }}>{{ $class->name }}</option>

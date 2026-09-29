@@ -158,7 +158,11 @@ class AcademicAggregatorService
 
     public function getRekapList(int $schoolId, ?int $academicYearId = null, ?int $semesterId = null, ?int $classId = null, ?int $subjectId = null): Collection
     {
-        $query = StudentGrade::with(['student.user', 'classroom', 'subject']);
+        // Relasi student memakai TenantScope (terfilter ke sekolah peminta), jadi
+        // grade sekolah lain harus dibuang di query ini agar tidak menghasilkan
+        // baris tanpa student (dan ErrorException saat dibaca).
+        $query = StudentGrade::with(['student.user', 'classroom', 'subject'])
+            ->whereHas('student', fn ($q) => $q->where('school_id', $schoolId));
 
         if ($semesterId !== null) {
             $query->where('semester_id', $semesterId);

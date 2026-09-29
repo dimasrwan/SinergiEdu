@@ -7,11 +7,10 @@ namespace App\Http\Controllers\KepalaSekolah;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KepalaSekolah\FeedbackRequest;
 use App\Models\Feedback;
-use App\Models\Pengawas;
+use App\Models\Role;
 use App\Models\Teacher;
-use App\Models\Waka;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class FeedbackController extends Controller
@@ -29,22 +28,44 @@ class FeedbackController extends Controller
 
     public function create(): View
     {
-        $teachers = Teacher::with('user')->get()->map(fn ($t) => [
-            'id' => $t->user_id,
-            'label' => $t->user->name,
-        ]);
+        $schoolId = (int) auth()->user()->school_id;
 
-        $wakas = Waka::with('user')->get()->map(fn ($w) => [
-            'id' => $w->user_id,
-            'label' => $w->user->name,
-        ]);
+        // Tabel `users` di-exclude dari TenantScope (lihat app/Models/Scopes/TenantScope.php),
+        // jadi batasi school_id secara manual ke sekolah kepala sekolah yang login.
+        $recipients = User::query()
+            ->where('school_id', $schoolId)
+            ->whereHas('role')
+            ->with('role')
+            ->orderBy('name')
+            ->get();
 
-        $pengawas = Pengawas::with('user')->get()->map(fn ($p) => [
-            'id' => $p->user_id,
-            'label' => $p->user->name,
-        ]);
+        $roleLabels = Role::pluck('display_name', 'name');
 
-        return view('pages.kepala-sekolah.feedback.create', compact('teachers', 'wakas', 'pengawas'));
+        // Daftar lengkap semua user sekolah, dipakai filter dinamis frontend saat Tujuan berubah.
+        $recipientOptions = collect([
+            ['value' => '', 'label' => '-- Semua (Umum) --', 'role' => null],
+        ])->merge($recipients->map(fn (User $u) => [
+            'value' => (string) $u->id,
+            'label' => $u->name,
+            'role' => $u->role->name,
+        ]))->values();
+
+        // Setelah validasi gagal, render daftar mengikuti role lama agar state konsisten
+        // (penerima yang tidak valid terhadap role tidak ikut ter-render/terpilih).
+        $activeRole = old('recipient_role');
+        $groups = $recipients
+            ->when($activeRole, fn ($c) => $c->filter(fn (User $u) => $u->role->name === $activeRole))
+            ->groupBy(fn (User $u) => $u->role->name);
+
+        // Old input recipient_id hanya dipertahankan jika masih valid terhadap daftar
+        // yang dirender (role Tujuan lama + sekolah yang sama); selain itu di-reset.
+        $visibleIds = $groups->flatten()->pluck('id')->map(static fn ($id) => (int) $id)->all();
+        $oldRecipient = old('recipient_id');
+        $selectedRecipient = $oldRecipient !== null && in_array((int) $oldRecipient, $visibleIds, true)
+            ? (string) $oldRecipient
+            : '';
+
+        return view('pages.kepala-sekolah.feedback.create', compact('groups', 'roleLabels', 'recipientOptions', 'selectedRecipient'));
     }
 
     public function store(FeedbackRequest $request): RedirectResponse
@@ -78,16 +99,5 @@ class FeedbackController extends Controller
         $feedback->load(['sender', 'recipient']);
 
         return view('pages.kepala-sekolah.feedback.show', compact('feedback'));
-    }
-
-    public function updateStatus(Request $request, Feedback $feedback): RedirectResponse
-    {
-        $request->validate([
-            'status' => 'required|in:draft,sent,acknowledged,actioned',
-        ]);
-
-        $feedback->update(['status' => $request->status]);
-
-        return back()->with('success', 'Status feedback diperbarui.');
     }
 }

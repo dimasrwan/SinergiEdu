@@ -20,5 +20,5 @@
           :selected="$selected" 
           :placeholder="$placeholder" 
           :required="$required" 
-          :options="$options" 
-          {!! $attributes !!} />
+          :options="$options"
+          {{ $attributes }} />

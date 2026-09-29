@@ -51,20 +51,6 @@
                         </div>
                     </dl>
                 </x-card>
-
-                <x-card>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">Perbarui Status</h2>
-                    <form action="{{ route('kepala-sekolah.feedback.update-status', $feedback) }}" method="POST" class="space-y-3">
-                        @csrf
-                        @method('PATCH')
-                        <x-select name="status">
-                            <option value="sent" {{ $feedback->status === 'sent' ? 'selected' : '' }}>Terkirim</option>
-                            <option value="acknowledged" {{ $feedback->status === 'acknowledged' ? 'selected' : '' }}>Dibaca</option>
-                            <option value="actioned" {{ $feedback->status === 'actioned' ? 'selected' : '' }}>Ditindaklanjuti</option>
-                        </x-select>
-                        <x-button variant="primary" type="submit" class="w-full justify-center">Simpan Status</x-button>
-                    </form>
-                </x-card>
             </div>
         </div>
     </div>

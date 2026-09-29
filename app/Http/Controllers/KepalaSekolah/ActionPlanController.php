@@ -6,10 +6,9 @@ namespace App\Http\Controllers\KepalaSekolah;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\KepalaSekolah\ActionPlanRequest;
+use App\Models\Role;
 use App\Models\SchoolActionPlan;
-use App\Models\Pengawas;
-use App\Models\Teacher;
-use App\Models\Waka;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -32,13 +31,44 @@ class ActionPlanController extends Controller
 
     public function create(): View
     {
-        $targets = [
-            'guru' => Teacher::with('user')->get()->map(fn ($t) => ['id' => $t->user_id, 'label' => $t->user->name]),
-            'waka' => Waka::with('user')->get()->map(fn ($w) => ['id' => $w->user_id, 'label' => $w->user->name]),
-            'pengawas' => Pengawas::with('user')->get()->map(fn ($p) => ['id' => $p->user_id, 'label' => $p->user->name]),
-        ];
+        $schoolId = (int) auth()->user()->school_id;
 
-        return view('pages.kepala-sekolah.rencana-aksi.create', compact('targets'));
+        // Tabel `users` di-exclude dari TenantScope (lihat app/Models/Scopes/TenantScope.php),
+        // jadi batasi school_id secara manual ke sekolah kepala sekolah yang login.
+        $targets = User::query()
+            ->where('school_id', $schoolId)
+            ->whereHas('role')
+            ->with('role')
+            ->orderBy('name')
+            ->get();
+
+        $roleLabels = Role::pluck('display_name', 'name');
+
+        // Daftar lengkap semua user sekolah, dipakai filter dinamis frontend saat Target Role berubah.
+        $targetOptions = collect([
+            ['value' => '', 'label' => '-- Semua sesuai role --', 'role' => null],
+        ])->merge($targets->map(fn (User $u) => [
+            'value' => (string) $u->id,
+            'label' => $u->name,
+            'role' => $u->role->name,
+        ]))->values();
+
+        // Setelah validasi gagal, render daftar mengikuti Target Role lama agar state konsisten
+        // (target yang tidak valid terhadap role tidak ikut ter-render/terpilih).
+        $activeRole = old('target_role');
+        $groups = $targets
+            ->when($activeRole, fn ($c) => $c->filter(fn (User $u) => $u->role->name === $activeRole))
+            ->groupBy(fn (User $u) => $u->role->name);
+
+        // Old input target_user_id hanya dipertahankan jika masih valid terhadap daftar
+        // yang dirender (Target Role lama + sekolah yang sama); selain itu di-reset.
+        $visibleIds = $groups->flatten()->pluck('id')->map(static fn ($id) => (int) $id)->all();
+        $oldTarget = old('target_user_id');
+        $selectedTarget = $oldTarget !== null && in_array((int) $oldTarget, $visibleIds, true)
+            ? (string) $oldTarget
+            : '';
+
+        return view('pages.kepala-sekolah.rencana-aksi.create', compact('groups', 'roleLabels', 'targetOptions', 'selectedTarget'));
     }
 
     public function store(ActionPlanRequest $request): RedirectResponse
@@ -47,8 +77,9 @@ class ActionPlanController extends Controller
             'user_id' => auth()->id(),
             'title' => $request->title,
             'description' => $request->description,
-            'target_role' => $request->target_role,
-            'target_user_id' => $request->target_user_id,
+            // Kolom nullable: '' (placeholder '-- Semua sesuai role --' / opsi kosong) disimpan sebagai null.
+            'target_role' => $request->target_role ?: null,
+            'target_user_id' => $request->target_user_id ?: null,
             'category' => $request->category,
             'priority' => $request->priority,
             'status' => $request->status ?? 'draft',

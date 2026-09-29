@@ -39,8 +39,6 @@ Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])
     // Feedback Strategis (Top-down)
     Route::resource('feedback', KepalaSekolah\FeedbackController::class)
         ->except(['edit', 'update', 'destroy']);
-    Route::patch('/feedback/{feedback}/status', [KepalaSekolah\FeedbackController::class, 'updateStatus'])
-        ->name('feedback.update-status');
 
     // Rencana Aksi
     Route::resource('rencana-aksi', KepalaSekolah\ActionPlanController::class)

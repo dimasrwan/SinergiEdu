@@ -83,16 +83,22 @@ class AcademicController extends Controller
         $rows = collect([]);
         $student = null;
         if ($selectedStudent) {
-            $studentQuery = Student::with('user')->where('id', $selectedStudent);
-            if ($classId) {
-                $studentQuery->whereHas('classes', fn ($q) => $q->where('classes.id', $classId));
-            }
-            $student = $studentQuery->first();
+            // Siswa tidak ada atau di luar sekolah peminta (TenantScope) → 404 tetap berlaku.
+            $student = Student::with('user')->where('id', $selectedStudent)->first();
 
             if (! $student) {
                 abort(404);
             }
 
+            // Kombinasi student_id + class_id tidak valid (kelas diganti setelah siswa
+            // dipilih) → reset pilihan, bukan 404.
+            if ($classId && ! $student->classes()->where('classes.id', $classId)->exists()) {
+                $student = null;
+                $selectedStudent = null;
+            }
+        }
+
+        if ($student) {
             $grades = StudentGrade::with(['subject', 'semester'])
                 ->where('student_id', $selectedStudent)
                 ->get();
