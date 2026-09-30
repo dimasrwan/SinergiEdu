@@ -24,6 +24,97 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        /* SinergiEdu Hero Logo Seamless Floating Animation */
+        @keyframes heroFloatSeamless {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(0.8deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        /* Ambient Glowing Pulse Animation */
+        @keyframes heroGlowBreathing {
+            0% {
+                opacity: 0.70;
+                transform: scale(0.95);
+            }
+            50% {
+                opacity: 0.95;
+                transform: scale(1.06);
+            }
+            100% {
+                opacity: 0.70;
+                transform: scale(0.95);
+            }
+        }
+
+        /* Outer Floating Track (Dedicated strictly to floating loop) */
+        .hero-logo-float-track {
+            animation: heroFloatSeamless 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+            will-change: transform;
+            transform-origin: center center;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Inner Interactive Logo */
+        .hero-logo-interactive {
+            transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1), filter 380ms cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, filter;
+            filter: drop-shadow(0 16px 36px rgba(18, 59, 130, 0.16));
+        }
+
+        /* 1. Main Vibrant Radial Ambient Glow (Behind Logo) */
+        .hero-glow-layer-primary {
+            animation: heroGlowBreathing 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+            will-change: opacity, transform;
+            background: radial-gradient(circle at 50% 50%, rgba(17, 159, 234, 0.45) 0%, rgba(18, 59, 130, 0.30) 40%, rgba(17, 159, 234, 0.15) 65%, transparent 80%);
+            filter: blur(48px);
+            z-index: 1;
+        }
+
+        /* 2. Focused Bottom Glow / Pedestal (Beneath Logo for levitation depth) */
+        .hero-glow-layer-bottom {
+            animation: heroGlowBreathing 5.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite 0.8s;
+            will-change: opacity, transform;
+            background: radial-gradient(ellipse at 50% 85%, rgba(17, 159, 234, 0.55) 0%, rgba(18, 59, 130, 0.35) 45%, transparent 75%);
+            filter: blur(32px);
+            z-index: 1;
+        }
+
+        /* Smooth Hover Interaction */
+        .hero-logo-container:hover .hero-logo-interactive {
+            transform: scale(1.035) translateY(-3px);
+            filter: drop-shadow(0 24px 48px rgba(18, 59, 130, 0.25));
+        }
+
+        .hero-logo-container:hover .hero-glow-layer-primary {
+            opacity: 1;
+            transform: scale(1.10);
+        }
+
+        .hero-logo-container:hover .hero-glow-layer-bottom {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        /* Accessibility: Support prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce) {
+            .hero-logo-float-track,
+            .hero-glow-layer-primary,
+            .hero-glow-layer-bottom {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-[#F5FAFF] font-['Outfit'] text-[#0B1733] antialiased selection:bg-[#123B82] selection:text-white">
 
@@ -94,81 +185,27 @@
 
                         <!-- 5. HUMAN BRAND STATEMENT (EDITORIAL QUOTE FOCAL POINT) -->
                         <div class="pt-2 sm:pt-3">
-                            <div class="relative pl-4 sm:pl-5 border-l-3 border-[#119FEA] text-left max-w-xl mx-auto lg:mx-0">
-                                <blockquote class="text-lg sm:text-xl lg:text-2xl font-bold text-[#123B82] tracking-tight leading-[1.3]">
-                                    &ldquo;Dengan <span class="text-[#119FEA]">keikhlasan diri</span> membangun pendidikan,<br>
-                                    dengan <span class="text-[#119FEA]">kepedulian</span> menumbuhkan masa depan.&rdquo;
+                            <div class="relative pl-3.5 sm:pl-5 border-l-2 sm:border-l-3 border-[#119FEA] text-left max-w-xl mx-auto lg:mx-0">
+                                <blockquote class="text-[15px] sm:text-lg md:text-xl lg:text-2xl font-bold text-[#123B82] tracking-tight leading-[1.4] sm:leading-[1.3] break-words">
+                                    &ldquo;Dengan <span class="text-[#119FEA]">keikhlasan diri</span> membangun pendidikan, dengan <span class="text-[#119FEA]">kepedulian</span> menumbuhkan masa depan.&rdquo;
                                 </blockquote>
                             </div>
                         </div>
                     </div>
 
-                    <!-- HERO RIGHT (PRODUCT PREVIEW MOCKUP) -->
-                    <div class="lg:col-span-6 relative min-w-0">
-                        <div class="bg-[#0B1733] border border-[#123B82]/50 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5 text-white relative">
-                            <!-- Window Header Dots -->
-                            <div class="flex items-center justify-between pb-3 border-b border-[#123B82]/40">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full bg-[#119FEA] inline-block"></span>
-                                    <span class="w-3 h-3 rounded-full bg-[#123B82] inline-block"></span>
-                                    <span class="w-3 h-3 rounded-full bg-[#EAF6FF]/40 inline-block"></span>
-                                    <span class="text-xs font-mono text-[#D7E4F3] ml-2">sinergiedu.id / dashboard</span>
-                                </div>
-                                <span class="px-2.5 py-0.5 rounded-full bg-[#119FEA]/20 text-[#119FEA] text-[11px] font-bold">Live Monitoring</span>
-                            </div>
-
-                            <!-- Overview Stats Grid -->
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-[#123B82]/40 border border-[#123B82]/60 p-4 rounded-2xl">
-                                    <span class="text-xs text-[#D7E4F3] font-medium">Rata-rata Nilai Siswa</span>
-                                    <div class="text-3xl font-extrabold text-white mt-1">85.4</div>
-                                    <span class="text-[11px] font-semibold text-[#119FEA] mt-1 inline-block">↑ Ter-rekonsiliasi</span>
-                                </div>
-                                <div class="bg-[#123B82]/40 border border-[#123B82]/60 p-4 rounded-2xl">
-                                    <span class="text-xs text-[#D7E4F3] font-medium">Ketuntasan KBM</span>
-                                    <div class="text-3xl font-extrabold text-white mt-1">92%</div>
-                                    <span class="text-[11px] font-semibold text-[#119FEA] mt-1 inline-block">Target Semester</span>
-                                </div>
-                            </div>
-
-                            <!-- Student Progress Visualization Bar -->
-                            <div class="bg-[#123B82]/40 border border-[#123B82]/60 p-4 rounded-2xl space-y-2">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="font-semibold text-slate-200">Pengumpulan Tugas &amp; Evaluasi</span>
-                                    <span class="font-bold text-[#119FEA]">98.5% Selesai</span>
-                                </div>
-                                <div class="w-full bg-[#0B1733] rounded-full h-2.5">
-                                    <div class="bg-gradient-to-r from-[#119FEA] to-[#123B82] h-2.5 rounded-full" style="width: 95%"></div>
-                                </div>
-                            </div>
-
-                            <!-- Mock Real-time Log Rows -->
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between p-3 bg-[#123B82]/30 rounded-xl text-xs border border-[#123B82]/40">
-                                    <div class="flex items-center gap-2 truncate">
-                                        <span class="w-2 h-2 rounded-full bg-[#119FEA] shrink-0"></span>
-                                        <span class="text-[#D7E4F3] font-medium truncate">Matematika — Evaluasi Pertemuan 4</span>
-                                    </div>
-                                    <span class="text-[10px] font-bold text-[#119FEA] shrink-0">TERSUBMIT</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 bg-[#123B82]/30 rounded-xl text-xs border border-[#123B82]/40">
-                                    <div class="flex items-center gap-2 truncate">
-                                        <span class="w-2 h-2 rounded-full bg-[#119FEA] shrink-0"></span>
-                                        <span class="text-[#D7E4F3] font-medium truncate">Laporan Supervisi Akademik Guru</span>
-                                    </div>
-                                    <span class="text-[10px] font-bold text-[#119FEA] shrink-0">TERVERIFIKASI</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Floating Overlay Card -->
-                        <div class="hidden sm:flex absolute -bottom-6 -left-6 bg-white border border-[#DCE8F3] p-4 rounded-2xl shadow-xl items-center gap-4 text-[#0B1733] z-10">
-                            <div class="w-12 h-12 rounded-xl bg-[#EAF6FF] text-[#123B82] flex items-center justify-center font-extrabold text-lg shrink-0">
-                                8
-                            </div>
-                            <div>
-                                <div class="text-sm font-extrabold text-[#0B1733]">Hak Akses Peran</div>
-                                <div class="text-xs text-[#64748B]">Admin, Kepsek, Guru, Siswa, dll.</div>
+                    <!-- HERO RIGHT (PERFECTED ANIMATED SINERGIEDU LOGO WITH AMBIENT BLUE GLOW) -->
+                    <div class="lg:col-span-6 flex items-center justify-center relative min-w-0">
+                        <div class="hero-logo-container relative w-full max-w-[420px] sm:max-w-[460px] lg:max-w-[500px] flex items-center justify-center p-6 sm:p-10 cursor-pointer">
+                            <!-- Dual-Layer Rich Ambient Blue Glow (Behind & Beneath Logo) -->
+                            <div class="hero-glow-layer-primary absolute -inset-6 sm:-inset-10 rounded-full pointer-events-none"></div>
+                            <div class="hero-glow-layer-bottom absolute inset-x-2 bottom-0 h-44 rounded-full pointer-events-none"></div>
+                            
+                            <!-- Outer Floating Track (Dedicated Strictly to Seamless Floating Loop) -->
+                            <div class="hero-logo-float-track w-full flex items-center justify-center">
+                                <!-- Inner Interactive Logo (Handles Hover Scale & Elevation Independently) -->
+                                <img src="{{ asset('images/logo.svg') }}?v={{ filemtime(public_path('images/logo.svg')) }}" 
+                                     alt="Logo SinergiEdu" 
+                                     class="hero-logo-interactive w-full h-auto max-h-[380px] sm:max-h-[440px] object-contain select-none">
                             </div>
                         </div>
                     </div>
