@@ -30,7 +30,8 @@
             .app-body-shell {
                 grid-template-columns: 0px minmax(0, 1fr);
             }
-            .app-body-shell.desktop-sidebar-open {
+            .app-body-shell.desktop-sidebar-open,
+            html.sidebar-desktop-preload-open .app-body-shell {
                 grid-template-columns: 230px minmax(0, 1fr);
             }
         }
@@ -76,29 +77,45 @@
                 } else {
                     document.documentElement.classList.remove('dark');
                 }
+
+                // Desktop Sidebar State Pre-init (>= 1024px: Respect localStorage, default closed/false if not set, NO flicker)
+                if (window.innerWidth >= 1024) {
+                    var savedDesktopState = localStorage.getItem('sinergiedu_desktop_sidebar_open');
+                    if (savedDesktopState === 'true') {
+                        document.documentElement.classList.add('sidebar-desktop-preload-open');
+                    }
+                }
             } catch (e) {}
         })();
     </script>
 </head>
 <body class="h-full overflow-hidden font-sans text-slate-800 antialiased tracking-tight bg-slate-50 flex flex-col"
       x-data="{
+          // Mobile/Tablet (< 1024px): Always starts closed, NEVER persisted to localStorage
           sidebarOpen: false,
-          sidebarDesktopOpen: false,
+          
+          // Desktop (>= 1024px): Persisted to localStorage
+          sidebarDesktopOpen: (window.innerWidth >= 1024 && localStorage.getItem('sinergiedu_desktop_sidebar_open') === 'true'),
+
           toggleSidebar() {
               if (window.innerWidth >= 1024) {
                   this.sidebarDesktopOpen = !this.sidebarDesktopOpen;
+                  localStorage.setItem('sinergiedu_desktop_sidebar_open', this.sidebarDesktopOpen ? 'true' : 'false');
+                  if (this.sidebarDesktopOpen) {
+                      document.documentElement.classList.add('sidebar-desktop-preload-open');
+                  } else {
+                      document.documentElement.classList.remove('sidebar-desktop-preload-open');
+                  }
                   setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 220);
               } else {
+                  // Mobile / Tablet toggle: purely in-memory, no localStorage
                   this.sidebarOpen = !this.sidebarOpen;
               }
           },
-          closeSidebar() {
-            this.sidebarOpen = false;
 
-            if (this.sidebarDesktopOpen) {
-                this.sidebarDesktopOpen = false;
-            }
-        }
+          closeSidebar() {
+              this.sidebarOpen = false;
+          }
       }"
       @keydown.escape.window="closeSidebar()">
 
