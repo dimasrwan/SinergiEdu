@@ -3,17 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SinergiEdu — Platform Manajemen Sekolah Terintegrasi</title>
-    <meta name="description" content="Satu platform terintegrasi untuk membantu sekolah mengelola pembelajaran, penilaian, monitoring, dan komunikasi antar pihak sekolah dalam satu sistem yang aman dan terisolasi.">
-
+    <title>SinergiEdu — Platform Manajemen Sekolah &amp; Sistem Monitoring Akademik Terintegrasi (SD, SMP, SMA, MTsN, MIN)</title>
+    <meta name="description" content="SinergiEdu adalah Platform Manajemen Sekolah &amp; Sistem Informasi Akademik Terintegrasi untuk SD, SMP, SMA, MTsN, MIN. Solusi aplikasi pengelolaan nilai, monitoring perkembangan siswa, tugas online, materi pembelajaran, serta komunikasi guru dan orang tua berbasis web.">
+    <meta name="keywords" content="SinergiEdu, SinergiEdu Platform Pendidikan, SinergiEdu Manajemen Sekolah, Sistem Informasi Manajemen Sekolah, Platform Manajemen Sekolah, Aplikasi Manajemen Sekolah, Sistem Informasi Akademik Sekolah, Aplikasi Akademik Sekolah, Sistem Pembelajaran Digital, Platform Pendidikan Digital, Sistem Monitoring Akademik, Aplikasi penilaian siswa, Sistem pengelolaan nilai siswa, Aplikasi monitoring perkembangan siswa, Sistem manajemen guru dan siswa, Aplikasi tugas sekolah online, Sistem pengelolaan materi pembelajaran, Aplikasi monitoring hasil belajar, Sistem informasi sekolah berbasis web, Platform komunikasi guru dan orang tua, Aplikasi manajemen kelas online, Sistem Monitoring Akademik Sekolah Terintegrasi, pendidikan, sd, smp, sma, mtsn, min">
+    <meta name="author" content="SinergiEdu">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    
     <!-- Canonical URL -->
     <link rel="canonical" href="https://sinergiedu.com/">
 
-    <!-- Open Graph Tags -->
-    <meta property="og:url" content="https://sinergiedu.com/">
-    <meta property="og:title" content="SinergiEdu — Platform Manajemen Sekolah Terintegrasi">
-    <meta property="og:description" content="Platform terintegrasi untuk membantu sekolah mengelola KBM, tugas, penilaian, monitoring, dan komunikasi antar pihak sekolah.">
+    <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sinergiedu.com/">
+    <meta property="og:site_name" content="SinergiEdu">
+    <meta property="og:title" content="SinergiEdu — Platform Manajemen Sekolah &amp; Sistem Monitoring Akademik Terintegrasi">
+    <meta property="og:description" content="Platform pendidikan digital terintegrasi untuk SD, SMP, SMA, MTsN, dan MIN. Kelola pembelajaran, penilaian, monitoring perkembangan siswa, dan administrasi sekolah dalam satu sistem web yang aman.">
+    <meta property="og:image" content="https://sinergiedu.com/images/logo.svg">
+    <meta property="og:image:alt" content="Logo SinergiEdu Platform Manajemen Sekolah">
+    <meta property="og:locale" content="id_ID">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://sinergiedu.com/">
+    <meta name="twitter:title" content="SinergiEdu — Platform Manajemen Sekolah &amp; Sistem Monitoring Akademik">
+    <meta name="twitter:description" content="Sistem Informasi Akademik &amp; Manajemen Sekolah Berbasis Web untuk SD, SMP, SMA, MTsN, MIN. Monitoring hasil belajar dan KBM lebih sinergis.">
+    <meta name="twitter:image" content="https://sinergiedu.com/images/logo.svg">
+
+    <!-- Structured Data (JSON-LD) for Search Engine Rich Snippets & Google Sitelinks -->
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@graph": [
+        {
+          "@@type": "WebSite",
+          "@@id": "https://sinergiedu.com/#website",
+          "url": "https://sinergiedu.com/",
+          "name": "SinergiEdu",
+          "alternateName": ["SinergiEdu Platform Pendidikan", "SinergiEdu Manajemen Sekolah"],
+          "description": "Sistem Informasi Akademik & Platform Manajemen Sekolah Terintegrasi (SD, SMP, SMA, MTsN, MIN)",
+          "inLanguage": "id-ID",
+          "publisher": {
+            "@@type": "Organization",
+            "name": "SinergiEdu",
+            "logo": {
+              "@@type": "ImageObject",
+              "url": "https://sinergiedu.com/images/logo.svg"
+            }
+          }
+        },
+        {
+          "@@type": "SoftwareApplication",
+          "@@id": "https://sinergiedu.com/#software",
+          "name": "SinergiEdu",
+          "operatingSystem": "Web",
+          "applicationCategory": "EducationalApplication",
+          "offers": {
+            "@@type": "Offer",
+            "price": "0",
+            "priceCurrency": "IDR"
+          },
+          "description": "Platform Manajemen Sekolah & Sistem Monitoring Akademik Terintegrasi untuk SD, SMP, SMA, MTsN, dan MIN.",
+          "featureList": [
+            "Manajemen Master Data Akademik & Kelas",
+            "Sistem Pembelajaran Digital & Tugas Online",
+            "Penilaian Siswa & Portofolio Perkembangan Hasil Belajar",
+            "Monitoring & Supervisi Kepala Sekolah, Waka, dan Pengawas",
+            "Platform Komunikasi Guru dan Orang Tua"
+          ]
+        },
+        {
+          "@@type": "ItemList",
+          "@@id": "https://sinergiedu.com/#sitelinks",
+          "name": "Navigasi Layanan SinergiEdu",
+          "itemListElement": [
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 1,
+              "name": "Portal Masuk Sistem",
+              "description": "Akses pintu masuk login akun resmi SinergiEdu untuk seluruh peran sekolah.",
+              "url": "https://sinergiedu.com/login"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 2,
+              "name": "Platform Manajemen Sekolah",
+              "description": "Informasi arsitektur dan kapabilitas sistem manajemen sekolah terintegrasi.",
+              "url": "https://sinergiedu.com/#platform"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 3,
+              "name": "Fitur KBM & Penilaian",
+              "description": "Sistem pengelolaan materi pembelajaran, tugas online, dan monitoring nilai siswa.",
+              "url": "https://sinergiedu.com/#fitur"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 4,
+              "name": "Ekosistem Peran Sekolah",
+              "description": "Akses terpadu untuk 8 peran: Admin, Kepsek, Guru, Siswa, Orang Tua, Waka, Pengawas, dan Komite.",
+              "url": "https://sinergiedu.com/#peran"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 5,
+              "name": "Alur Kerja Sistem",
+              "description": "Tahapan alur pencatatan hasil belajar mulai dari setup, pembelajaran, hingga monitoring.",
+              "url": "https://sinergiedu.com/#alur"
+            },
+            {
+              "@@type": "SiteNavigationElement",
+              "position": 6,
+              "name": "Layanan Reset Sandi",
+              "description": "Fasilitas pemulihan dan reset kata sandi akun pengguna SinergiEdu.",
+              "url": "https://sinergiedu.com/forgot-password"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/favicon.svg') }}">
@@ -607,11 +716,16 @@
         <section class="py-20 sm:py-24 bg-gradient-to-r from-[#119FEA] to-[#123B82] text-white relative overflow-hidden">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">
-                    Bangun Pengelolaan Sekolah yang Lebih Terintegrasi
+                    Sistem Informasi &amp; Aplikasi Manajemen Sekolah Terintegrasi
                 </h2>
-                <p class="text-base sm:text-lg text-[#EAF6FF] max-w-2xl mx-auto font-normal leading-relaxed">
-                    Satu platform untuk membantu sekolah mengelola pembelajaran, penilaian, monitoring, dan komunikasi antar pihak sekolah.
+                <p class="text-base sm:text-lg text-[#EAF6FF] max-w-3xl mx-auto font-normal leading-relaxed">
+                    Solusi platform pendidikan digital untuk SD, SMP, SMA, MTsN, dan MIN. Menghubungkan guru, siswa, orang tua, dan manajemen sekolah dalam satu sistem pengelolaan KBM, penilaian, dan monitoring hasil belajar terpusat.
                 </p>
+                <div class="pt-2">
+                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-8 py-3.5 text-base font-bold text-[#123B82] bg-white hover:bg-[#F5FAFF] active:scale-[0.98] rounded-xl transition shadow-lg shadow-black/10">
+                        Masuk ke Portal SinergiEdu &rarr;
+                    </a>
+                </div>
             </div>
         </section>
     </main>
@@ -619,34 +733,38 @@
     <!-- FOOTER (DARK NAVY #0B1733) -->
     <footer class="bg-[#0B1733] text-[#AFC4DA] py-12 border-t border-[#123B82]/40 text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-[#123B82]/40">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-[#123B82]/40">
                 
                 <!-- Col 1: Brand & Tagline -->
-                <div class="space-y-3">
+                <div class="space-y-3 md:col-span-2">
                     <div class="flex items-center gap-3">
                         <img src="{{ asset('images/logo.svg') }}?v={{ filemtime(public_path('images/logo.svg')) }}" alt="Logo SinergiEdu" class="h-8 w-auto">
                         <span class="text-xl font-extrabold text-white">Sinergi<span class="text-[#119FEA]">Edu</span></span>
                     </div>
-                    <p class="text-xs text-[#AFC4DA] leading-relaxed">
-                        Platform Manajemen Sekolah &amp; Monitoring Hasil Belajar Siswa Terintegrasi.
+                    <p class="text-xs text-[#AFC4DA] leading-relaxed max-w-md">
+                        <strong>SinergiEdu</strong> adalah Platform Pendidikan Digital dan Sistem Informasi Manajemen Sekolah Berbasis Web. Mendukung ekosistem pendidikan untuk jenjang SD, SMP, SMA, MTsN, dan MIN dengan monitoring hasil belajar siswa, pengelolaan nilai, materi KBM, dan tugas online terintegrasi.
                     </p>
                 </div>
 
                 <!-- Col 2: Navigation Links -->
                 <div class="space-y-2">
-                    <span class="text-xs font-extrabold text-white uppercase tracking-wider block mb-2">Platform Navigation</span>
+                    <span class="text-xs font-extrabold text-white uppercase tracking-wider block mb-2">Navigasi Platform</span>
                     <ul class="space-y-1.5 text-xs text-[#D7E4F3]">
-                        <li><a href="#platform" class="hover:text-[#119FEA] transition-colors">Platform</a></li>
-                        <li><a href="#fitur" class="hover:text-[#119FEA] transition-colors">Fitur Utama</a></li>
-                        <li><a href="#peran" class="hover:text-[#119FEA] transition-colors">Peran Sekolah</a></li>
-                        <li><a href="#alur" class="hover:text-[#119FEA] transition-colors">Alur Kerja</a></li>
+                        <li><a href="#platform" class="hover:text-[#119FEA] transition-colors">Platform Akademik</a></li>
+                        <li><a href="#fitur" class="hover:text-[#119FEA] transition-colors">Fitur Manajemen KBM</a></li>
+                        <li><a href="#peran" class="hover:text-[#119FEA] transition-colors">Peran &amp; Akses Sekolah</a></li>
+                        <li><a href="#alur" class="hover:text-[#119FEA] transition-colors">Alur Kerja Sistem</a></li>
                     </ul>
                 </div>
 
                 <!-- Col 3: System Access -->
                 <div class="space-y-2">
-                    <span class="text-xs font-extrabold text-white uppercase tracking-wider block mb-2">Akses Portal</span>
-                    <p class="text-xs text-[#AFC4DA]">Akses pintu masuk utama seluruh peran pengguna sekolah.</p>
+                    <span class="text-xs font-extrabold text-white uppercase tracking-wider block mb-2">Layanan &amp; Portal</span>
+                    <ul class="space-y-1.5 text-xs text-[#D7E4F3]">
+                        <li><a href="{{ route('login') }}" class="hover:text-[#119FEA] transition-colors">Portal Masuk Sistem</a></li>
+                        <li><a href="{{ route('password.request') }}" class="hover:text-[#119FEA] transition-colors">Layanan Reset Sandi</a></li>
+                        <li><span class="text-[#64748B]">Jenjang: SD, SMP, SMA, MTsN, MIN</span></li>
+                    </ul>
                 </div>
 
             </div>
