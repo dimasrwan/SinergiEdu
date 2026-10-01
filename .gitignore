@@ -25,7 +25,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# File bantu lokal / debris / deployment / sensitive (jangan di-push)
 /debug_update.php
 /test_scope.php
 /add_tenant_scope.py
