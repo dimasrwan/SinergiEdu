@@ -1,7 +1,22 @@
 <x-layouts.app>
     <x-slot:title>Manajemen Komite Sekolah</x-slot:title>
 
-    <div class="space-y-6">
+    <div class="space-y-6" x-data="{
+        deleteModalOpen: false,
+        komiteToDeleteId: null,
+        komiteNameToDelete: '',
+        confirmDelete(id, name) {
+            this.komiteToDeleteId = id;
+            this.komiteNameToDelete = name;
+            this.deleteModalOpen = true;
+        },
+        submitDelete() {
+            if (this.komiteToDeleteId) {
+                const form = document.getElementById('delete-komite-form-' + this.komiteToDeleteId);
+                if (form) form.submit();
+            }
+        }
+    }">
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-slate-200 pb-5 gap-4">
             <div>
@@ -72,7 +87,16 @@
                             <a href="{{ route('admin.komite.edit', $user) }}" class="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors min-h-[38px] min-w-[38px] inline-flex items-center justify-center" title="Edit">
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                             </a>
+                            <button type="button" x-on:click="confirmDelete('{{ $user->id }}', '{{ addslashes($user->name) }}')" class="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors min-h-[38px] min-w-[38px] inline-flex items-center justify-center" title="Hapus" aria-label="Hapus komite">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                            </button>
                         </div>
+
+                        <!-- Hidden Delete Form -->
+                        <form id="delete-komite-form-{{ $user->id }}" action="{{ route('admin.komite.destroy', $user) }}" method="POST" class="hidden">
+                            @csrf
+                            @method('DELETE')
+                        </form>
                     </div>
                 @empty
                     <div class="p-8 text-center text-slate-500 text-sm font-medium">
@@ -114,6 +138,9 @@
                                         <a href="{{ route('admin.komite.edit', $user) }}" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
                                         </a>
+                                        <button type="button" x-on:click="confirmDelete('{{ $user->id }}', '{{ addslashes($user->name) }}')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus" aria-label="Hapus komite">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -134,5 +161,76 @@
                 </div>
             @endif
         </x-card>
+
+        <!-- Delete Confirmation Modal -->
+        <div
+            x-show="deleteModalOpen"
+            x-cloak
+            class="fixed inset-0 z-50 !mt-0 flex items-center justify-center p-4 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title-delete-komite"
+            x-on:keydown.escape.window="deleteModalOpen = false"
+        >
+            <!-- Overlay -->
+            <div
+                x-show="deleteModalOpen"
+                x-transition:enter="ease-out duration-200"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-150"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+                @click="deleteModalOpen = false"
+            ></div>
+
+            <!-- Dialog Box -->
+            <div
+                x-show="deleteModalOpen"
+                x-transition:enter="ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative z-10 transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all w-full sm:max-w-md max-h-[calc(100dvh-8rem)] overflow-y-auto p-5 border border-slate-200 mx-auto my-auto shrink-0 box-border"
+            >
+                <!-- Trash Icon Container -->
+                <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-red-50 text-red-600 mb-3 shrink-0">
+                    <svg class="h-5.5 w-5.5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                </div>
+
+                <!-- Content -->
+                <div class="text-center space-y-1.5 w-full mx-auto min-w-0">
+                    <h3 class="text-base sm:text-lg font-semibold text-slate-900 tracking-tight break-words px-1" id="modal-title-delete-komite">
+                        Hapus Akun Komite?
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed break-words">
+                        Apakah Anda yakin ingin menghapus akun komite &ldquo;<span x-text="komiteNameToDelete" class="font-semibold text-slate-900 break-all"></span>&rdquo;? Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-4 md:mt-5 flex items-center justify-end gap-2 flex-wrap sm:flex-nowrap w-full">
+                    <button
+                        type="button"
+                        @click="deleteModalOpen = false"
+                        class="flex-1 sm:flex-initial min-w-[90px] px-4 h-10 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl border border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="button"
+                        @click="submitDelete()"
+                        class="flex-1 sm:flex-initial min-w-[90px] px-4 h-10 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-semibold rounded-xl transition-colors shadow-2xs focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    >
+                        Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </x-layouts.app>

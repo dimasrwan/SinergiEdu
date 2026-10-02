@@ -126,23 +126,22 @@
                                         </div>
 
                                         <!-- Dropdown Kelas -->
-                                        <div class="md:col-span-5 relative">
+                                        <div class="md:col-span-5 relative" x-on:change="assignment.class_id = $event.target.value">
                                             <label class="block text-xs font-semibold text-slate-500 mb-1 md:hidden">Pilih Kelas</label>
-                                            <x-select :name="`assignments[\${index}][class_id]`"
-                                                      placeholder="-- Pilih Kelas --"
+                                            <x-select placeholder="-- Pilih Kelas --"
                                                       required
-                                                      x-model="assignment.class_id"
                                                       :options="$classes->map(fn($cls) => ['value' => $cls->id, 'label' => $cls->name . ' (Tingkat ' . $cls->grade_level . ')'])->toArray()" />
+                                            {{-- Name/value diikat Alpine per baris (index ada di scope x-for). Name kosong saat belum dipilih agar baris kosong tidak ikut terkirim. --}}
+                                            <input type="hidden" :name="assignment.class_id ? `assignments[${index}][class_id]` : null" :value="assignment.class_id">
                                         </div>
 
                                         <!-- Dropdown Mapel -->
-                                        <div class="md:col-span-5 relative">
+                                        <div class="md:col-span-5 relative" x-on:change="assignment.subject_id = $event.target.value">
                                             <label class="block text-xs font-semibold text-slate-500 mb-1 md:hidden">Pilih Mata Pelajaran</label>
-                                            <x-select :name="`assignments[\${index}][subject_id]`"
-                                                      placeholder="-- Pilih Mata Pelajaran --"
+                                            <x-select placeholder="-- Pilih Mata Pelajaran --"
                                                       required
-                                                      x-model="assignment.subject_id"
                                                       :options="$subjects->map(fn($sub) => ['value' => $sub->id, 'label' => $sub->name])->toArray()" />
+                                            <input type="hidden" :name="assignment.subject_id ? `assignments[${index}][subject_id]` : null" :value="assignment.subject_id">
                                             
                                             <!-- Duplicate Error -->
                                             <template x-if="isDuplicate(index)">

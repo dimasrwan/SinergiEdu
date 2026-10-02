@@ -152,12 +152,12 @@
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="bg-slate-50/70 border-b border-slate-200">
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama / NIS</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas Aktif</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Jenis Kelamin</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Lahir</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Orang Tua / Wali</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Nama / NIS</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas Aktif</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Jenis Kelamin</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal Lahir</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Orang Tua / Wali</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -191,8 +191,8 @@
                                         <span class="text-sm text-slate-400 italic">Belum terhubung</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex flex-wrap items-center justify-end gap-1.5 ">
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <div class="flex flex-nowrap items-center justify-end gap-1.5 whitespace-nowrap">
                                         <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-placement-{{ $student->id }}')" class="px-2.5 py-1 text-xs font-bold text-white bg-accent hover:bg-blue-600 rounded-lg transition-colors shrink-0">
                                             + Penempatan
                                         </button>
@@ -260,7 +260,42 @@
                 </x-modal>
 
                 <!-- Add Placement Modal -->
-                <x-modal name="add-placement-{{ $student->id }}" maxWidth="xl">
+                <div
+                    x-data="{ show: false }"
+                    x-init="$watch('show', value => document.body.classList.toggle('overflow-y-hidden', value))"
+                    x-on:open-modal.window="$event.detail == 'add-placement-{{ $student->id }}' ? show = true : null"
+                    x-on:close-modal.window="$event.detail == 'add-placement-{{ $student->id }}' ? show = false : null"
+                    x-on:keydown.escape.window="show = false"
+                    x-show="show"
+                    x-cloak
+                    class="fixed inset-0 z-50 !mt-0 flex items-center justify-center p-4 sm:p-6"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Tambah Penempatan"
+                >
+                    <!-- Overlay -->
+                    <div
+                        x-show="show"
+                        x-transition:enter="ease-out duration-200"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="ease-in duration-150"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        class="fixed inset-0 bg-slate-900/50 transition-opacity"
+                        x-on:click="show = false"
+                    ></div>
+                    <!-- Dialog -->
+                    <div
+                        x-show="show"
+                        x-transition:enter="ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="ease-in duration-150"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="relative z-10 w-full sm:max-w-xl max-h-[calc(100dvh-8rem)] overflow-y-auto bg-surface border border-slate-100 rounded-2xl shadow-card box-border shrink-0"
+                    >
                     <form action="{{ route('admin.student-placements.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="redirect_to" value="students_index">
@@ -296,7 +331,8 @@
                             </div>
                         </div>
                     </form>
-                </x-modal>
+                    </div>
+                </div>
             @endforeach
 
             @if($students->hasPages())

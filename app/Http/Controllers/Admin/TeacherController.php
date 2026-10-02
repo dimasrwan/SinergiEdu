@@ -7,10 +7,13 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TeacherRequest;
+use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Role;
+use App\Models\Semester;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Models\TeacherSubject;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +60,28 @@ class TeacherController extends Controller
     public function store(TeacherRequest $request): RedirectResponse
     {
         Gate::authorize('create', \App\Models\Teacher::class);
-        DB::transaction(function () use ($request) {
+
+        $assignments = $request->validated('assignments', []);
+
+        // Penugasan dari form Tambah Guru disimpan ke Tahun Ajaran & Semester Aktif,
+        // memakai mekanisme yang sama dengan alur "+ Penugasan" (TeacherAssignmentController).
+        $activeAY = null;
+        $activeSem = null;
+        if ($assignments !== []) {
+            $activeAY = AcademicYear::where('is_active', true)->first();
+            if (!$activeAY) {
+                return back()->withInput()->with('error', 'Tidak ada Tahun Ajaran Aktif. Silakan atur Tahun Ajaran terlebih dahulu.');
+            }
+
+            $activeSem = Semester::where('academic_year_id', $activeAY->id)
+                ->where('is_active', true)
+                ->first();
+            if (!$activeSem) {
+                return back()->withInput()->with('error', 'Tidak ada Semester Aktif. Silakan atur Semester terlebih dahulu.');
+            }
+        }
+
+        DB::transaction(function () use ($request, $assignments, $activeAY, $activeSem) {
             // Dapatkan Role ID Guru
             $roleGuru = Role::where('name', 'guru')->firstOrFail();
 
@@ -77,6 +101,16 @@ class TeacherController extends Controller
                 'address' => $request->address,
             ]);
 
+            // 3. Simpan Penugasan Kelas & Mata Pelajaran
+            foreach ($assignments as $assignment) {
+                TeacherSubject::firstOrCreate([
+                    'teacher_id' => $teacher->id,
+                    'subject_id' => $assignment['subject_id'],
+                    'class_id' => $assignment['class_id'],
+                    'academic_year_id' => $activeAY->id,
+                    'semester_id' => $activeSem->id,
+                ]);
+            }
         });
 
         return redirect()->route('admin.teachers.index')->with('success', 'Data Guru berhasil ditambahkan.');

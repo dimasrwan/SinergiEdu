@@ -226,7 +226,42 @@
                     </form>
 
                     <!-- Add Assignment Modal -->
-                    <x-modal name="add-assignment-{{ $teacher->id }}" maxWidth="xl">
+                    <div
+                        x-data="{ show: false }"
+                        x-init="$watch('show', value => document.body.classList.toggle('overflow-y-hidden', value))"
+                        x-on:open-modal.window="$event.detail == 'add-assignment-{{ $teacher->id }}' ? show = true : null"
+                        x-on:close-modal.window="$event.detail == 'add-assignment-{{ $teacher->id }}' ? show = false : null"
+                        x-on:keydown.escape.window="show = false"
+                        x-show="show"
+                        x-cloak
+                        class="fixed inset-0 z-50 !mt-0 flex items-center justify-center p-4 sm:p-6"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Tambah Penugasan Mengajar"
+                    >
+                        <!-- Overlay -->
+                        <div
+                            x-show="show"
+                            x-transition:enter="ease-out duration-200"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="ease-in duration-150"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="fixed inset-0 bg-slate-900/50 transition-opacity"
+                            x-on:click="show = false"
+                        ></div>
+                        <!-- Dialog -->
+                        <div
+                            x-show="show"
+                            x-transition:enter="ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="ease-in duration-150"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-95"
+                            class="relative z-10 w-full sm:max-w-xl max-h-[calc(100dvh-8rem)] overflow-y-auto bg-surface border border-slate-100 rounded-2xl shadow-card box-border shrink-0"
+                        >
                         <form action="{{ route('admin.teacher-assignments.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="redirect_to" value="teachers_index">
@@ -269,7 +304,8 @@
                                 </div>
                             </div>
                         </form>
-                    </x-modal>
+                        </div>
+                    </div>
                 </div>
             @empty
                 <div class="bg-white rounded-xl p-8 border border-slate-200 text-center">
@@ -294,14 +330,14 @@
         <!-- Desktop Table Container (>= 1024px) -->
         <div class="hidden lg:block">
             <x-card padding="none" class="overflow-visible">
-                <div class="overflow-x-auto lg:overflow-visible">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50/70 border-b border-slate-200">
-                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama / NIP</th>
-                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kontak</th>
-                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas & Mapel</th>
-                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Nama / NIP</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Kontak</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Kelas & Mapel</th>
+                                <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -344,7 +380,7 @@
                                         @endphp
                                         
                                         @if($groupedAssignments->isNotEmpty())
-                                            <div class="space-y-2 min-w-[260px] max-w-md">
+                                            <div class="space-y-2 max-w-md">
                                                 @foreach($groupedAssignments as $group)
                                                     <div x-data="{ expanded: false }" class="bg-slate-50/80 border border-slate-200/80 rounded-xl p-2.5 transition-all">
                                                         <div class="flex items-center justify-between gap-2 mb-1.5">
@@ -398,8 +434,8 @@
                                             <span class="text-sm text-slate-400 italic">Belum ada penugasan</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex flex-wrap items-center justify-end gap-1.5">
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                        <div class="flex flex-nowrap items-center justify-end gap-1.5 whitespace-nowrap">
                                             <button type="button" x-on:click.prevent="$dispatch('open-modal', 'add-assignment-{{ $teacher->id }}')" class="px-2.5 py-1 text-xs font-bold text-white bg-accent hover:bg-blue-600 rounded-lg transition-colors shrink-0">
                                                 + Penugasan
                                             </button>
@@ -421,7 +457,42 @@
                                         </form>
 
                                         <!-- Add Assignment Modal -->
-                                        <x-modal name="add-assignment-{{ $teacher->id }}" maxWidth="xl">
+                                        <div
+                                            x-data="{ show: false }"
+                                            x-init="$watch('show', value => document.body.classList.toggle('overflow-y-hidden', value))"
+                                            x-on:open-modal.window="$event.detail == 'add-assignment-{{ $teacher->id }}' ? show = true : null"
+                                            x-on:close-modal.window="$event.detail == 'add-assignment-{{ $teacher->id }}' ? show = false : null"
+                                            x-on:keydown.escape.window="show = false"
+                                            x-show="show"
+                                            x-cloak
+                                            class="fixed inset-0 z-50 !mt-0 flex items-center justify-center p-4 sm:p-6"
+                                            role="dialog"
+                                            aria-modal="true"
+                                            aria-label="Tambah Penugasan Mengajar"
+                                        >
+                                            <!-- Overlay -->
+                                            <div
+                                                x-show="show"
+                                                x-transition:enter="ease-out duration-200"
+                                                x-transition:enter-start="opacity-0"
+                                                x-transition:enter-end="opacity-100"
+                                                x-transition:leave="ease-in duration-150"
+                                                x-transition:leave-start="opacity-100"
+                                                x-transition:leave-end="opacity-0"
+                                                class="fixed inset-0 bg-slate-900/50 transition-opacity"
+                                                x-on:click="show = false"
+                                            ></div>
+                                            <!-- Dialog -->
+                                            <div
+                                                x-show="show"
+                                                x-transition:enter="ease-out duration-200"
+                                                x-transition:enter-start="opacity-0 scale-95"
+                                                x-transition:enter-end="opacity-100 scale-100"
+                                                x-transition:leave="ease-in duration-150"
+                                                x-transition:leave-start="opacity-100 scale-100"
+                                                x-transition:leave-end="opacity-0 scale-95"
+                                                class="relative z-10 w-full sm:max-w-xl max-h-[calc(100dvh-8rem)] overflow-y-auto bg-surface border border-slate-100 rounded-2xl shadow-card box-border shrink-0"
+                                            >
                                             <form action="{{ route('admin.teacher-assignments.store') }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="redirect_to" value="teachers_index">
@@ -464,7 +535,8 @@
                                                     </div>
                                                 </div>
                                             </form>
-                                        </x-modal>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -503,7 +575,7 @@
         <div 
             x-show="deleteModalOpen" 
             x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto" 
+            class="fixed inset-0 z-50 !mt-0 flex items-center justify-center p-4 sm:p-6 overflow-y-auto" 
             role="dialog" 
             aria-modal="true"
             aria-labelledby="modal-title-delete-teacher"
