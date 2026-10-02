@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Siswa\AssignmentController;
 use App\Http\Controllers\Siswa\DashboardController;
 use App\Http\Controllers\Siswa\MaterialController;
+use App\Http\Controllers\Siswa\RencanaAksiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -32,4 +33,8 @@ Route::get('/feedbacks/{feedback}', [\App\Http\Controllers\Siswa\FeedbackControl
 
 Route::get('/reflections', [\App\Http\Controllers\Siswa\ReflectionController::class, 'index'])->name('reflections.index');
 Route::post('/reflections', [\App\Http\Controllers\Siswa\ReflectionController::class, 'store'])->name('reflections.store');
+
+// Rencana Aksi (READ-ONLY: hanya rencana yang ditujukan ke siswa ini)
+Route::get('/rencana-aksi', [RencanaAksiController::class, 'index'])->name('rencana-aksi.index');
+Route::get('/rencana-aksi/{rencana_aksi}', [RencanaAksiController::class, 'show'])->name('rencana-aksi.show');
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\WakaKurikulum\SemesterController;
 use App\Http\Controllers\WakaKurikulum\ClassroomController;
 use App\Http\Controllers\WakaKurikulum\SubjectController;
 use App\Http\Controllers\WakaKurikulum\MonitoringController;
+use App\Http\Controllers\WakaKurikulum\RencanaAksiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -41,3 +42,9 @@ Route::get('/monitoring/student-progress', [MonitoringController::class, 'studen
 Route::get('/monitoring/student-progress/export', [MonitoringController::class, 'exportIndividual'])->name('monitoring.student-progress.export');
 Route::post('/monitoring/collaborative-action', [MonitoringController::class, 'storeCollaborativeAction'])->name('monitoring.store-collaborative-action');
 Route::get('/monitoring/evaluations', [MonitoringController::class, 'evaluations'])->name('monitoring.evaluations');
+
+// Rencana Aksi (target: Guru)
+Route::get('/rencana-aksi', [RencanaAksiController::class, 'index'])->name('rencana-aksi.index');
+Route::get('/rencana-aksi/create', [RencanaAksiController::class, 'create'])->name('rencana-aksi.create');
+Route::post('/rencana-aksi', [RencanaAksiController::class, 'store'])->name('rencana-aksi.store');
+Route::get('/rencana-aksi/{rencana_aksi}', [RencanaAksiController::class, 'show'])->name('rencana-aksi.show');

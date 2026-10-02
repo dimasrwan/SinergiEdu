@@ -119,25 +119,58 @@ class ActionPlanTargetTest extends TestCase
         ], $overrides);
     }
 
-    public function test_create_lists_all_users_of_same_school_when_target_role_empty(): void
+    public function test_create_keeps_target_person_placeholder_when_target_role_empty(): void
     {
         $response = $this->actingAs($this->kepsek)
             ->get(route('kepala-sekolah.rencana-aksi.create'));
 
         $response->assertOk();
+        $html = $response->getContent();
 
-        $options = $this->targetOptions($response->getContent());
-        $labels = array_column($options, 'label');
+        // Target Role kosong → Target Orang hanya placeholder (TIDAK menampilkan semua user).
+        $state = $this->targetSelectState($html);
+        $labels = array_column($state['options'], 'label');
+        $this->assertSame(['Pilih Target Role terlebih dahulu'], $labels);
 
-        // Target Role kosong → semua user sekolah yang sama (semua role valid).
-        $this->assertContains('-- Semua sesuai role --', $labels);
-        $this->assertContains('Guru Andi A', $labels);
-        $this->assertContains('Waka Budi A', $labels);
-        $this->assertContains('Siswa Dewi A', $labels);
-
-        // Tenant isolation: user sekolah lain tidak boleh muncul.
-        $this->assertNotContains('Guru Eka B', $labels);
+        // Payload filter dinamis (KS_ACTION_PLAN_TARGETS) tetap dibawa untuk saat role
+        // dipilih, dan tetap tenant-isolated (user sekolah lain tidak pernah ikut).
+        $payloadLabels = array_column($this->targetOptions($html), 'label');
+        $this->assertContains('Guru Andi A', $payloadLabels);
+        $this->assertContains('Waka Budi A', $payloadLabels);
+        $this->assertNotContains('Guru Eka B', $payloadLabels);
         $response->assertDontSee('Guru Eka B');
+    }
+
+    public function test_create_lists_only_same_school_guru_when_target_role_guru(): void
+    {
+        $html = $this->actingAs($this->kepsek)
+            ->withSession(['_old_input' => ['target_role' => 'guru']])
+            ->get(route('kepala-sekolah.rencana-aksi.create'))
+            ->assertOk()
+            ->getContent();
+
+        $labels = array_column($this->targetSelectState($html)['options'], 'label');
+
+        $this->assertContains('Guru Andi A', $labels);
+        $this->assertNotContains('Waka Budi A', $labels);
+        $this->assertNotContains('Siswa Dewi A', $labels);
+        $this->assertNotContains('Guru Eka B', $labels, 'Guru sekolah lain tidak boleh muncul.');
+    }
+
+    public function test_create_lists_only_same_school_waka_when_target_role_waka(): void
+    {
+        $html = $this->actingAs($this->kepsek)
+            ->withSession(['_old_input' => ['target_role' => 'waka']])
+            ->get(route('kepala-sekolah.rencana-aksi.create'))
+            ->assertOk()
+            ->getContent();
+
+        $labels = array_column($this->targetSelectState($html)['options'], 'label');
+
+        $this->assertContains('Waka Budi A', $labels);
+        $this->assertNotContains('Guru Andi A', $labels);
+        $this->assertNotContains('Siswa Dewi A', $labels);
+        $this->assertNotContains('Guru Eka B', $labels, 'Waka sekolah lain tidak boleh muncul.');
     }
 
     public function test_create_carries_role_metadata_and_dynamic_filter_reset_handler(): void

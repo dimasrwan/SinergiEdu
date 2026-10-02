@@ -3,7 +3,7 @@
 
     <div class="w-full space-y-6">
         <div>
-            <a href="{{ route('kepala-sekolah.rencana-aksi.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary gap-1.5 transition-colors mb-4">
+            <a href="{{ route($prefix.'.index') }}" class="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary gap-1.5 transition-colors mb-4">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
                 Kembali ke Daftar Rencana Aksi
             </a>
@@ -11,7 +11,7 @@
         </div>
 
         <x-card padding="lg">
-            <form action="{{ route('kepala-sekolah.rencana-aksi.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route($prefix.'.store') }}" method="POST" class="space-y-6">
                 @csrf
 
                 <div>
@@ -56,8 +56,9 @@
                         <x-input-label for="target_role" :value="__('Target Role')" />
                         <x-select id="target_role" name="target_role" placeholder="-- Pilih Target Role --" onchange="window.KS_ACTION_PLAN_FILTER && window.KS_ACTION_PLAN_FILTER(this.value)">
                             <option value="">-- Pilih Target Role --</option>
-                            <option value="guru" {{ old('target_role') === 'guru' ? 'selected' : '' }}>Guru</option>
-                            <option value="waka" {{ old('target_role') === 'waka' ? 'selected' : '' }}>Waka Kurikulum</option>
+                            @foreach($targetRoleOptions as $option)
+                                <option value="{{ $option['value'] }}" {{ old('target_role') === $option['value'] ? 'selected' : '' }}>{{ $option['label'] }}</option>
+                            @endforeach
                         </x-select>
                         @error('target_role') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                     </div>
