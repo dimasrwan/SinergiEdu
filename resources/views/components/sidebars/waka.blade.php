@@ -41,6 +41,13 @@
             Evaluasi Pembelajaran
         </x-sidebar-link>
 
+        <x-sidebar-link href="{{ route('waka.rencana-aksi.index') }}" :active="request()->routeIs('waka.rencana-aksi.*')">
+            <x-slot:icon>
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+            </x-slot:icon>
+            Rencana Aksi
+        </x-sidebar-link>
+
         <li class="border-t border-slate-100 my-4 pt-4"><span class="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Master Data</span></li>
         <x-sidebar-link href="{{ route('waka.academic-years.index') }}" :active="request()->routeIs('waka.academic-years.*')">
             <x-slot:icon>

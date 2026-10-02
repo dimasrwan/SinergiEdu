@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\WakaKurikulum;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\WakaKurikulum\SemesterRequest;
 use App\Models\AcademicYear;
 use App\Models\Semester;
 use Illuminate\Http\RedirectResponse;

@@ -40,17 +40,19 @@
         @keyframes pageFadeIn {
             from {
                 opacity: 0.96;
-                transform: translateY(2px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
             }
         }
 
         .page-content-enter {
             animation: pageFadeIn 160ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            will-change: opacity, transform;
+            /* Jangan pakai will-change: transform — menjadikan elemen containing
+               block untuk position: fixed turunannya (modal ter-anchors ke kotak
+               konten halaman, bukan viewport). Jangan pakai will-change: opacity —
+               menciptakan stacking context sehingga modal z-50 terkurung di bawah
+               header z-40 (modal/overlay tidak menutup header). */
         }
 
         /* Accessibility: Reduced Motion Support */

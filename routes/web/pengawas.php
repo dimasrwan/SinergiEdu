@@ -6,6 +6,7 @@ use App\Http\Controllers\Pengawas\DashboardController;
 use App\Http\Controllers\Pengawas\EvaluationController;
 use App\Http\Controllers\Pengawas\FeedbackController;
 use App\Http\Controllers\Pengawas\InspectionController;
+use App\Http\Controllers\Pengawas\RencanaAksiController;
 use App\Http\Controllers\Pengawas\ReportController;
 use App\Http\Controllers\Pengawas\StudentMonitoringController;
 use App\Http\Controllers\Pengawas\SchoolSelectorController;
@@ -52,3 +53,9 @@ Route::get('/inspections/archived', [InspectionController::class, 'archived'])->
 Route::resource('/inspections', InspectionController::class);
 Route::put('/inspections/{inspection}/archive', [InspectionController::class, 'archive'])->name('inspections.archive');
 Route::put('/inspections/{inspection}/unarchive', [InspectionController::class, 'unarchive'])->name('inspections.unarchive');
+
+// Rencana Aksi (target: Kepala Sekolah)
+Route::get('/rencana-aksi', [RencanaAksiController::class, 'index'])->name('rencana-aksi.index');
+Route::get('/rencana-aksi/create', [RencanaAksiController::class, 'create'])->name('rencana-aksi.create');
+Route::post('/rencana-aksi', [RencanaAksiController::class, 'store'])->name('rencana-aksi.store');
+Route::get('/rencana-aksi/{rencana_aksi}', [RencanaAksiController::class, 'show'])->name('rencana-aksi.show');

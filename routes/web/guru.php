@@ -8,6 +8,7 @@ use App\Http\Controllers\Guru\FeedbackController;
 use App\Http\Controllers\Guru\GradeController;
 use App\Http\Controllers\Guru\LearningMeetingController;
 use App\Http\Controllers\Guru\MaterialController;
+use App\Http\Controllers\Guru\RencanaAksiController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Guru\ClassroomController;
@@ -38,3 +39,9 @@ use App\Http\Controllers\Guru\StudentProgressController;
 
 Route::get('/student-progress', [StudentProgressController::class, 'index'])->name('student-progress.index');
 Route::get('/student-progress/{student}', [StudentProgressController::class, 'show'])->name('student-progress.show');
+
+// Rencana Aksi (target: Siswa)
+Route::get('/rencana-aksi', [RencanaAksiController::class, 'index'])->name('rencana-aksi.index');
+Route::get('/rencana-aksi/create', [RencanaAksiController::class, 'create'])->name('rencana-aksi.create');
+Route::post('/rencana-aksi', [RencanaAksiController::class, 'store'])->name('rencana-aksi.store');
+Route::get('/rencana-aksi/{rencana_aksi}', [RencanaAksiController::class, 'show'])->name('rencana-aksi.show');

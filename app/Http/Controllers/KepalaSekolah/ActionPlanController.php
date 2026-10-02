@@ -53,11 +53,12 @@ class ActionPlanController extends Controller
             'role' => $u->role->name,
         ]))->values();
 
-        // Setelah validasi gagal, render daftar mengikuti Target Role lama agar state konsisten
-        // (target yang tidak valid terhadap role tidak ikut ter-render/terpilih).
-        $activeRole = old('target_role');
+        // Target Orang hanya dirender setelah Target Role dipilih (placeholder sampai
+        // role dipilih — tidak menampilkan seluruh user). Setelah validasi gagal,
+        // daftar mengikuti Target Role lama agar state konsisten.
+        $activeRole = old('target_role') ?: null;
         $groups = $targets
-            ->when($activeRole, fn ($c) => $c->filter(fn (User $u) => $u->role->name === $activeRole))
+            ->filter(fn (User $u) => $activeRole !== null && $u->role->name === $activeRole)
             ->groupBy(fn (User $u) => $u->role->name);
 
         // Old input target_user_id hanya dipertahankan jika masih valid terhadap daftar
