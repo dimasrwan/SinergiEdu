@@ -19,6 +19,7 @@ class ReportController extends Controller
         $totalSchools = 1; // Konteks sekolah aktif pengawasan saat ini
 
         $grades = \App\Models\StudentGrade::query()
+            ->when($activeSchoolId, fn($q) => $q->whereHas('student', fn($sq) => $sq->where('school_id', $activeSchoolId)))
             ->when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear?->id))
             ->when($activeSemester, fn ($q) => $q->where('semester_id', $activeSemester?->id));
 
@@ -56,7 +57,10 @@ class ReportController extends Controller
         $activeYear = \App\Models\AcademicYear::where('is_active', true)->first();
         $activeSemester = \App\Models\Semester::where('is_active', true)->first();
 
+        $activeSchoolId = session('pengawas_school_id');
+
         $archivedGrades = \App\Models\StudentGrade::query()
+            ->when($activeSchoolId, fn($q) => $q->whereHas('student', fn($sq) => $sq->where('school_id', $activeSchoolId)))
             ->when($activeYear, fn ($q) => $q->where('academic_year_id', $activeYear->id))
             ->when($activeSemester, fn ($q) => $q->where('semester_id', $activeSemester->id))
             ->whereNotNull('supervisor_feedback')

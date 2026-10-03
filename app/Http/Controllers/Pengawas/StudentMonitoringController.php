@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use OpenSpout\Writer\XLSX\Writer;
+use OpenSpout\Common\Entity\Row;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StudentMonitoringController extends Controller
 {
@@ -137,7 +140,7 @@ class StudentMonitoringController extends Controller
     /**
      * Download hasil belajar dalam format Excel.
      */
-    public function downloadReport(): StreamedResponse
+    public function exportExcel()
     {
         $activeYear = AcademicYear::where('is_active', true)->first();
         $activeSemester = Semester::where('is_active', true)->first();
@@ -172,37 +175,83 @@ class StudentMonitoringController extends Controller
             }])
             ->get();
 
-        $filename = 'hasil_belajar_' . ($activeYear?->name ?? 'tahun') . '.csv';
+        $filename = 'hasil_belajar_' . ($activeYear?->name ?? 'tahun') . '_' . date('Ymd_His') . '.xlsx';
+        $filePath = tempnam(sys_get_temp_dir(), 'excel_') . '.xlsx';
 
-        $response = new StreamedResponse(function () use ($students) {
-            $handle = fopen('php://output', 'w');
-            
-            // Header
-            fputcsv($handle, ['NIS', 'NISN', 'Nama Siswa', 'Tes Awal', 'Tugas', 'Tes Akhir', 'Karakter', 'Hafalan', 'Rata-rata']);
+        $writer = new Writer();
+        $writer->openToFile($filePath);
 
-            // Data
-            foreach ($students as $student) {
-                foreach ($student->studentGrades as $grade) {
-                    fputcsv($handle, [
-                        $student->nis,
-                        $student->nisn,
-                        $student->user?->name,
-                        $grade->pre_test_score,
-                        $grade->assignment_score,
-                        $grade->post_test_score,
-                        $grade->character_score,
-                        $grade->memorization_score,
-                        $grade->average_score,
-                    ]);
-                }
+        $writer->addRow(Row::fromValues(['LAPORAN HASIL BELAJAR', '', '', '', '', '', '', '', '']));
+        $writer->addRow(Row::fromValues(['Periode', $activeYear->year ?? '-', '', '', '', '', '', '', '']));
+        $writer->addRow(Row::fromValues([]));
+
+        $writer->addRow(Row::fromValues([
+            'NIS', 'NISN', 'Nama Siswa', 'Tes Awal', 'Tugas', 'Tes Akhir', 'Karakter', 'Hafalan', 'Rata-rata'
+        ]));
+
+        foreach ($students as $student) {
+            foreach ($student->studentGrades as $grade) {
+                $writer->addRow(Row::fromValues([
+                    $student->nis,
+                    $student->nisn,
+                    $student->user?->name,
+                    $grade->pre_test_score ?? 0,
+                    $grade->assignment_score ?? 0,
+                    $grade->post_test_score ?? 0,
+                    $grade->character_score ?? 0,
+                    $grade->memorization_score ?? 0,
+                    $grade->average_score ?? 0,
+                ]));
             }
+        }
 
-            fclose($handle);
-        });
+        $writer->close();
+        return response()->download($filePath, $filename)->deleteFileAfterSend(true);
+    }
 
-        $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
-        $response->headers->set('Content-Disposition', "attachment; filename=\"$filename\"");
+    /**
+     * Download hasil belajar dalam format PDF.
+     */
+    public function exportPdf()
+    {
+        $activeYear = AcademicYear::where('is_active', true)->first();
+        $activeSemester = Semester::where('is_active', true)->first();
+        $requestClassId = request('class_id');
+        $selectedClassId = ($requestClassId && $requestClassId !== 'all') ? $requestClassId : 'all';
 
-        return $response;
+        $activeSchoolId = session('pengawas_school_id');
+
+        if (!$activeYear || !$activeSemester || !$activeSchoolId) {
+            abort(404, 'Tahun ajaran, semester aktif, atau sekolah pengawasan tidak ditemukan.');
+        }
+
+        // Validasi jika class_id spesifik diberikan, pastikan kelas milik sekolah aktif
+        if ($selectedClassId !== 'all') {
+            $classExistsInActiveSchool = Classroom::where('school_id', $activeSchoolId)->where('id', $selectedClassId)->exists();
+            if (!$classExistsInActiveSchool) {
+                $selectedClassId = 'all';
+            }
+        }
+
+        $students = Student::query()
+            ->when($activeSchoolId, fn ($q) => $q->where('school_id', $activeSchoolId))
+            ->when($selectedClassId !== 'all', function ($query) use ($selectedClassId, $activeYear) {
+                return $query->whereHas('classes', function ($q) use ($selectedClassId, $activeYear) {
+                    $q->where('classes.id', $selectedClassId)
+                      ->where('student_classes.academic_year_id', $activeYear->id);
+                });
+            })
+            ->with(['user', 'studentGrades' => function ($q) use ($activeYear, $activeSemester) {
+                $q->where('academic_year_id', $activeYear->id)
+                  ->where('semester_id', $activeSemester->id);
+            }])
+            ->get();
+
+        $filename = 'hasil_belajar_' . ($activeYear?->name ?? 'tahun') . '_' . date('Ymd_His') . '.pdf';
+
+        $pdf = Pdf::loadView('pages.pengawas.students.pdf-report', compact('students', 'activeYear', 'activeSemester'));
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->download($filename);
     }
 }

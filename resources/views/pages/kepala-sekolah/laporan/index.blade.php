@@ -16,37 +16,68 @@
 
         <!-- Tombol Aksi Laporan -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <a href="{{ route('kepala-sekolah.reports.weekly') }}" class="p-5 bg-white border border-slate-200 rounded-2xl hover:border-primary hover:shadow-sm transition group">
-                <div class="h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition">
+            <!-- Rekap Mingguan -->
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col h-full">
+                <div class="h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
                 </div>
                 <h3 class="font-bold text-slate-900">Rekap Mingguan</h3>
-                <p class="text-sm text-slate-500 mt-1">Ringkasan komponen nilai & rangking kelas mingguan.</p>
-            </a>
+                <p class="text-sm text-slate-500 mt-1 mb-4 flex-grow">Ringkasan komponen nilai & rangking kelas mingguan.</p>
+                <div class="flex gap-2 mt-auto">
+                    <a href="{{ route('kepala-sekolah.reports.weekly') }}" class="flex-1 text-center py-2 px-3 bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 transition">Lihat Rekap</a>
+                    <a href="{{ route('kepala-sekolah.reports.export-weekly-pdf') }}" class="flex-1 text-center py-2 px-3 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100 transition flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        PDF
+                    </a>
+                </div>
+            </div>
 
-            <a href="{{ route('kepala-sekolah.reports.monthly') }}" class="p-5 bg-white border border-slate-200 rounded-2xl hover:border-primary hover:shadow-sm transition group">
-                <div class="h-11 w-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition">
+            <!-- Rekap Bulanan -->
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col h-full">
+                <div class="h-11 w-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
                 </div>
                 <h3 class="font-bold text-slate-900">Rekap Bulanan</h3>
-                <p class="text-sm text-slate-500 mt-1">Analisis mata pelajaran & performa kelas bulanan.</p>
-            </a>
+                <p class="text-sm text-slate-500 mt-1 mb-4 flex-grow">Analisis mata pelajaran & performa kelas bulanan.</p>
+                <div class="flex gap-2 mt-auto">
+                    <a href="{{ route('kepala-sekolah.reports.monthly') }}" class="flex-1 text-center py-2 px-3 bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 transition">Lihat Rekap</a>
+                    <a href="{{ route('kepala-sekolah.reports.export-monthly-pdf') }}" class="flex-1 text-center py-2 px-3 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100 transition flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        PDF
+                    </a>
+                </div>
+            </div>
 
-            <a href="{{ route('kepala-sekolah.reports.semester') }}" class="p-5 bg-white border border-slate-200 rounded-2xl hover:border-primary hover:shadow-sm transition group">
-                <div class="h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition">
+            <!-- Rekap Semester -->
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col h-full">
+                <div class="h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"/></svg>
                 </div>
                 <h3 class="font-bold text-slate-900">Rekap Semester</h3>
-                <p class="text-sm text-slate-500 mt-1">Ringkasan semester lengkap beserta laporan PDF.</p>
-            </a>
+                <p class="text-sm text-slate-500 mt-1 mb-4 flex-grow">Ringkasan semester lengkap beserta laporan PDF.</p>
+                <div class="flex gap-2 mt-auto">
+                    <a href="{{ route('kepala-sekolah.reports.semester') }}" class="flex-1 text-center py-2 px-3 bg-slate-50 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-100 transition">Lihat Rekap</a>
+                    <a href="{{ route('kepala-sekolah.reports.export-semester-pdf') }}" class="flex-1 text-center py-2 px-3 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100 transition flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        PDF
+                    </a>
+                </div>
+            </div>
 
-            <a href="{{ route('kepala-sekolah.reports.export-rekap-excel') }}" class="p-5 bg-white border border-slate-200 rounded-2xl hover:border-emerald-500 hover:shadow-sm transition group">
-                <div class="h-11 w-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:bg-amber-100 transition">
+            <!-- Export Excel -->
+            <div class="p-5 bg-white border border-slate-200 rounded-2xl flex flex-col h-full">
+                <div class="h-11 w-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
                 </div>
                 <h3 class="font-bold text-slate-900">Export Excel</h3>
-                <p class="text-sm text-slate-500 mt-1">Unduh rekap nilai dalam format Excel (.xlsx).</p>
-            </a>
+                <p class="text-sm text-slate-500 mt-1 mb-4 flex-grow">Unduh rekap nilai dalam format Excel (.xlsx).</p>
+                <div class="flex gap-2 mt-auto">
+                    <a href="{{ route('kepala-sekolah.reports.export-rekap-excel') }}" class="w-full text-center py-2 px-3 bg-emerald-50 text-emerald-600 text-xs font-semibold rounded-lg hover:bg-emerald-100 transition flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download Excel
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Tabel Rekap -->

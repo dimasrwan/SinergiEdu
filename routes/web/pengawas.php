@@ -26,7 +26,8 @@ Route::get('/users/{user}', [UserMonitoringController::class, 'show'])->name('us
 // Monitoring Siswa & Hasil Belajar
 Route::get('/students', [StudentMonitoringController::class, 'index'])->name('students.index');
 Route::get('/students/{student}', [StudentMonitoringController::class, 'show'])->name('students.show');
-Route::get('/students/download/report', [StudentMonitoringController::class, 'downloadReport'])->name('students.downloadReport');
+Route::get('/students/export/pdf', [StudentMonitoringController::class, 'exportPdf'])->name('students.exportPdf');
+Route::get('/students/export/excel', [StudentMonitoringController::class, 'exportExcel'])->name('students.exportExcel');
 
 // Feedback & Rencana Aksi
 Route::get('/feedback/archived', [FeedbackController::class, 'archived'])->name('feedback.archived');

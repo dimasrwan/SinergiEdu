@@ -15,6 +15,7 @@ class SupervisionService
     public function getGradingStatus(): Collection
     {
         $assignments = TeacherSubject::with(['teacher.user', 'classroom', 'subject'])
+            ->whereHas('teacher', fn($q) => $q->where('school_id', auth()->user()->school_id))
             ->get();
 
         return $assignments->map(function ($ts) {
@@ -37,7 +38,9 @@ class SupervisionService
 
     public function getTeacherReports(): Collection
     {
-        $teachers = \App\Models\Teacher::with(['user'])->get();
+        $teachers = \App\Models\Teacher::with(['user'])
+            ->where('school_id', auth()->user()->school_id)
+            ->get();
 
         return $teachers->map(function ($teacher) {
             $assignments = TeacherSubject::where('teacher_id', $teacher->id)->get();

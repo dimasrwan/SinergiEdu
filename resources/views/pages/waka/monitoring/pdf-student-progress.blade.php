@@ -114,11 +114,15 @@
 </head>
 <body>
 
-    <!-- Header Dokumen -->
-    <div class="header">
-        <h1>Laporan Perkembangan Hasil Belajar Siswa</h1>
-        <p>Sistem Informasi Akademik Terintegrasi — SinergiEdu</p>
-    </div>
+    @php
+        $schoolName = auth()->user()->school->name ?? 'Sekolah';
+        $academicYearName = $activeYear->year ?? '-';
+    @endphp
+    <x-pdf.header 
+        title="LAPORAN PERKEMBANGAN HASIL BELAJAR" 
+        :schoolName="$schoolName"
+        :academicYear="$academicYearName"
+    />
 
     <!-- Identitas Siswa -->
     <table class="info-table">
@@ -197,13 +201,10 @@
         </tbody>
     </table>
 
-    <!-- Tanda Tangan -->
-    <table class="footer">
+    <!-- Tanda Tangan & Footer -->
+    <table class="footer" style="margin-bottom: 30px;">
         <tr>
             <td style="width: 65%;">
-                <p style="font-size: 10px; color: #64748b; margin-top: 15px;">
-                    * Dokumen ini dibuat secara otomatis melalui Sistem SinergiEdu dan sah sebagai laporan hasil pembelajaran.
-                </p>
             </td>
             <td style="width: 35%; text-align: right;">
                 <div class="signature-box" style="float: right;">
@@ -217,6 +218,15 @@
             </td>
         </tr>
     </table>
+
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 10px; display: table; width: 100%;">
+        <div style="display: table-cell; text-align: left; color: #64748b; font-size: 10px;">
+            SinergiEdu — Peduli Prosesnya, Tumbuh Hasilnya.
+        </div>
+        <div style="display: table-cell; text-align: right; color: #64748b; font-size: 10px;">
+            Dicetak: {{ date('d/m/Y H:i') }}
+        </div>
+    </div>
 
 </body>
 </html>

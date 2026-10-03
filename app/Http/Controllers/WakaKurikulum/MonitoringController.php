@@ -139,6 +139,8 @@ class MonitoringController extends Controller
 
     public function previewMaterial(Material $material)
     {
+        abort_if($material->classroom?->school_id !== auth()->user()->school_id, 403, 'Akses ditolak.');
+
         $type = request()->query('type', 'file');
         $path = $type === 'video' ? $material->video_path : $material->file_path;
 
@@ -157,6 +159,8 @@ class MonitoringController extends Controller
 
     public function downloadMaterial(Material $material)
     {
+        abort_if($material->classroom?->school_id !== auth()->user()->school_id, 403, 'Akses ditolak.');
+
         $type = request()->query('type', 'file');
         $path = $type === 'video' ? $material->video_path : $material->file_path;
 
@@ -169,6 +173,8 @@ class MonitoringController extends Controller
 
     public function previewAssignment(Assignment $assignment)
     {
+        abort_if($assignment->classroom?->school_id !== auth()->user()->school_id, 403, 'Akses ditolak.');
+
         $path = $assignment->attachment_path;
         if (!$path || !Storage::disk('local')->exists($path)) {
             abort(404, 'File lampiran tugas tidak ditemukan.');
@@ -185,6 +191,8 @@ class MonitoringController extends Controller
 
     public function downloadAssignment(Assignment $assignment)
     {
+        abort_if($assignment->classroom?->school_id !== auth()->user()->school_id, 403, 'Akses ditolak.');
+
         $path = $assignment->attachment_path;
         if (!$path || !Storage::disk('local')->exists($path)) {
             abort(404, 'File lampiran tugas tidak ditemukan.');
@@ -195,6 +203,7 @@ class MonitoringController extends Controller
 
     public function previewSubmission(Assignment $assignment, AssignmentSubmission $submission)
     {
+        abort_if($assignment->classroom?->school_id !== auth()->user()->school_id, 403, 'Akses ditolak.');
         abort_if($submission->assignment_id !== $assignment->id, 404);
 
         $path = $submission->file_path;
@@ -213,6 +222,7 @@ class MonitoringController extends Controller
 
     public function downloadSubmission(Assignment $assignment, AssignmentSubmission $submission)
     {
+        abort_if($assignment->classroom?->school_id !== auth()->user()->school_id, 403, 'Akses ditolak.');
         abort_if($submission->assignment_id !== $assignment->id, 404);
 
         $path = $submission->file_path;
@@ -449,6 +459,8 @@ class MonitoringController extends Controller
             if ($activeSemester) $meetingQuery->where('semester_id', $activeSemester->id);
             if ($selectedClassId) $meetingQuery->where('class_id', $selectedClassId);
             if ($selectedSubjectId) $meetingQuery->where('subject_id', $selectedSubjectId);
+        })->whereHas('student', function ($studentQuery) {
+            $studentQuery->where('school_id', auth()->user()->school_id);
         });
 
         $grades = $query->get();
@@ -496,7 +508,7 @@ class MonitoringController extends Controller
         $activeYear = AcademicYear::where('is_active', true)->first();
         $student = Student::with(['user', 'parent.user'])->find($studentId);
 
-        if (!$student) return redirect()->back()->with('error', 'Siswa tidak ditemukan.');
+        if (!$student || $student->school_id !== auth()->user()->school_id) return redirect()->back()->with('error', 'Siswa tidak ditemukan atau bukan dari sekolah Anda.');
 
         $query = StudentAssessment::where('student_id', $studentId)
             ->with(['learningMeeting.subject', 'learningMeeting.classroom']);
@@ -521,6 +533,9 @@ class MonitoringController extends Controller
         $grades = StudentAssessment::with(['student.user', 'learningMeeting.classroom', 'learningMeeting.subject'])
             ->whereHas('learningMeeting', function ($q) use ($selectedClassId) {
                 if ($selectedClassId) $q->where('class_id', $selectedClassId);
+            })
+            ->whereHas('student', function ($q) {
+                $q->where('school_id', auth()->user()->school_id);
             })
             ->get();
 

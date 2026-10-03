@@ -44,6 +44,7 @@ class AcademicAggregatorService
         }
 
         $grades = StudentGrade::where('semester_id', $semesterId)
+            ->whereHas('student', fn($q) => $q->where('school_id', $schoolId))
             ->get();
 
         return $grades->isNotEmpty()
@@ -59,9 +60,10 @@ class AcademicAggregatorService
         }
 
         return Classroom::all()
-            ->map(function ($class) use ($semesterId) {
+            ->map(function ($class) use ($semesterId, $schoolId) {
                 $avg = StudentGrade::where('class_id', $class->id)
                     ->where('semester_id', $semesterId)
+                    ->whereHas('student', fn($q) => $q->where('school_id', $schoolId))
                     ->get()
                     ->avg(fn ($g) => $g->average_score);
                 return [
@@ -90,7 +92,9 @@ class AcademicAggregatorService
             return $empty;
         }
 
-        $grades = StudentGrade::where('semester_id', $semesterId)->get();
+        $grades = StudentGrade::where('semester_id', $semesterId)
+            ->whereHas('student', fn($q) => $q->where('school_id', $schoolId))
+            ->get();
         if ($grades->isEmpty()) {
             return $empty;
         }
@@ -114,9 +118,10 @@ class AcademicAggregatorService
         $subjects = \App\Models\Subject::all();
         $classes = Classroom::all();
 
-        return $subjects->map(function ($subject) use ($semesterId, $classes) {
+        return $subjects->map(function ($subject) use ($semesterId, $classes, $schoolId) {
             $rows = StudentGrade::where('subject_id', $subject->id)
                 ->where('semester_id', $semesterId)
+                ->whereHas('student', fn($q) => $q->where('school_id', $schoolId))
                 ->get();
 
             $avg = $rows->isNotEmpty()
@@ -127,10 +132,11 @@ class AcademicAggregatorService
             $total = $rows->count();
             $passRate = $total > 0 ? round(($passed / $total) * 100, 1) : 0;
 
-            $perClass = $classes->map(function ($class) use ($subject, $semesterId) {
+            $perClass = $classes->map(function ($class) use ($subject, $semesterId, $schoolId) {
                 $rows = StudentGrade::where('class_id', $class->id)
                     ->where('subject_id', $subject->id)
                     ->where('semester_id', $semesterId)
+                    ->whereHas('student', fn($q) => $q->where('school_id', $schoolId))
                     ->get();
                 return [
                     'class_id' => $class->id,

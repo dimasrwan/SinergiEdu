@@ -62,6 +62,10 @@ Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])
             ->name('semester');
         Route::post('/approve', [KepalaSekolah\ReportController::class, 'approve'])
             ->name('approve');
+        Route::get('/export/mingguan-pdf', [KepalaSekolah\ReportController::class, 'exportWeeklyPdf'])
+            ->name('export-weekly-pdf');
+        Route::get('/export/bulanan-pdf', [KepalaSekolah\ReportController::class, 'exportMonthlyPdf'])
+            ->name('export-monthly-pdf');
         Route::get('/export/semester-pdf', [KepalaSekolah\ReportController::class, 'exportSemesterPdf'])
             ->name('export-semester-pdf');
         Route::get('/export/rekap-excel', [KepalaSekolah\ReportController::class, 'exportRekapExcel'])

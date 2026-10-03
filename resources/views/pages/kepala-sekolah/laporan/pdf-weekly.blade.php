@@ -2,13 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Rekap Semester - SinergiEdu</title>
+    <title>Rekap Mingguan - SinergiEdu</title>
     <style>
         * { font-family: 'DejaVu Sans', sans-serif; }
         body { font-size: 12px; color: #1e293b; padding: 24px; }
-        .header { text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 24px; }
-        .header h1 { margin: 0; font-size: 20px; color: #1e3a8a; }
-        .header p { margin: 4px 0 0; color: #64748b; font-size: 12px; }
         .summary { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
         .box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 16px; flex: 1; text-align: center; }
         .box .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; }
@@ -24,38 +21,33 @@
 <body>
     @php
         $schoolName = auth()->user()->school->name ?? 'Sekolah';
-        // Try to get academic year from somewhere, since it's not passed explicitly.
-        // Or we can just pass null if not available, since it's optional.
     @endphp
     <x-pdf.header 
-        title="LAPORAN REKAP SEMESTER" 
+        title="LAPORAN REKAP MINGGUAN" 
         :schoolName="$schoolName" 
     />
 
+    <h2 class="section-title">Ringkasan Komponen Nilai</h2>
     <div class="summary">
         <div class="box">
-            <div class="label">Rata-rata Sekolah</div>
-            <div class="value">{{ $schoolAvgGrade }}</div>
-        </div>
-        <div class="box">
             <div class="label">Pretest</div>
-            <div class="value">{{ $componentAverages['avg_pre_test'] }}</div>
+            <div class="value">{{ $componentAverages['avg_pre_test'] ?? 0 }}</div>
         </div>
         <div class="box">
             <div class="label">Tugas</div>
-            <div class="value">{{ $componentAverages['avg_assignment'] }}</div>
+            <div class="value">{{ $componentAverages['avg_assignment'] ?? 0 }}</div>
         </div>
         <div class="box">
             <div class="label">Posttest</div>
-            <div class="value">{{ $componentAverages['avg_post_test'] }}</div>
+            <div class="value">{{ $componentAverages['avg_post_test'] ?? 0 }}</div>
         </div>
         <div class="box">
             <div class="label">Karakter</div>
-            <div class="value">{{ $componentAverages['avg_character'] }}</div>
+            <div class="value">{{ $componentAverages['avg_character'] ?? 0 }}</div>
         </div>
         <div class="box">
             <div class="label">Hafalan</div>
-            <div class="value">{{ $componentAverages['avg_memorization'] }}</div>
+            <div class="value">{{ $componentAverages['avg_memorization'] ?? 0 }}</div>
         </div>
     </div>
 
@@ -78,7 +70,7 @@
                     <td>{{ $row['avg'] }}</td>
                 </tr>
             @empty
-                <tr><td colspan="4">Belum ada data.</td></tr>
+                <tr><td colspan="4">Belum ada data mingguan.</td></tr>
             @endforelse
         </tbody>
     </table>

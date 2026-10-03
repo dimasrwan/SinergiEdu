@@ -462,10 +462,10 @@ class PengawasMultiSchoolHardeningTest extends TestCase
 
         $response = $this->actingAs($this->pengawas)
             ->withSession(['pengawas_school_id' => $this->schoolA->id])
-            ->get(route('pengawas.students.downloadReport', ['class_id' => 'all']));
+            ->get(route('pengawas.students.exportPdf', ['class_id' => 'all']));
 
         $response->assertStatus(200);
-        $this->assertEquals('text/csv; charset=utf-8', $response->headers->get('Content-Type'));
+        $this->assertEquals('application/pdf', $response->headers->get('Content-Type'));
     }
 
     /** Test 31: Super Admin can remove one school assignment via edit form while preserving others, profile, and user account */

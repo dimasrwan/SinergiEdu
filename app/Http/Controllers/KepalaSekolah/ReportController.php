@@ -54,6 +54,30 @@ class ReportController extends Controller
         ));
     }
 
+    public function exportWeeklyPdf(AcademicAggregatorService $aggregator)
+    {
+        $componentAverages = $aggregator->getComponentAverages(auth()->user()->school_id);
+        $classRankings = $aggregator->getClassRankings(auth()->user()->school_id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pages.kepala-sekolah.laporan.pdf-weekly', compact(
+            'componentAverages', 'classRankings'
+        ));
+
+        return $pdf->download('rekap-mingguan.pdf');
+    }
+
+    public function exportMonthlyPdf(AcademicAggregatorService $aggregator)
+    {
+        $subjectAnalysis = $aggregator->getSubjectAnalysis(auth()->user()->school_id);
+        $classRankings = $aggregator->getClassRankings(auth()->user()->school_id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pages.kepala-sekolah.laporan.pdf-monthly', compact(
+            'subjectAnalysis', 'classRankings'
+        ));
+
+        return $pdf->download('rekap-bulanan.pdf');
+    }
+
     public function approve(\Illuminate\Http\Request $request)
     {
         return back()->with('success', 'Laporan telah disetujui dan ditandatangani.');
